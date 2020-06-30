@@ -1,5 +1,5 @@
 # Spicr - Modern Content Showcase Component
-The mobile first, multi layer carousel component for the modern web.
+The mobile first, multi layer slider / carousel component for the modern web.
 
 [![NPM Version](https://img.shields.io/npm/v/spicr.svg?style=flat-square)](https://www.npmjs.com/package/spicr)
 [![NPM Downloads](https://img.shields.io/npm/dm/spicr.svg?style=flat-square)](http://npm-stat.com/charts.html?package=spicr)
@@ -20,7 +20,7 @@ Download the package and check the demo folder, or check it online [here](http:/
 * Fallbacks and polyfills for IE9+
 
 # NPM
-You can install this through NPM:
+You can install Spicr via NPM:
 
 ```
 $ npm install spicr
@@ -61,9 +61,9 @@ A minimalistic markup example:
     <div class="item">
       <div class="item-bg spicr-layer" data-duration="700" data-move="z:150" data-easing="cubicOut" style="background-image: url(../images/your-image.jpg);"></div>
       <div class="container">
-        <!-- this is the required wrapper of the content spicr-layer -->
-        <div class="d-flex">
-          <div class="spicr-layer perspective" data-move="z:250" data-delay="200" data-duration="800" data-rotate="z:15deg" data-easing="easingBackOut">
+        <!-- use any wrapper for your spicr-layer -->
+        <div class="d-flex perspective">
+          <div class="spicr-layer" data-move="z:250" data-delay="200" data-duration="800" data-rotate="z:15deg" data-easing="easingBackOut">
               <!-- valid HTML goes here -->                                  
           </div>
       </div>
@@ -88,8 +88,8 @@ Alternatively you can use a carousel-like markup:
     </div>
     <div class="item">
       <div class="container">
-        <!-- this is the required wrapper of the content spicr-layer -->
-        <div class="spicr-carousel-layer">
+        <!-- use any wrapper -->
+        <div class="perspective d-flex justify-content-center">
           <div class="spicr-layer">
               <!-- valid HTML goes here -->                                  
           </div>
