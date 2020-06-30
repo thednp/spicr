@@ -9,6 +9,7 @@
   "jsnext": "src/js/index.js",
   "files": [
     "dist/{js,css}/*.{js,css,map}",
+    "src/{js,scss}/**/*.{js,map}",
     "src/{js,scss}/*.{js,scss,map}"
   ],
   "scripts": {

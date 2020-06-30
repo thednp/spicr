@@ -1,5 +1,5 @@
 /*!
-* Spicr Standalone v1.0.0 (http://thednp.github.io/spicr)
+* Spicr Standalone v1.0.1 (http://thednp.github.io/spicr)
 * Copyright 2017-2020 © thednp
 * Licensed under MIT (https://github.com/thednp/spicr/blob/master/LICENSE)
 */
