@@ -1,0 +1,9 @@
+$xs: 320px;
+$sm: 576px;
+$md: 768px;
+$lg: 992px;
+$xl: 1200px;
+$xxl: 1400px;
+$breakpoints: (xs: $xs, sm: $sm, md: $md, lg: $lg, xl: $xl, xxl: $xxl) !default;
+$breakpoint: $md !default;
+$grid-gutter-width: 30px !default;

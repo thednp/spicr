@@ -1,0 +1,12 @@
+// @import 'variables';
+
+@function get-breakpoint-name(){
+  $bp: md;
+
+  @each $name, $i in $breakpoints {
+    @if $i == $breakpoint {
+      $bp: $name;
+    }
+  }
+  @return $bp;
+}

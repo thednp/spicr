@@ -1,0 +1,18 @@
+
+// spicr carousel
+.spicr-carousel {
+  clear: both; 
+  display: inline-block; 
+  width: 100%; 
+
+  // handle opacity to make it optional on specific layers
+  &[data-opacity="false"] .next .spicr-layer {
+    transform: translate3d(-100%,0,0);
+  }
+  &:not([data-opacity="false"]) .spicr-layer {
+    opacity: 0;
+  }
+  &:not([data-opacity="false"]) .active .spicr-layer{
+    opacity: 1;
+  }
+}

@@ -1,0 +1,18 @@
+// @import 'variables';
+// @import 'functions';
+
+.d-none { display: none }
+.d-inline { display: inline }
+.d-flex { display: flex }
+.d-block { display: block }
+
+@media (min-width: $breakpoint) {
+  $bp: get-breakpoint-name();
+
+  .d-#{$bp}-none { display: none }
+  .d-#{$bp}-inline { display: inline }
+  .d-#{$bp}-flex { display: flex }
+  .d-#{$bp}-block { display: block }
+
+  // @debug "(#{$bp},#{$breakpoint},#{index($breakpoints, $breakpoint)});  value-type '#{type-of($bp)}:' ";
+}

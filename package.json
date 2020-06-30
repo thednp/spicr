@@ -1,0 +1,82 @@
+{
+  "name": "spicr",
+  "version": "1.0.0",
+  "description": "Spicr Modern Slideshow Component",
+  "main": "dist/js/spicr.min.js",
+  "module": "dist/js/spicr.esm.js",
+  "style": "dist/css/spicr.min.css",
+  "sass": "src/css/spicr.scss",
+  "jsnext": "src/js/index.js",
+  "files": [
+    "dist/{js,css}/*.{js,css,map}",
+    "src/{js,scss}/*.{js,scss,map}"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bundle": "npm-run-all --parallel build compile",
+    "build": "npm-run-all --parallel build-* && npm run copy-build && npm run copy-standalone",
+    "build-js": "rollup --environment FORMAT:umd,MIN:false -c",
+    "build-min": "rollup --environment FORMAT:umd,MIN:true -c",
+    "build-esm": "rollup --environment FORMAT:esm,MIN:false -c",
+    "build-esm-min": "rollup --environment FORMAT:esm,MIN:true -c",
+    "build-standalone": "rollup --environment INPUTFILE:src/js/standalone.js,OUTPUTFILE:dist/js/spicr-standalone.js,MIN:false,FORMAT:umd,STANDALONE -c",
+    "build-standalone-min": "rollup --environment INPUTFILE:src/js/standalone.js,OUTPUTFILE:dist/js/spicr-standalone.min.js,MIN:true,FORMAT:umd -c",
+    "build-standalone-esm": "rollup --environment INPUTFILE:src/js/standalone.js,OUTPUTFILE:dist/js/spicr-standalone-esm.js,MIN:false,FORMAT:esm -c",
+    "build-standalone-esm-min": "rollup --environment INPUTFILE:src/js/standalone.js,OUTPUTFILE:dist/js/spicr-standalone-esm.min.js,MIN:true,FORMAT:esm -c",
+    "build-standalone-legacy": "rollup --environment INPUTFILE:src/js/standalone-legacy.js,OUTPUTFILE:demo/src/js/spicr-standalone-legacy.min.js,MIN:true,FORMAT:umd,STANDALONE -c",
+    "build-standalone-matrix": "rollup --environment INPUTFILE:src/js/standalone-matrix.js,OUTPUTFILE:demo/src/js/spicr-standalone-matrix.min.js,MIN:true,FORMAT:umd,STANDALONE -c",
+    "do-custom": "rollup -c --environment",
+    "copy-build": "node compile.js INPUTFILE:dist/js/spicr.min.js OUTPUTFILE:demo/src/js/spicr.min.js COPY:true",
+    "copy-standalone": "node compile.js INPUTFILE:dist/js/spicr-standalone.min.js OUTPUTFILE:demo/src/js/spicr-standalone.min.js COPY:true",
+    "compile": "npm-run-all --parallel compile-* && npm run copy-compile",
+    "compile-scss": "node compile.js",
+    "compile-scss-min": "node compile.js MIN:true",
+    "compile-ie": "node compile.js INPUTFILE:src/scss/ie.scss OUTPUTFILE:demo/src/css/ie-polyfill.min.css MIN:true",
+    "compile-theme": "node compile.js INPUTFILE:src/scss/spicr-theme.scss OUTPUTFILE:demo/assets/css/spicr-theme.min.css MIN:true",
+    "copy-compile": "node compile.js INPUTFILE:dist/css/spicr.min.css OUTPUTFILE:demo/src/css/spicr.min.css COPY:true",
+    "polyfill": "npm-run-all --parallel poly-unmin poly-min && npm run copy-poly && npm run poly-legacy",
+    "poly-unmin": "rollup --environment MIN:false -c rollup.polyfill.js",
+    "poly-min": "rollup --environment MIN:true -c rollup.polyfill.js",
+    "poly-legacy": "rollup --environment INPUTFILE:src/js/util/polyfill-legacy.js,OUTPUTFILE:demo/src/js/polyfill-legacy.min.js,MIN:false -c rollup.polyfill.js",
+    "copy-poly": "node compile.js INPUTFILE:dist/js/polyfill.min.js OUTPUTFILE:demo/src/js/polyfill.min.js COPY:true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thednp/spicr.js.git"
+  },
+  "keywords": [
+    "spicr",
+    "kute.js",
+    "site navigation",
+    "site menu",
+    "navigation",
+    "menu",
+    "javascript menu",
+    "javascript navigation",
+    "native javascript"
+  ],
+  "author": "thednp",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thednp/spicr.js/issues"
+  },
+  "homepage": "http://thednp.github.io/spicr",
+  "dependencies": {
+    "kute.js": "^2.0.10",
+    "minifill": "^0.0.12",
+    "shorter-js": "^0.1.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-buble": "^0.21.3",
+    "@rollup/plugin-json": "^4.0.3",
+    "@rollup/plugin-node-resolve": "^7.1.3",
+    "node-sass": "^4.14.1",
+    "npm-run-all": "^4.1.5",
+    "rollup": "^1.32.1",
+    "rollup-plugin-cleanup": "^3.1.1",
+    "rollup-plugin-sass": "^1.2.2",
+    "rollup-plugin-scss": "^2.5.0",
+    "rollup-plugin-terser": "^5.3.0",
+    "sass": "^1.26.9"
+  }
+}

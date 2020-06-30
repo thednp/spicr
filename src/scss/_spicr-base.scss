@@ -1,0 +1,90 @@
+
+.spicr {
+  position: relative;
+  overflow: hidden;
+  .item {
+    position: relative;
+    display: none;
+    float: left;
+    width: 100%;
+    margin-right: -100%;
+    backface-visibility: hidden;
+  }
+  .active.item, 
+  .next.item {
+    display: block;
+  }  
+}
+.spicr-inner {
+  position: relative;
+  width: 100%;
+}
+// spicr-layer 
+.spicr-layer { 
+  position: relative; 
+  width: 100%; 
+  transform-style: preserve-3d; 
+  backface-visibility: hidden;
+}
+// arrows
+.spicr-control {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 15%;
+  opacity: 0.5;
+  font-size: 20px;
+  color: #ffffff;
+  text-align: center;
+  &.right {
+    left: auto;
+    right: 0;
+  }
+  &:focus { color: #fff }
+  &:hover {
+    outline: 0;
+    color: #ffffff;
+    text-decoration: none;
+    opacity: 0.9;
+  }
+  .arrow-prev, .arrow-next {
+    position: absolute;
+    top: 50%;
+    display: inline-block;
+    margin-top: #{-$arrow-width/2};
+  }
+  .arrow-prev {
+    left: 50%;
+  }
+  .arrow-next {
+    right: 50%;
+  }
+}
+// spicr carousel pages navigation
+.spicr-pages { 
+  margin: 0;
+  padding: 0;
+  position: absolute; 
+  li { display: inline-block; line-height: 1 }
+  &.top-left { top: 0; left: 0 }
+  &.bottom-left { bottom: 0; left: 0 }
+  &.top-right { top: 0; right: 0 }
+  &.bottom-right { bottom: 0; right: 0 }
+}
+.spicr-control,
+.spicr-pages > * {
+  cursor: pointer
+}
+.spicr-icon {
+  width: $arrow-width;
+  height: $arrow-width;
+  fill: currentColor
+}
+// zIndex is important
+// .active.item .spicr-layer { z-index: auto }
+.spicr-pages, .spicr-control,
+.spicr .next.item { z-index: 1 }
+
+// .spicr-layer { opacity: 0 }
+// .item.active .spicr-layer { opacity: 1 }

@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Spicr is a modern content showcase component">
+    <meta name="keywords" content="Spicr,JavaScript,Native JavaScript,vanilla javascript,kute.js">
+    <meta name="author" content="thednp">
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="apple-touch-icon" href="./assets/img/apple-touch-icon.png">
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,800" rel="stylesheet">
+
+    <title>Spicr | Modern Content Showcase Component</title>
+	
+    <!-- Tooltip, PRISM & Navbar CSS -->
+    <link type="text/css" href="./assets/css/tooltip.min.css" rel="stylesheet">
+    <link type="text/css" href="https://cdn.jsdelivr.net/npm/navbar.js@2.0.7/dist/css/navbar.min.css" rel="stylesheet">
+    <link href="./assets/css/prism.css" rel="stylesheet">
+    
+    <!-- Spicr CSS -->
+    <link type="text/css" href="./src/css/spicr.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this example -->
+    <link type="text/css" href="./assets/css/spicr-theme.min.css" rel="stylesheet">
+    
+    <!-- IE9- Polyfill CSS -->
+    <!--[if lte IE 9]><link type="text/css" href="./src/css/ie-polyfill.min.css" rel="stylesheet"><![endif]-->
+  </head>
+
+  <body>
+    <header class="navbar-wrapper">
+      <div class="container">
+        <nav class="navbar navigation" data-function="navbar" data-toggle-siblings="true">
+          <a class="brand" href="https://github.com/thednp/spicr" title="Spicr on Github">Spicr</a>
+          <button class="navbar-toggle">
+            <svg class="menu-icon" viewBox="0 0 1024 1024">
+              <path d="M896.876 319.65h-768.751c-14.152 0-25.625-11.473-25.625-25.625s11.473-25.625 25.625-25.625h768.751c14.153 0 25.625 11.473 25.625 25.625s-11.472 25.625-25.625 25.625z m0 256.25h-768.751c-14.152 0-25.625-11.472-25.625-25.625s11.473-25.625 25.625-25.625h768.751c14.153 0 25.625 11.472 25.625 25.625s-11.472 25.625-25.625 25.625z m0 256.25h-768.751c-14.152 0-25.625-11.472-25.625-25.625s11.473-25.625 25.625-25.625h768.751c14.153 0 25.625 11.472 25.625 25.625s-11.472 25.625-25.625 25.625z"></path>
+            </svg>
+          </button>
+          <div>
+            <ul id="topnav" class="nav">
+              <li>
+                <span>Jump To
+                  <svg class="parent-icon" viewBox="0 0 1024 1024">
+                    <path d="M316 334l196 196 196-196 60 60-256 256-256-256z"></path>
+                  </svg>
+                  <svg class="parent-toggle" viewBox="0 0 1024 1024">
+                    <path d="M316 334l196 196 196-196 60 60-256 256-256-256z"></path>
+                  </svg>
+                </span>
+                <ul class="subnav">
+                  <li><a href="#main">Top</a></li>
+                  <li><a href="#features">Features</a></li>
+                  <li>
+                    <span>Usage
+                      <svg class="parent-icon" viewBox="0 0 1024 1024">
+                        <path d="M366 698l196-196-196-196 60-60 256 256-256 256z"></path>
+                      </svg>
+                      <svg class="parent-toggle" viewBox="0 0 1024 1024">
+                        <path d="M316 334l196 196 196-196 60 60-256 256-256-256z"></path>
+                      </svg>
+                    </span>
+                    <ul class="subnav">
+                      <li><a href="#usage" onclick="usage.Spicr.slideTo(0)">Installation</a></li>
+                      <li><a href="#usage" onclick="usage.Spicr.slideTo(1)">JavaScript API</a></li>
+                      <li><a href="#usage" onclick="usage.Spicr.slideTo(2)">DATA API</a></li>
+                      <li><a href="#usage" onclick="usage.Spicr.slideTo(3)">SCSS Sources</a></li>
+                      <li><a href="#usage" onclick="usage.Spicr.slideTo(4)">Code Samples</a></li>
+                    </ul>
+                  </li>
+                  <li>
+                    <span>Spicr Slider
+                      <svg class="parent-icon" viewBox="0 0 1024 1024">
+                        <path d="M366 698l196-196-196-196 60-60 256 256-256 256z"></path>
+                      </svg>
+                      <svg class="parent-toggle" viewBox="0 0 1024 1024">
+                        <path d="M316 334l196 196 196-196 60 60-256 256-256-256z"></path>
+                      </svg>
+                    </span>
+                    <ul class="subnav">
+                      <li><a href="#slider-markup">Spicr Slider Markup</a></li>
+                      <li><a href="#slider-item">Spicr Slider Item</a></li>
+                      <li><a href="#slider-demo">Spicr Slider Demo</a></li>
+                    </ul>
+                  </li>
+                  <li>
+                    <span>Spicr Carousel
+                      <svg class="parent-icon" viewBox="0 0 1024 1024">
+                        <path d="M366 698l196-196-196-196 60-60 256 256-256 256z"></path>
+                      </svg>
+                      <svg class="parent-toggle" viewBox="0 0 1024 1024">
+                        <path d="M316 334l196 196 196-196 60 60-256 256-256-256z"></path>
+                      </svg>
+                    </span>
+                    <ul class="subnav">
+                      <li><a href="#carousel-markup">Spicr Carousel Markup</a></li>
+                      <li><a href="#carousel-item">Spicr Carousel Item</a></li>
+                      <li><a href="#carousel-demo">Spicr Carousel Demo</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="#quicks">Spicr Quirks</a></li>
+                </ul>
+              </li>
+              <li>
+                <span>Share
+                  <svg class="parent-icon" viewBox="0 0 1024 1024">
+                    <path d="M316 334l196 196 196-196 60 60-256 256-256-256z"></path>
+                  </svg>
+                  <svg class="parent-toggle" viewBox="0 0 1024 1024">
+                    <path d="M316 334l196 196 196-196 60 60-256 256-256-256z"></path>
+                  </svg>
+                </span>
+                <ul class="subnav">
+                  <li>
+                    <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://thednp.github.io/spicr/index.html" title="Share Spicr on Facebook">
+                      <svg class="menu-icon" viewBox="0 0 1024 1024">
+                        <path d="M713.143 73.143c90.857 0 164.571 73.714 164.571 164.571v548.571c0 90.857-73.714 164.571-164.571 164.571h-107.429v-340h113.714l17.143-132.571h-130.857v-84.571c0-38.286 10.286-64 65.714-64l69.714-0.571v-118.286c-12-1.714-53.714-5.143-101.714-5.143-101.143 0-170.857 61.714-170.857 174.857v97.714h-114.286v132.571h114.286v340h-304c-90.857 0-164.571-73.714-164.571-164.571v-548.571c0-90.857 73.714-164.571 164.571-164.571h548.571z"></path>
+                      </svg>
+                      <span>Facebook</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a target="_blank" href="https://twitter.com/home?status=Spread the word about %23Spicr by @dnp_theme and download here http://thednp.github.io/spicr/index.html" title="Share Spicr on Twitter">
+                      <svg class="menu-icon" viewBox="0 0 1024 1024">
+                        <path d="M731.429 348.571c-21.714 9.714-44.571 16-69.143 19.429 25.143-14.857 44-38.857 53.143-66.857-23.429 13.714-49.143 24-76.571 29.143-21.714-23.429-53.143-37.714-87.429-37.714-66.286 0-120 53.714-120 120 0 9.143 0.571 18.857 2.857 27.429-100-5.143-188.571-52.571-248-125.714-10.286 17.714-16.571 38.857-16.571 60.571 0 41.714 19.429 78.286 52 100-20-0.571-38.857-6.286-57.143-14.857v1.143c0 58.286 44 106.857 98.857 117.714-10.286 2.857-18.286 4.571-29.143 4.571-7.429 0-14.857-1.143-22.286-2.286 15.429 47.429 59.429 82.286 112 83.429-41.143 32-92.571 51.429-149.143 51.429-9.714 0-19.429-0.571-28.571-1.714 53.143 33.714 116 53.714 184 53.714 220.571 0 341.714-182.857 341.714-341.714 0-5.143 0-10.286-0.571-15.429 23.429-16.571 44-37.714 60-62.286zM877.714 237.714v548.571c0 90.857-73.714 164.571-164.571 164.571h-548.571c-90.857 0-164.571-73.714-164.571-164.571v-548.571c0-90.857 73.714-164.571 164.571-164.571h548.571c90.857 0 164.571 73.714 164.571 164.571z"></path>
+                      </svg>
+                      <span>Twitter</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a href="https://github.com/thednp/spicr/wiki">Wiki</a>
+              </li>
+            </ul>
+            <div class="copy navbar-content">
+              <span><a target="_blank" href="https://github.com/thednp">thednp</a> © 2020</span>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <!-- slider ================================================== -->
+      <div id="SpicrMainDemo" class="spicr spicr-slider" data-interval="false">
+        <div class="spicr-inner">
+          <div class="item">
+            <!-- <div class="item-bg spicr-layer bg-blue" data-translate="y:500" data-duration="700" data-easing="easingCubicOut"></div> -->
+            <div class="item-bg spicr-layer bg-blue" data-translate="y:100%" data-duration="700" data-easing="easingCubicInOut" data-src="https://picsum.photos/id/881/1680/720.jpg"></div>
+            <div class="overlay spicr-layer"></div>
+            <div class="container h-100"> <!-- IE9 fix -->
+              <div class="d-flex align-items-center h-100">
+                <div class="flex-column w-md-50 text-center" style="margin: 0 auto">
+                  <div class="spicr-layer" data-translate="y:250" data-duration="500" data-rotate="z:15deg" data-easing="easingCubicInOut">
+                    <h1>Hi, I'm Spicr!</h1>
+                  </div>
+                  <div class="spicr-layer" data-translate="y:250" data-delay="150" data-duration="600" data-rotate="z:10deg" data-easing="easingCubicInOut">
+                    <p class="lead">Modern content showcase plugin</p> 
+                  </div>
+                  <div class="spicr-layer" data-translate="y:250" data-delay="250" data-duration="700" data-rotate="z:5deg" data-easing="easingCubicInOut">
+                    <p>Spicr is a freemium content showcase component featuring multi-layer slider and carousel, and is powered by <a class="text-light font-weight-bold" href="http://thednp.github.io/kute.js/">KUTE.js</a> 
+                      for hardware accelerated and super smooth animations.</p>
+                  </div>
+                  <div>
+                    <p class="btns">
+                      <a class="btn btn-red spicr-layer" href="http://thednp.github.io/Spicr" role="button" data-translate="y:250" data-delay="300" data-duration="600" data-easing="easingCircularInOut">Download</a>
+                      <a class="btn btn-olive spicr-layer" href="https://www.npmjs.com/package/Spicr" role="button" data-translate="y:250" data-delay="350" data-duration="700" data-easing="easingCircularInOut">NPM</a>
+                      <a class="btn btn-indigo spicr-layer" href="https://www.jsdelivr.com/package/npm/Spicr" role="button" data-translate="y:250" data-delay="400" data-duration="800" data-easing="easingCircularInOut">CDN</a>
+                    </p>
+                  </div> 
+                </div> 
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <!-- <div class="item-bg spicr-layer bg-pink" data-translate="y:-500" data-duration="700" data-easing="easingCubicInOut"></div> -->
+            <div class="item-bg spicr-layer bg-pink" data-translate="y:-100%" data-duration="700" data-easing="easingCubicInOut" data-src="https://picsum.photos/id/301/1680/720.jpg"></div>
+            <div class="overlay spicr-layer"></div>
+            <div class="container h-100">
+              <div class="row align-content-center h-100">
+                <div class="col-md-6 h-md-100"> <!-- IE9 fix -->
+                  <div class="d-flex align-items-end align-items-md-center h-md-100">
+                    <div class="w-100 flex-column"> <!-- IE9 fix -->
+                      <div class="spicr-layer" data-translate="y:-150" data-duration="400" data-delay="200" data-easing="easingCircularOut">
+                        <h1>Solid build and easy to use</h1>
+                      </div>
+                      <div class="spicr-layer" data-translate="y:-150" data-duration="400" data-delay="300" data-easing="easingCircularOut">
+                        <p>The HTML markup required is familiar and straight forward, it alows you to set all your slider animation settings via DATA API. No coding knowledge required, 
+                          no need for CSS3 transitions.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 h-md-100">
+                  <div class="d-flex align-items-start align-items-md-center h-md-100">
+                    <div class="w-100 flex-column"> <!-- IE9 fix -->
+                      <div class="spicr-layer" data-translate="y:-150" data-duration="400" data-delay="400" data-easing="easingCircularOut">
+                        <h1>ES6/ES7 and SCSS Sources</h1>
+                      </div>
+                      <div class="spicr-layer" data-translate="y:-150" data-duration="400" data-delay="500" data-easing="easingCircularOut">
+                        <p>The component was developed on ES6/ES7 JavaScript standard for the modern web and comes packed with solid build tools. The SCSS sources provide the 
+                          basic layout design for flexible design.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="item perspective-1500">
+            <!-- <div class="item-bg spicr-layer bg-olive" data-rotate="x:90" data-transform-origin="z:-50%v" data-duration="700" data-easing="easingCubicInOut"></div> -->
+            <div class="item-bg spicr-layer bg-olive" data-rotate="x:90" data-transform-origin="z:50%v" data-duration="700" data-easing="easingCubicInOut" data-src="https://picsum.photos/id/182/1680/720.jpg"></div>
+            <div class="overlay spicr-layer"></div>
+            <div class="container h-100"><!-- IE9 fix -->
+              <div class="row h-100 align-content-center">
+                <div class="col-md-6 h-md-100"><!-- IE9 fix -->
+                  <div class="d-flex perspective align-items-end align-items-md-center h-md-100">
+                    <div class="spicr-layer" data-translate="y:10%" data-rotate="x:90" data-transform-origin="z:50%" data-duration="700" data-easing="easingCubicInOut">
+                      <h1>Likes most browsers</h1>
+                      <p>Thanks to KUTE.js, Spicr has some built in functions to provide smooth translate, rotate, scale and opacity transitions on modern browsers. Thanks to polyfills 
+                        and custom builds, Spicr supports most legacy browsers.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 h-md-100">
+                  <div class="d-flex perspective align-items-start align-items-md-center h-md-100">
+                    <div class="spicr-layer" data-translate="y:10%" data-rotate="x:90" data-transform-origin="z:50%" data-duration="800" data-delay="100" data-easing="easingCubicInOut">
+                      <h1>High performance</h1>
+                      <p>Also thanks to KUTE.js, Spicr delivers at least 60 frames per second animations on modern browsers. All that powered by modern, clean, modular and high performance
+                        JavaScript code, developed for scalable and snappy applications.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="item perspective-1500">
+            <!-- <div class="item-bg spicr-layer bg-indigo" data-rotate="y:90" data-transform-origin="z:-50%" data-duration="700" data-easing="easingCubicOut"></div> -->
+            <div class="item-bg spicr-layer bg-indigo" data-rotate="y:90" data-transform-origin="z:-50%" data-duration="700" data-easing="easingCubicInOut" data-src="https://picsum.photos/id/434/1680/720.jpg"></div>
+            <div class="overlay spicr-layer"></div>
+            <div class="container h-100">
+              <div class="d-flex w-md-50 align-items-center text-md-center justify-content-md-center h-100" style="margin: 0 auto">
+                <div class="spicr-layer" data-translate="x:50%" data-scale="0.5" data-duration="700" data-easing="easingCubicInOut">
+                  <h1><span>What's crazy about it?</span><br>IT IS FREE!</h1>
+                  <p>That's right! Spicr is licensed under <a class="text-red" href="https://github.com/thednp/spicr/blob/master/LICENSE" target="_blank">MIT License</a> and this means you can use
+                    it for both personal and commercial purpose as long as you show proper credits to the original author. Yey!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- pages -->
+        <ol class="spicr-pages d-flex flex-row justify-content-center">
+          <li data-slide-to="0" class=""></li>
+          <li data-slide-to="1"></li>
+          <li data-slide-to="2"></li>
+          <li data-slide-to="3"></li>
+        </ol>
+        <a class="left spicr-control long-shadows" data-slide="prev">
+          <span class="arrow-prev">
+            <svg class="spicr-icon" viewBox="0 0 1024 1024">
+              <path d="M658 686l-60 60-256-256 256-256 60 60-196 196z"></path>
+            </svg>
+          </span>
+        </a>
+        <a class="right spicr-control long-shadows" data-slide="next">
+          <span class="arrow-next">
+            <svg class="spicr-icon" viewBox="0 0 1024 1024">
+              <path d="M366 698l196-196-196-196 60-60 256 256-256 256z"></path>
+            </svg>
+          </span>
+        </a>
+      </div><!-- /.spicr -->
+
+      <!-- Featurettes
+      ================================================== -->
+    
+      <div class="marketing">
+        <div class="container">
+          <!-- <a class="btn" href="#SpicrMainDemo" onclick="SpicrMainDemo.Spicr.slideTo(0)">0</a>
+          <a class="btn" href="#SpicrMainDemo" onclick="SpicrMainDemo.Spicr.slideTo(1)">1</a>
+          <a class="btn" href="#SpicrMainDemo" onclick="SpicrMainDemo.Spicr.slideTo(3)">3</a> -->
+      
+        <div class="featurette">
+          <h2 id="features">Spicr <span class="text-blue">Features</span> </h2>
+          <div class="row featurette">
+            <div class="col-md-6">
+              <h3 class="featurette-heading m-0"><span>Built on ES6/ES7 JavaScript standard</span></h3>
+              <p>Spicr was developed with native JavaScript and does not depend on JavaScript libraries like jQuery, Zepto or anyother, except KUTE.js.</p>						
+            </div>
+            <div class="col-md-6">
+              <h3 class="featurette-heading m-0"><span>Smooth transitions</span></h3>
+              <p>Thanks to our very own <a href="https://github.com/thednp/kute.js">KUTE.js</a>, a flexible and powerful animation engine, Spicr can deliver 
+                smooth transitions with high frame rate.</p>
+            </div>
+            <div class="col-md-6">
+              <h3 class="featurette-heading m-0"><span>Great browser support</span></h3>
+              <p>Thanks to the flexibility of Spicr, KUTE.js and polyfills available, you can do a lot more to showcase content even with <code>IE9</code>.</p>
+            </div>
+            <div class="col-md-6">
+              <h3 class="featurette-heading m-0"><span>Multiple use focus</span></h3>
+              <p>When using proper classes and the right markup, you can do full width sliders, carousels, newslines, tabs, all with minimal scripting.</p>
+            </div>
+            <div class="col-md-6">
+              <h3 class="featurette-heading m-0"><span>Works with popular CSS frameworks</span></h3>
+              <p>Spicr is a fork of our own <a href="http://thednp.github.io/bootstrap.native/#carouselExamples">Carousel for Bootstrap</a>, inheriting it's basic 
+                prototype and required markup, but providing and a wide range of animation options.</p>
+            </div>
+            <div class="col-md-6">
+              <h3 class="featurette-heading m-0"><span>Comes with SCSS sources</span></h3>
+              <p>Spicr comes with SCSS source so you can quick&amp;easy adapt the styling to your project. Also there are a set of variables you can play with, just to get things right.</p>
+            </div>
+            <div class="col-md-6">
+              <h3 class="featurette-heading m-0"><span>Powerful DATA API</span></h3>
+              <p>All animation, easing, control is handled by powerful API system.</p>
+            </div>
+            <div class="col-md-6">
+              <h3 class="featurette-heading m-0"><span>Developer friendly license</span></h3>
+              <p>Spicr is released under <a href="https://github.com/thednp/spicr/blob/master/LICENSE" target="_blank">MIT License</a>.</p>
+            </div>
+          </div>					  
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div id="usage" class="spicr spicr-carousel features-carousel" data-duration="700" data-translate="x:50%" data-easing="easingCubicOut" data-interval="false" data-function="spicr">
+          <div class="spicr-inner">
+            <div class="item">
+              <div class="spicr-layer">
+                <h2>Spicr <span class="text-blue">Usage</span> </h2>
+
+                <h3 class="featurette-heading m-0"><span>Install from NPM</span></h3>
+                <p>Spicr is available via the npm clouds, just type in:</p>
+
+<pre><code class="language-clike">npm install spicr</code></pre>
+
+                <h3 class="featurette-heading m-0"><span>Load from CDN</span></h3>
+                <p>Thanks to <a href="http://www.jsdelivr.com/">jsdelivr</a> we have a CDN link, so drop these lines in your site <code>&lt;head></code> to load the CSS:</p>
+
+<pre><code class="language-markup">&lt;link type="text/css" src="https://cdn.jsdelivr.net/npm/kute.js@2.0.10/dist/css/spicr.min.css" rel="stylesheet"&gt;
+</code></pre>
+
+                <p>To load the script files, you have several options, for instance you can load the KUTE.js and Spicr before your ending <code>&lt;/body></code> tag. Spicr latest 
+                  releases <a href="http://www.jsdelivr.com/#!spicr">come here</a> and for KUTE.js <a href="http://www.jsdelivr.com/#!kute.js">here</a>.</p>
+
+<pre><code class="language-markup">&lt;script src="https://cdn.jsdelivr.net/npm/kute.js@2.0.10/dist/kute.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/spicr.js@1.0.0/dist/js/spicr.min.js"&gt;&lt;/script&gt;
+</code></pre>
+
+                <p>Alternativelly, you can include the standalone version:</p>
+
+<pre><code class="language-markup">&lt;script src="https://cdn.jsdelivr.net/npm/spicr.js@1.0.0/dist/js/spicr-standalone.min.js"&gt;&lt;/script&gt;</code></pre>
+
+                <p>For best performance you should link the script(s) in the <code>&lt;body></code>, but the script should still work fine in the <code>&lt;head></code> as well.</p>
+
+                <h3 class="featurette-heading m-0"><span>Working locally</span></h3>
+                <p>If you host the files on your project folders, download the <a href="https://github.com/thednp/spicr/archive/master.zip">Spicr</a> package at github, 
+                  and <a href="https://github.com/thednp/kute.js/archive/master.zip">KUTE.js</a>, unpack them, copy the files from both the <code>dist</code> folder into your 
+                  application's <code>assets</code> folder, then simply drop these lines before your ending <code>&lt;/body></code>
+                  tag.</p>
+              
+
+<pre><code class="language-markup">&lt;script src="../assets/js/kute.min.js">&lt;/script>
+&lt;script src="../assets/js/spicr.min.js">&lt;/script>
+</code></pre>
+
+                <p>Or include the standalone version:</p>
+
+<pre><code class="language-markup">&lt;script src="../assets/js/spicr-standalone.min.js">&lt;/script></code></pre>
+
+                <h3 class="featurette-heading m-0"><span>Legacy Browsers</span></h3>
+                <p>You can enable IE10+ browsers out of the box, however for IE9+ there are a series of polyfills and CSS fallbacks, not included with the default distribution files,
+                  make sure to check out the <a href="https://github.com/thednp/spicr/wiki">wiki</a>. Below you have a sample usage of the included polyfill:</p>
+
+<pre><code class="language-markup">&lt;script src="https://cdn.jsdelivr.net/npm/spicr.js@1.0.0/dist/js/polyfill.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/kute.js@2.0.10/dist/kute.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/spicr.js@1.0.0/dist/js/spicr.min.js"&gt;&lt;/script&gt;
+</code></pre>
+
+                <p>Below you have several examples of markup you can use to create your spicy content.</p>
+
+                </div>
+              </div>
+
+              <div class="item">
+                <div class="spicr-layer">
+                  <h2>Spicr <span class="text-blue">JavaScript API</span></h2>
+
+                  <h3 class="featurette-heading m-0"><span>Public Methods</span></h3>
+                  <p>The Spicr component exposes a seriers of public methods you can call to interact with the initialization instance:</p>
+                  <ul>
+                    <li><b>.slideTo(<i>Number</i>)</b> - allows you to jump to the item you want by specifying its index.</li>
+                    <li><b>.cycle()</b> - jumps to the next item, usually to the item with higher index, or first if the current active item is last.</li>
+                    <li><b>.getActiveIndex()</b> - returns the current active item index.</li>
+                    <li><b>.dispose()</b> - resets all animation and removes the Spicr initialization from the target.</li>
+                  </ul>
+
+                  <h3 class="featurette-heading m-0"><span>Instance Options</span></h3>
+                  <p>The Spicr component allows you to set various options via JavaScript, some are exclusive to the JavaScript API, others are common with the DATA API.
+                    Once you've set your Element class, it will expect specific options and the entire execution is dictated by the combination of the following options:</p>
+                  <ul>
+                    <li><b>interval</b> | <i>Number</i> or <i>false</i> - allows you to enable / disable automatic transition by setting a delay value in miliseconds.
+                      This option can be set via DATA API with the <code>data-interval</code> attribute. The default value is <code>5000</code>.</li>
+                    <li><b>pause</b> | <i>string</i> or <i>false</i> - option to pause automatic transition. This option can be set via DATA API with the <code>data-pause</code> 
+                      attribute. The default value is <code>hover</code> which will pause the automatic transition on mouse hover.</li>
+                    <li><b>duration</b> | <i>Number</i> - allows you to set transition <b>duration</b> in miliseconds for <code>.spicr-carousel</code> instances. This option can be 
+                      set via DATA API with the <code>data-duration</code> attribute. The default value is <code>500</code>.</li>
+                    <li><b>delay</b> | <i>Number</i> - allows you to set transition <b>delay</b> in miliseconds for <code>.spicr-carousel</code> instances. This option can be 
+                      set via DATA API with the <code>data-delay</code> attribute. The default value is <code>150</code> and usually this applies in a stagger effect.
+                      For instance, with the default value, on <code>.spicr-carousel</code> items with multiple <code>.spicr-layer</code> Elements, the delay value for each
+                      layer goes like this 0, 150, 300, 450, etc.</li>
+                    <li><b>easing</b> | <i>string</i> - allows you to set the transition <b>timing function</b> for <code>.spicr-carousel</code> instances. This option can be 
+                      set via DATA API with the <code>data-easing</code> attribute. The default value is <code>easingCubicOut</code>.</li>
+                  </ul>
+                  <p>Keep in mind that JavaScript set options have <b>higher priority</b> over DATA API set options.</p>
+          
+                </div>
+              </div>
+              <div class="item">
+                <div class="spicr-layer">
+                  <h2>Spicr <span class="text-blue">DATA API</span></h2>
+                  <p>While for <code>.spicr-carousel</code> you can set all animation settings on the target Element itself, for <code>.spicr-slider</code> you can set
+                    all animation settings to the <code>spicr-layer</code> Elements individually. Some of these animation settings are exclusively for DATA API.</p>
+
+                  <h3 class="featurette-heading m-0"><span>Supported Properties</span></h3>
+                  <ul>
+                    <li><b>data-translate</b> attribute allows you to set the <b>translation</b> for <code>.spicr-layer</code> on all X, Y and Z axes for all layers of 
+                      a <code>.spicr-carousel</code> Element or each layer of a <code>.spicr-slider</code> Element. Example: <code>data-translate="x:50%,y:200,z:150"</code>.</li>
+                    <li><b>data-rotate</b> attribute allows you to set the <b>rotation</b> for <code>.spicr-layer</code> on all X, Y and Z axes for all layers of a 
+                      <code>.spicr-carousel</code> Element or each layer of a <code>.spicr-slider</code> Element. Example: <code>data-rotate="x:90,y:360,z:180"</code>. 
+                      The legacy builds will only work with the Z axis on IE9.</li>
+                    <li><b>data-scale</b> attribute allows you to set the <b>scale</b> for <code>.spicr-layer</code> for all layers of a <code>.spicr-carousel</code> Element 
+                      or each layer of a <code>.spicr-slider</code> Element. Example: <code>data-scale="2.5"</code>. While the <code>transformMatrix</code> component 
+                      technically supports <code>scale3d</code>, Spicr will only provide one scale value for all axes and we never found any need to implement an independed 
+                      all three axes support for scale so far.</li>
+                    <li><b>data-opacity</b> attribute allows you to remove <b>opacity</b> animation for all layers of a <code>.spicr-carousel</code> Element or each
+                      layer of a <code>.spicr-slider</code> Element. The default value is <code>true</code> which means that the layer (or all <code>.spicr-carousel</code> layers) 
+                      always animate the opacity property; Example: <code>data-opacity="false"</code> will disable opacity animation for that specific layer or 
+                      <code>.spicr-carousel</code> instance.</li>
+                    <li><b>data-transform-origin</b> attribute allows you to set a <code>transformOrigin</code> for all layers of a <code>.spicr-carousel</code> Element or each
+                      layer of a <code>.spicr-slider</code> Element. This functionality is unique as it allows you to set percentage based values for all axes, and Spicr 
+                      will then calculate the pixel values based on the <code>.spicr-layer</code> Element, something that cannot be done with CSS3 or other similar scripts. 
+                      In addition, you can specify on which axis to compute the Z value of the transform-origin. Example: <code>data-transform-origin="z:50%</code> will use the
+                      default value of <b>50%</b> for X and Y axes, and for Z will compute <b>50%</b> of the <b>width</b> of the layer; setting <code>data-transform-origin="z:50%v</code>
+                      will compute the Z axis based on the <b>height</b> of the layer (v for vertical).</li>
+                  </ul>
+
+                  <h3 class="featurette-heading m-0"><span>Animation Settings</span></h3>
+                  <ul>
+                    <li><b>data-duration</b> attribute allows you to set the <b>duration</b> for all the <code>.spicr-layer</code> animation of a <code>.spicr-carousel</code> 
+                      Element or each layer of a <code>.spicr-slider</code> Element. If not set, the <i>defaultDuration</i> of <code>500</code>ms is used.</li>
+                    <li><b>data-delay</b> attribute allows you to set the <b>delay</b> for all the <code>.spicr-layer</code> animation of a <code>.spicr-carousel</code> 
+                      Element or each layer of a <code>.spicr-slider</code> Element. If not set, the <i>defaultDelay</i> of <code>150</code>ms is used. When the layer is a 
+                      child of a <code>.spicr-slider</code> Element, this delay value is ignored when animating layers of the current active item out of view. When set on a 
+                      <code>.spicr-carousel</code> Element, this value is used to create a stagger effect for all the <code>.spicr-layer</code> elements depending on the slide 
+                      direction: if sliding left, delays are 0, 150, 300, etc, or when sliding right, the values are 300, 150, 0.</li>
+                    <li><b>data-easing</b> attribute allows you to set the <b>easing</b> for all the <code>.spicr-layer</code> animation of a <code>.spicr-carousel</code> 
+                      Element or each layer of a <code>.spicr-slider</code> Element. If not set, the <i>defaultEasing</i> of <code>easingCubicOut</code> is used. 
+                      When animating in, the layer will use the "Out" version of the function and "In" when animating out of view, but the "InOut" is never modified.</li>
+                  </ul>  
+                </div>
+              </div>
+              <div class="item">
+                <div class="spicr-layer">
+
+                  <h2>Spicr <span class="text-blue">SCSS</span></h2>
+
+                  <h3 class="featurette-heading m-0"><span>The Spicr Main Style</span></h3>
+                  <p>The Spicr component provides SCSS sources for its basic layout and its most essential styling in the <i>src/scss/spicr.scss</i> file.</p>
+
+<pre><code class="language-scss">@import 'functions', 'variables';
+
+@import 'spicr-base';
+@import 'spicr-slider';
+@import 'spicr-carousel'; 
+</code></pre>
+
+                  <ul>
+                    <li><code>spicr-base</code> provides the absolute basic layout of the component;</li>
+                    <li><code>spicr-slider</code> provides the <code>.spicr-slider</code> styling;</li>
+                    <li><code>spicr-carousel</code> provides the <code>.spicr-carousel</code> styling.</li>
+                  </ul>
+
+                  <h3 class="featurette-heading m-0"><span>SCSS Variables</span></h3>
+                  <p>The basic styling is really basic, it only needs a couple of variables.</p>
+
+<pre><code class="language-scss">// component own variables
+$slider-height: 600px !default;
+$slider-color: rgba(255,255,255,0.75) !default;
+$slider-heading-color: #fff !default;
+$arrow-width: 30px !default;
+</code></pre>
+
+                  <ul>
+                    <li><code>$slider-height</code> sets the <code>.spicr-slider</code> height; You can use units like <code>vh</code> on modern browsers or <code>px</code>
+                      based values for legacy browsers;</li>
+                    <li><code>$slider-color</code> sets the <code>.spicr-slider</code> text color;</li>
+                    <li><code>$slider-heading-color</code> sets the <code>.spicr-slider</code> heading colors;</li>
+                    <li><code>$arrow-width</code> sets the size for icons used by the navigation.</li>
+                  </ul>
+
+                  <h3 class="featurette-heading m-0"><span>Content Styling</span></h3>
+                  <p>The Spicr component only provides the styling for its basic layout and for the purpose of this demo, we've used some stuff from 
+                    <a href="https://getbootstrap.com">Bootstrap</a>:</p>
+
+                  <ul>
+                    <li><code>reboot</code> a nice style reset for modern browsers;</li>
+                    <li><code>flex</code> provides the flexbox styling; for our demo here, we've created some <code>display: table</code> fallbacks for IE9;</li>
+                    <li><code>container</code> wraps all content in a nice padded column;</li>
+                    <li><code>grid</code> provides the rows and column styling;</li>
+                    <li>other styling for spacing, dimensions, alignment, 3D perspective, etc.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="item">
+                <div class="spicr-layer">
+                  <h2>Spicr <span class="text-blue">Code Examples</h2>
+                  <h3 class="featurette-heading m-0"><span>ES5 Example</span></h3>
+                  <p>Once you've loaded the component's script file into your document, it's ready to play:</p>
+
+<pre><code class="language-javascript">// initialize 
+let mySpicrInit = new Spicr('target',options)
+</code></pre>
+
+                  <h3 class="featurette-heading m-0"><span>ES6/ES7 Example</span></h3>
+                  <p>Spicr requires KUTE.js, so there might be more files to import:</p>
+
+<pre><code class="language-javascript">// import the default Spicr distribution
+// this requires the KUTE.js loaded before the execution of this script 
+import Spicr from 'spicr'
+
+// initialize 
+let mySpicrInit = new Spicr('.slider-target',{
+  interval: 7000,
+  pause: false,
+  // other animation options are set via DATA API on each spicr-layer Element
+}})
+</code></pre>
+
+                  <p>In other cases you can also use one of the standalone versions which already include a specific KUTE.js build:</p>
+
+<pre><code class="language-javascript">// import the standalone Spicr distribution
+import Spicr from 'spicr/src/standalone.js'
+
+// or the legacy standalone, designed for legacy browsers IE9+
+import Spicr from 'spicr/src/standalone-legacy.js'
+
+// or the matrix standalone, designed for IE10+, Firefox and all Webkit browsers
+import Spicr from 'spicr/src/standalone-matrix.js'
+
+// initialize with options
+let mySpicrInit = new Spicr('.carousel-target',{
+  duration: 700,
+  interval: 7000,
+  pause: false,
+  easing: 'easingCircularOut'
+  // other animation options are set via DATA API
+}})
+</code></pre>
+
+                  <h3 class="featurette-heading m-0"><span>Using Instance Methods</span></h3>
+                  <p>As mentioned before, the Spicr initialization object is attached to the target element, giving you instant access to
+                    its public methods:</p>
+
+<pre><code class="language-javascript">// get one of the initialization targets
+let mySpicr = document.getElementById('mySpicr');
+
+// access the initialization
+let mySpicrInit = mySpicr.Spicr;
+
+// get the current active index
+let currentActiveIndex = mySpicrInit.getActiveIndex();
+
+// jump to a specific item
+mySpicrInit.slideTo(2);
+
+// animate to the next item
+mySpicrInit.cycle();
+</code></pre>
+
+                  <h3 class="featurette-heading m-0"><span>Dynamic Content</span></h3>
+                  <p>For dynamic content, Spicr exports a special callback <code>initComponent(<i>container</i>)</code> you can use with various events like 
+                    <i>turbolinks:load</i> or other events to initialize new targets appended to a container or the entire document.</p>
+
+<pre><code class="language-javascript">// get the main container
+let mainContainer = document.getElementsByTagName('main');
+
+// attach event
+document.addEventListener('turbolinks:load',function(){
+  Spicr.initComponent(mainContainer)
+});
+</code></pre>
+
+                </div>
+              </div>              
+            </div>
+            <ol class="spicr-pages top-right">
+              <li data-slide-to="0" data-toggle="tooltip" title="Usage" class="btn">1</li>
+              <li data-slide-to="1" data-toggle="tooltip" title="JavaScript API" class="btn">2</li>
+              <li data-slide-to="2" data-toggle="tooltip" title="DATA API" class="btn">3</li>
+              <li data-slide-to="3" data-toggle="tooltip" title="SCSS Sources" class="btn">4</li>
+              <li data-slide-to="4" data-toggle="tooltip" title="Code Examples" class="btn">5</li>
+            </ol>		        
+          </div><!-- /.spicr -->
+
+          <hr class="featurette-divider">
+
+          <h2 id="slider">Spicr <span class="text-blue">Slider</span></h2>
+
+          <h3 id="slider-markup" class="my-0">Slider Basic Markup</h3>
+          <p>The slider functionality is designed to showcase more media content rather than text content, and its functionality is geared 
+            towards wide screens, with animation control for any and all content items. You can use what ever markup structure you want,
+            make use of any content classes you see fit, the component's layout design has no limitation.</p>
+          <p>The very <a href="#">first example</a> on this page is a <code>.spicr-slider</code> instance, showcasing some of the component capability. 
+            The basic slider markup is designed to be simple, effective and allow for maximum content flexibility:</p>
+
+<pre><code class="language-markup">&lt;!-- spicr-slider basic markup --&gt;
+&lt;div data-function="spicr" class="spicr spicr-slider" data-interval="false"&gt;
+  &lt;div class="spicr-inner"&gt;
+    &lt;div class="item active"&gt;
+      &lt;!-- item content --&gt;
+    &lt;/div&gt;
+    &lt;div class="item"&gt;
+      &lt;!-- item content --&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- pages navigation --&gt;
+  &lt;ol class="spicr-pages"&gt;
+    &lt;li data-slide-to="0" class="active"&gt;&lt;/li&gt;
+    &lt;li data-slide-to="1"&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+  &lt;a class="left spicr-control" data-slide="prev">&lt;/a>
+  &lt;a class="right spicr-control" data-slide="next">&lt;/a>  
+&lt;/div&gt;	
+</code></pre>
+
+          <p><b>Markup breakdown and attribute specifications</b>:</p>
+          <ul>
+            <li>The <code>data-function="spicr"</code> attribute enables the Spicr automatic initialization for your Element.</li>
+            <li>The <code>.spicr-slider</code> class dictates how the layer animation works. This means that the animation DATA API is expected from 
+              all <code>.spicr-layer</code> Elements. If no <code>.spicr-layer</code> element is found, the component will still go to the next item.</li>
+            <li>The first <code>&lt;div class="item"></code> must always be active, which means having the <code>active</code> class or else Spicr will
+              animate its layers and make it active on initialization.</li>
+            <li>The slider instance expects to use a fixed height for its items and a flexbox container for their contents, but you can override anything
+              with classes from other HTML frameworks like <a href="https://getbootstrap.com/">Bootstrap</a> or 
+              <a href="https://get.foundation/">Foundation</a>, as the Spicr component itself doesn't include this kind of styling in its default CSS files.</li>
+            <li>Generally the <code>.spicr-slider</code> instance knows it must animate first a background <code>.item-bg.spicr-layer</code> Element if found, 
+              then other content items with <code>.spicr-layer</code> class.</li>
+            <li>The first element of the <code>&lt;div class="spicr-pages"></code> must be active, means having the <code>active</code> class.</li>
+            <li>The <code>data-interval</code> is either <em>false</em> or an <i>integer</i> number, the default value is <code>5000</code> and that 
+              is in milliseconds.</li>
+            <li>The <code>.spicr-pages</code> Element or <code>.spicr-control</code> Elements provide navigation to your initialization, first allows 
+              users to jump to a certain item and the second allows the user to slide items back and forth. At least one of the two is recommended to be 
+              used so that users can have a way to interact and read the desired content. This is where you can get very creative.</li>
+          </ul>
+
+          <h3 id="slider-item" class="my-0">Slider Item Markup</h3>
+          <p>OK now it's time to take a look at a slider item.</p>
+
+<pre><code class="language-markup">&lt;div class="item active"&gt;
+  &lt;!-- this is the background layer --&gt;
+  &lt;div class="item-bg spicr-layer" style="background-image: url(..);"
+       data-scale="1.5" 
+       data-duration="700" data-easing="easingCubicOut"&gt;&lt;/div&gt;
+  &lt;!-- you can use any container --&gt;
+  &lt;div class="container"&gt;
+    &lt;!-- you can also use a flexbox container --&gt;
+    &lt;div class="d-flex align-items-center h-100 perspective"&gt;
+      &lt;!-- this is the the content spicr-layer, with some sample settings --&gt;
+      &lt;div class="spicr-layer" 
+           data-translate="y:250" data-rotate="z:15" 
+           data-duration="800" data-delay="200" data-easing="easingBackOut"&gt;
+        &lt;!-- valid HTML goes here --&gt;									  
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+          <p><b>Markup breakdown and attribute specification</b>:</p>
+          <ul>
+            <li>The <code>.item-bg</code> is for background for your item, it can also become an animation layer by adding the <code>spicr-layer</code> class 
+              and automatically works with animation options set via DATA API. The background layer is <b>not</b> animating out, for performance reasons.</li>
+            <li>As shown in the above sample code, you can use any container for your content and layers, while for the first parent of each layer you can also
+              set a <code>perspective</code> class, in case your layer needs to animate 3D transform functions.</li>
+            <li>As suggested by the above sample code, the item markup is not constrained by any rule, you can use any container, flexbox, alignment, etc.
+              Anything you need to create a nice visual experience.</li>
+            <li>The <code>.spicr-layer</code> contained can use any and all the above <a href="#usage" onclick="usage.Spicr.slideTo(2)">DATA API</a> options to 
+              set animation.</li>
+          </ul>
+
+          <h3 id="slider-demo" class="my-0">Slider Example</h3>
+          <p>Based on the above sample codes, let's have a quick demo:</p>
+
+          <div id="mySpicrSlider" data-function="spicr" class="spicr spicr-slider mb-4 h-33vh" data-interval="false">
+            <div class="spicr-inner h-100">
+              <div class="item h-100 active">
+                <div class="item-bg spicr-layer bg-olive" data-duration="700" data-translate="y:100%" data-easing="easingCubicOut"></div>
+                <div class="d-flex h-100 px-4 py-3 align-items-center text-center perspective">
+                  <div class="spicr-layer" data-rotate="y:-90" data-translate="y:-10%" data-transform-origin="z:-50%v" data-duration="800" data-easing="easingCubicOut">
+                    <h3 class="m-0">Sample title</h3>							  
+                    <p>Sample text content</p>
+                  </div>
+                </div>
+              </div>
+              <div class="item h-100">
+                <div class="item-bg spicr-layer bg-orange" data-duration="700" data-translate="x:100%" data-easing="easingCubicOut"></div>
+                <div class="d-flex h-100 px-4 py-3 align-items-center text-center perspective">
+                  <div class="spicr-layer" data-rotate="x:90" data-translate="y:50%" data-transform-origin="z:-50%" data-duration="800" data-easing="easingCubicOut">
+                    <h3 class="m-0">Sample title</h3>							  
+                    <p>Sample text content</p>							  
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- pages navigation -->
+            <ol class="spicr-pages d-flex flex-row justify-content-center">
+              <li data-slide-to="0" class="active"></li>
+              <li data-slide-to="1"></li>
+            </ol>
+            <a class="left spicr-control" data-slide="prev"><span class="arrow-prev" style="margin-top: -10px">&laquo;</span></a>
+            <a class="right spicr-control" data-slide="next"><span class="arrow-next" style="margin-top: -10px">&raquo;</span></a>  
+          </div>
+
+          <p>For this demo we've bypassed the default <code>$slider-height:600px;</code> by using a <code>h-100</code> class for the 
+            <code>&lt;div class="item"></code> and other wrappers and set a fixed height of 35vh to the target <code>&lt;div class="spicr-slider"></code>
+            Element.</p>
+          <p>If you inspect the markup demo you will also discover other gems like flexbox, alignments, spacing and other goodies.</p>
+
+          <hr class="featurette-divider">
+
+          <h2 id="carousel">Spicr <span class="text-blue">Carousel</span></h2>
+
+          <h3 id="carousel-markup" class="my-0">Carousel Markup</h3>
+          <p>The carousel functionality is different in many ways, first of all, it was designed to deal with text-content, text blocks and handles the 
+            layer animation with a stagger effect. The <a href="#usage" onclick="usage.Spicr.slideTo(0)">Usage</a> Section of this page is a carousel instance.</p>
+          <p>When the current active and the next active item have different a height, the carousel instance will make a nice transition from the current height
+            to the height of the next active item. For this reason, the default <b>overflow</b> of the <code>.spicr-carousel</code> is <b>hidden</b>, but you can 
+            override that too, as we will see in a later example.</p>
+          <p>The required markup to create a carousel is similar but the animation DATA API apply to the target Element itself, so let's have a look:</p>
+
+<pre><code class="language-markup">&lt;!-- spicr-carousel basic markup --&gt;
+&lt;div class="spicr spicr-carousel" data-function="spicr" data-interval="false" 
+     data-duration="700" data-delay="200" data-easing="easingCircularInOut" 
+     data-translate="x:100%" data-rotate="x:90"&gt;
+  &lt;div class="spicr-inner"&gt;
+    &lt;div class="item active"&gt;
+      &lt;!-- item content --&gt;
+    &lt;/div&gt;
+    &lt;div class="item"&gt;
+      &lt;!-- item content --&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- pages navigation --&gt;
+  &lt;ol class="spicr-pages top-right"&gt;
+    &lt;a data-slide="prev">&lt;/a>
+    &lt;a data-slide="next">&lt;/a>
+  &lt;/ol&gt;
+&lt;/div&gt;	
+</code></pre>
+
+          <p><b>Markup breakdown and attribute specifications</b>:</p>
+          <ul>
+            <li>The <code>data-function="spicr"</code> attribute enables the Spicr automatic initialization for your Element.</li>
+            <li>The <code>.spicr-carousel</code> class dictates how the layer animation works. This means that the animation DATA API is expected from 
+              the target <code>.spicr-carousel</code> Element and apply to all child <code>.spicr-layer</code> Elements. If no <code>.spicr-layer</code> 
+              element is found, the component will still go to the next item.</li>
+            <li>The <code>.spicr-carousel</code> Element uses all <a href="#usage" onclick="usage.Spicr.slideTo(2)">DATA API</a> attributes, but the 
+              coordinates for translation and transform-origin are based on each individual layer.</li>
+            <li>The first <code>&lt;div class="item"></code> must always be active, which means having the <code>active</code> class or else Spicr will
+              animate its layers and make it active on initialization.</li>
+            <li>The <code>data-interval</code> is either <em>false</em> or an <i>integer</i> Number, the default value is <code>5000</code>ms.</li>
+            <li>The <code>&lt;div class="spicr-pages"></code> can use either elements with <code>data-slide-to="<i>Number</i>"</code> attribute or the 
+              <code>data-slide="next/prev"</code> attribute or both types as we will see in an example soon. In addition, the component provides 
+              positional classes like <i>bottom-left</i> or <i>top-right</i> to be used for your carousel instance navigation.</li>
+          </ul>
+
+          <h3 id="carousel-item" class="my-0">Carousel Item Markup</h3>
+          <p>Remember that carousel expects to animate more text content rather than media, in the examples below we're going to try and showcase the
+            best use cases. OK now it's time to take a look at a sample carousel item markup.</p>
+
+<div class="code-wrapper">
+<pre><code class="language-markup">&lt;div class="item active"&gt;
+  &lt;!-- you can use any container --&gt;
+  &lt;div class="container perspective"&gt;
+    &lt;!-- this is the the content spicr-layer, with some sample settings --&gt;
+    &lt;div class="spicr-layer"&gt;
+      &lt;!-- valid HTML goes here --&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre></div>
+
+          <p><b>Markup breakdown and attribute specifications</b>:</p>
+          <ul>
+            <li>The <code>.spicr-layer</code> doesn't have any DATA API attributes, but will inherit them all from the parent <code>.spicr-carousel</code> Element.</li>
+            <li>You can again use any type of markup structure you want, flexbox or not, but remember it's main functionality.</li>
+          </ul>
+
+          <h3 id="carousel-demo">Carousel Demos</h3>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div id="myCarousel1" data-function="spicr" class="spicr spicr-carousel" data-opacity="false" data-interval="false">
+                <div class="spicr-inner">
+                  <div class="item active">
+                    <div class="spicr-layer">
+                      <h4>No animation set</h4>
+                      <img alt="" src="http://placehold.it/470x200/ff5722/ff5722/">
+                      <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    </div>
+                  </div>
+                  <div class="item">
+                    <h4>No layer found</h4>
+                    <img alt="" src="http://placehold.it/470x200/159bd8/159bd8/">
+                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                  </div>
+                  <div class="item perspective">
+                    <h4>Not even opacity</h4>
+                    <img alt="" src="http://placehold.it/470x200/e91b1f/e91b1f/">
+                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                  </div>
+                </div>
+                <div class="spicr-pages top-right">
+                  <a class="btn p-0" data-slide="prev">
+                    <svg class="spicr-icon" viewBox="0 0 1024 1024">
+                      <path d="M658 686l-60 60-256-256 256-256 60 60-196 196z"></path>
+                    </svg>
+                  </a>
+                  <a class="btn p-0" data-slide="next">
+                    <svg class="spicr-icon" viewBox="0 0 1024 1024">
+                      <path d="M366 698l196-196-196-196 60-60 256 256-256 256z"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <p class="m-0"><b>Example breakdown</b>:</p>
+              <ul>
+                <li>As the title of the first item suggests, this example uses no animation setting, and even disables the opacity transition via the <code>data-opacity="false"</code> attribute.
+                  This is to verify the component's reliability in various scenarios, when no transition is set, no layer is found and most importantly <b>no error</b> in the console.</li>
+                <li>In this demo we've used the <code>top-right</code> position class for the <code>&lt;div class="spicr-pages"></code> Element.</li>
+                <li>The component provides basic styling for icons to be used for the <code>&lt;div class="spicr-pages"></code> elements, the <code>.spicr-icon</code> class.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div id="myCarousel2" data-function="spicr" class="spicr spicr-carousel" data-interval="false" data-translate="x:100%" data-opacity="false" data-duration="1000" data-easing="easingCircularOut">
+                <div class="spicr-inner">
+                  <div class="item active perspective">
+                    <div class="spicr-layer">
+                      <h4>This is a basic slide</h4>
+                      <img alt="" src="http://placehold.it/470x200/7b9e28/7b9e28/">
+                      <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    </div>
+                  </div>
+                  <div class="item perspective">
+                    <div class="spicr-layer">
+                      <h4>This is a basic slide</h4>
+                      <img alt="" src="http://placehold.it/470x200/9c27b0/9c27b0/">
+                      <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    </div>
+                  </div>
+                  <div class="item perspective">
+                    <div class="spicr-layer">
+                      <h4>This is a basic slide</h4>
+                      <img alt="" src="http://placehold.it/470x200/ff5722/ff5722/">
+                      <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="spicr-pages top-right">
+                  <a class="btn p-0" data-slide="prev">
+                    <svg class="spicr-icon" viewBox="0 0 1024 1024">
+                      <path d="M658 686l-60 60-256-256 256-256 60 60-196 196z"></path>
+                    </svg>
+                  </a>
+                  <a class="btn p-0" data-slide="next">
+                    <svg class="spicr-icon" viewBox="0 0 1024 1024">
+                      <path d="M366 698l196-196-196-196 60-60 256 256-256 256z"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div><!-- /.spicr -->
+            </div>
+            <div class="col-md-6">
+              <p class="m-0"><b>Example breakdown</b>:</p>
+              <ul>
+                <li>This example showcases a basic, classic horizontal slide animation via the <code>data-translate="x:100%"</code> attribute.</li>
+                <li>For this demo we've also removed the opacity transition via the <code>data-opacity="false"</code> attribute.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="row featurette">
+            <div class="col-md-6">
+              <div id="myCarousel3" data-function="spicr" class="spicr spicr-carousel overflow-visible mb-4" data-pause="" data-interval="0" data-transform-origin="z:-50%v" data-rotate="x:90" data-duration="2000" data-easing="easingCubicInOut">
+                <div class="spicr-inner text-light">
+                  <div class="item active perspective-1000">
+                    <div class="spicr-layer">
+                      <div class="item-bg px-4 py-3 bg-orange">
+                        <h4>This is cube animation</h4>
+                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus.</p>
+                        <p class="m-0">Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="item perspective-1000">
+                    <div class="spicr-layer">
+                      <div class="item-bg px-4 py-3 bg-red">
+                        <h4>This is cube animation</h4>
+                        <p>Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                        <p class="m-0">Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="item perspective-1000">
+                    <div class="spicr-layer">
+                      <div class="item-bg px-4 py-3 bg-green">
+                        <h4>This is cube animation</h4>
+                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                        <p class="m-0">Donec id elit non mi porta gravida at eget metus.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="spicr-pages top-right my-3">
+                  <a class="btn btn-light p-0 vertical-align-top" data-slide="prev">
+                    <svg class="spicr-icon" viewBox="0 0 1024 1024">
+                      <path d="M658 686l-60 60-256-256 256-256 60 60-196 196z"></path>
+                    </svg>
+                  </a>
+                  <a class="btn btn-light p-0 vertical-align-top" data-slide="next">
+                    <svg class="spicr-icon" viewBox="0 0 1024 1024">
+                      <path d="M366 698l196-196-196-196 60-60 256 256-256 256z"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div><!-- /.spicr -->
+
+              <div id="myCarousel4" data-function="spicr" class="spicr spicr-carousel overflow-visible mb-4" data-pause="false" data-interval="0" data-transform-origin="z:50%" data-rotate="y:90" data-duration="2000" data-easing="easingCubicInOut">
+                <div class="spicr-inner text-light">
+                  <div class="item active perspective-1500">
+                    <div class="spicr-layer">
+                      <div class="item-bg px-4 py-3 bg-blue">
+                        <h4>This is cube animation</h4>
+                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus.</p>
+                        <p class="m-0">Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="item perspective-1500">
+                    <div class="spicr-layer">
+                      <div class="item-bg px-4 py-3 bg-olive">
+                        <h4>This is cube animation</h4>
+                        <p>Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                        <p class="m-0">Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="item perspective-1500">
+                    <div class="spicr-layer">
+                      <div class="item-bg px-4 py-3 bg-indigo">
+                        <h4>This is cube animation</h4>
+                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                        <p class="m-0">Donec id elit non mi porta gravida at eget metus.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="spicr-pages top-right my-3">
+                  <a class="btn btn-light p-0 vertical-align-top" data-slide="prev">
+                    <svg class="spicr-icon" viewBox="0 0 1024 1024">
+                      <path d="M658 686l-60 60-256-256 256-256 60 60-196 196z"></path>
+                    </svg>
+                  </a>
+                  <a class="btn btn-light p-0 vertical-align-top" data-slide="next">
+                    <svg class="spicr-icon" viewBox="0 0 1024 1024">
+                      <path d="M366 698l196-196-196-196 60-60 256 256-256 256z"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div><!-- /.spicr -->
+            </div>
+            
+            <div class="col-md-6">
+              <p class="m-0"><b>Example breakdown</b>:</p>
+              <ul>
+                <li>For these two demos we've set a different <b>overflow</b> via the <code>overflow-visible</code> class, for better visual presentation.</li>
+                <li>This <b>first example</b> showcases a cube animation with the <code>data-rotate="x:90"</code> and <code>data-transform-origin="z:-50%v"</code> attributes,
+                  the animation looks like the items form a cube <b>in front of the viewer</b>.</li>
+                <li>This <b>second example</b> showcases a cube animation with the <code>data-rotate="y:90"</code> and <code>data-transform-origin="z:50%"</code> attributes,
+                  the animations looks like the items form a cube <b>around the viewer</b>.</li>
+                <li>For this kind of setup you might want to use a fixed height, a <code>vw</code> based <code>line-height</code> for your <code>.spicr-carousel</code> 
+                  items or a combination of both, to make sure they always have the same size to produces a consistent animation.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="featurette">
+            <div id="myCarousel0" data-function="spicr" class="spicr spicr-carousel" data-easing="easingCubicInOut" data-transform-origin="z:-50%" data-rotate="y:90" data-interval="false" data-delay="200" data-duration="700">
+              <div class="spicr-inner">
+                <div class="item active">
+                  <div class="row">
+                    <div class="col-md-4 perspective">
+                      <div class="spicr-layer">
+                        <h4>Multi layer carousel</h4>
+                        <img alt="" src="http://placehold.it/470x200/159bd8/159bd8/">
+                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                      </div>
+                    </div>
+                    <div class="col-md-4 perspective">
+                      <div class="spicr-layer">
+                        <h4>Doing stagger</h4>
+                        <img alt="" src="http://placehold.it/470x200/159bd8/159bd8/">
+                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                      </div>
+                    </div>
+                    <div class="col-md-4 perspective">
+                      <div class="spicr-layer">
+                        <h4>With cubes</h4>
+                        <img alt="" src="http://placehold.it/470x200/159bd8/159bd8/">
+                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="item">
+                  <div class="row">
+                    <div class="col-md-4 perspective">
+                      <div class="spicr-layer">
+                        <h4>The simplest example</h4>
+                        <img alt="" src="http://placehold.it/470x200/592673/592673/">
+                        <p>Cras justo odio, dapibus ac facilisis in, egestas id elit non mi porta gravida at eget metus.</p>
+                      </div>
+                    </div>
+                    <div class="col-md-4 perspective">
+                      <div class="spicr-layer">
+                        <h4>The simplest example</h4>
+                        <img alt="" src="http://placehold.it/470x200/592673/592673/" >
+                        <p>Donec id elit non mi porta gravida at eget dolor id nibh ultricies vehicula ut id elit.</p>
+                      </div>
+                    </div>
+                    <div class="col-md-4 perspective">
+                      <div class="spicr-layer">
+                        <h4>The simplest example</h4>
+                        <img alt="" src="http://placehold.it/470x200/592673/592673/">
+                        <p>Cras justo odio, dapibus ac facilisis in, donec id elit non mi porta gravida at eget metus.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="spicr-pages top-right">
+                <a class="btn p-0" data-slide="prev">
+                  <svg class="spicr-icon" viewBox="0 0 1024 1024">
+                    <path d="M658 686l-60 60-256-256 256-256 60 60-196 196z"></path>
+                  </svg>
+                </a>
+                <a class="btn p-0" data-slide="next">
+                  <svg class="spicr-icon" viewBox="0 0 1024 1024">
+                    <path d="M366 698l196-196-196-196 60-60 256 256-256 256z"></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <p class="m-0"><b>Example breakdown</b>:</p>
+          <ul>
+            <li>This demo showcases how the component works with the <code>data-delay</code> attribute on a multi-layer <code>.spicr-carousel</code> Element. 
+              It creates a stagger effect back and forth depending on the slide direction.</li>
+            <li>The <code>data-rotate="y:90"</code> and <code>data-transform-origin="z:-50%"</code> attributes set on the target Element are determined based on each
+              <code>.spicr-layer</code> individually.</li>
+            <li>This demo should also highlight the <b>height</b> transition as items of the <code>.spicr-carousel</code> Element don't have equal height.</li>
+          </ul>
+
+        <hr class="featurette-divider">
+        
+        <h2 id="quicks" class="featurette-heading">Spicr <span>Quirks</span></h2>
+        <ul>
+          <li>The Spicr default distribution file <i>spicr.min.js</i> is compatible with the default KUTE.js distribution file <i>kute.min.js</i> which 
+            includes the <code>transformFunctions</code> component. This component is designed for modern browsers and comes with a special KUTE.js 
+            custom build with support for IE9+ browsers which uses the new and improved <code>transformLegacy</code> component from KUTE.js. When building 
+            a legacy custom build, you also have the polyfill that covers support for IE9+ browsers.</li>
+          <li>This very demo page works on IE9+. and uses a special custom build <i>spicr-standalone-legacy.js</i> mentioned above and a special 
+            <i>polyfill-legacy.js</i>. In addition, some special SCSS sources with fallbacks have been developed for maximum consistency.</li>
+          <li>On initialization, Spicr will check the target Element class, contents and attributes of the target and child elements and animate first 
+            <code>&lt;div class="item"></code> if it doesn't have the <code>active</code> class.</li>
+          <li>Depending on the attributes specific for its DATA API, Spicr will process all your attributes' values and feed KUTE.js with pre-processed
+            values for immediate tween initialization.</li>
+          <li>The Spicr component will attach the initialization object to the target into the <code>element.Spicr</code> object, giving you access to
+            the initialization object even for DATA API initialized targets.</li>
+          <li>There are a set of standalone versions that include custom KUTE.js builds (also tons of build options) just in case you want to use KUTE.js 
+            exclusively with Spicr, so you can go either way.</li>
+          <li>For various builds and compatibility requirements, Spicr comes with a series of value processing specific to each KUTE.js build (included 
+            or not) to make sure the values are exactly what your chosen KUTE.js components expect.</li>
+          <li>Reinitializing the Spicr for a specific target just to change options should work fine, but will disrupt any and all active animations.</li>
+          <li>The component doesn't support nested Spicr initializations.</li>
+        </ul>
+        <hr class="featurette-divider">
+
+        <div class="row">
+          <div class="col-md-4">
+            <h4>Powered by KUTE.js</h4>
+            <p>Thanks to the KUTE.js, a modern animation engine, Spicr can deliver some awesome user experiences, on more than just modern browsers.</p>
+            <p><a class="btn btn-default" href="http://thednp.github.io/kute.js/" role="button">More on KUTE.js &raquo;</a></p>
+          </div>
+          <div class="col-md-4">
+            <h4>Developer Wiki</h4>
+            <p>For more information on custom builds, legacy support and other developer information, don't forget to check the wiki.</p>
+            <p><a target="_blank" class="btn btn-default" href="https://github.com/thednp/spicr/wiki" role="button">Spicr Wiki &raquo;</a></p>
+          </div>
+          <div class="col-md-4">
+            <h4>Other Resources</h4>
+            <ul>
+              <li><a href="http://thednp.github.io/navbar.js/">Navbar.js</a> - the navigation of this demo;</li>
+              <li><a href="http://thednp.github.io/dll.js/">DLL.js</a> - lazy-loading images on this demo;</li>
+              <li><a href="http://thednp.github.io/minifill/">minifill</a> - the polyfill for IE9+ browsers;</li>
+              <li><a href="https://picsum.photos/">picsum.photos</a> and <a href="http://placehold.it">placehold.id</a> - the demo photos.</li>
+            </ul>
+          </div>
+        </div>
+        
+      </div><!-- /.container -->
+    </div><!-- /.marketing -->
+  </main>
+  
+  <!-- FOOTER -->
+  <footer class="bg-blue text-light">
+    <div class="container py-3">
+      <p class="float-right my-0"><a class="btn btn-light" href="#">Back to top</a></p>
+      <p class="my-0"><a href="https://github.com/thednp" class="text-light">thednp</a> &copy; 2020</p>
+    </div>
+  </footer>
+
+    <script src="./src/js/polyfill-legacy.min.js"></script> 
+		
+    <script src="https://cdn.jsdelivr.net/npm/dll.js@1.5.5/dist/dll.min.js"></script> <!--  DLL -->
+    <script src="https://cdn.jsdelivr.net/npm/navbar.js@2.0.7/dist/js/navbar.min.js"></script> <!--  Navbar -->
+    <script src="./assets/js/tooltip-native.min.js"></script> <!--  Tooltip -->
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/kute.js@2.0.10/dist/kute.js"></script>
+    <script src="../dist/js/spicr.js"></script>   -->
+    
+    <!-- spicr standalone -->
+    <script src="./src/js/spicr-standalone-legacy.min.js"></script>  
+    <!-- <script src="./src/js/spicr-standalone-matrix.min.js"></script>   -->
+    <!-- <script src="../dist/js/spicr-standalone.js"></script>   -->
+
+    <script src="./assets/js/scripts.js"></script>
+    <script src="./assets/js/prism.js"></script>		
+	
+  </body>
+</html>
