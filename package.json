@@ -1,6 +1,6 @@
 {
   "name": "spicr",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Spicr Modern Slideshow Component",
   "main": "dist/js/spicr.min.js",
   "module": "dist/js/spicr.esm.js",
