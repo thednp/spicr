@@ -1,9 +1,11 @@
 import spicrConnect from '../util/spicrConnect.js'
 import getLayerData from './getLayerData.js'
+import defaultDelay from '../options/defaultDelay.js'
 
 // tweenLayer to work with KUTE.js transformFunctions component
 export default function(elem,isInAnimation,nextData) {
   let data = nextData ? nextData : getLayerData(elem),
+    isBg = elem.classList.contains('item-bg'),
     from = {}, to = {},
     translate = data.translate,
     rotate = data.rotate,
@@ -11,12 +13,14 @@ export default function(elem,isInAnimation,nextData) {
     opacity = data.opacity,
     origin = data.origin,
     duration = data.duration,
-    delay = data.delay,
+    delay = data.delay || (!isBg ? defaultDelay : 0),
     easing = data.easing,
     tweenOptions;
 
   easing = /InOut/.test(easing) || nextData ? easing : ( isInAnimation ? easing.replace('In','Out') : easing.replace('Out','In') ) // easing
   delay = isInAnimation ? delay : 0;
+  duration = isInAnimation ? duration : !isBg ? duration*1.5 : duration;
+  opacity = !isInAnimation && isBg && nextData ? 0 : opacity;
 
   if (opacity) {
     from.opacity = isInAnimation?0:1; 

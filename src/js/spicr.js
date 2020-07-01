@@ -4,15 +4,13 @@ import supportTouch from 'shorter-js/src/boolean/supportTouch.js'
 import mouseHoverEvents from 'shorter-js/src/strings/mouseHoverEvents.js'
 
 import spicrConnect from './util/spicrConnect.js'
-import animateBackgrounds from './process/animateBackgrounds.js'
 import animateSliderLayers from './process/animateSliderLayers.js'
 
 // options
 import defaultDuration from './options/defaultDuration.js'
 import defaultInterval from './options/defaultInterval.js'
 import defaultEasing from './options/defaultEasing.js'
-// import defaultDelay from './options/defaultDelay.js'
-
+import defaultDelay from './options/defaultDelay.js'
 
 // SPICR DEFINITION
 // ================
@@ -55,7 +53,7 @@ export default function( element, options ) {
     // internal variables and / or constants
     timer = null,
     slideDirection = null,
-    index = null,
+    index = 0,
     isAnimating = 0,
 
     // spicr type
@@ -117,10 +115,13 @@ export default function( element, options ) {
     Array.from(pages).map(x=>x.classList.remove('active'))
     pageIndex && pageIndex.classList.add('active')
   }
-  function beforeTween(next){
+  function beforeTween(current,next){
     index = next
     slides[next].classList.add('next')
     isAnimating = true;
+    if (isCarousel && current>-1 && slides[current].offsetHeight !== slides[next].offsetHeight) {
+      element.style.height = getComputedStyle(slides[current]).height
+    }
   }
   function afterTween(activeIndex,nextItem) {
     slides[nextItem].classList.add('active');
@@ -156,7 +157,8 @@ export default function( element, options ) {
     }, intervalOption);
   }
   this.slideTo = function( nextActive ) {
-    let activeIndex = this.getActiveIndex(); 
+    let activeIndex = this.getActiveIndex()
+
     if (activeIndex === nextActive || isAnimating) return;
 
     clearInterval(timer)
@@ -175,65 +177,32 @@ export default function( element, options ) {
   
       // do slider work
       if ( isSlider ) {
-        beforeTween(nextActive) // always before creating tween objects
+        beforeTween(activeIndex,nextActive) // always before creating tween objects
 
-        let animateBg = activeIndex !== -1 ? animateBackgrounds(slides,activeIndex,nextActive) : animateBackgrounds(slides,activeIndex),
-            animateActiveLayers = activeIndex !== -1 ? animateSliderLayers(slides[activeIndex]) : animateSliderLayers(slides[0]),
-            animateNextLayers = activeIndex !== -1 && animateSliderLayers(slides[nextActive]),
-            lastTweens = []
+        let animateActiveLayers = activeIndex !== -1 ? animateSliderLayers(slides,activeIndex,nextActive) : animateSliderLayers(slides,activeIndex),
+            animateNextLayers = activeIndex !== -1 && animateSliderLayers(slides,nextActive)
   
         if (activeIndex === -1){
-          if (animateBg.length) {
-            lastTweens = animateBg
-            tws = tws.concat( animateBg )
-            if (animateActiveLayers.length) {
-              lastTweens = animateActiveLayers
-              animateBg[animateBg.length - 1].chain( animateActiveLayers )
-            }
-          }
-
-          if (lastTweens.length) {
-            lastTweens[lastTweens.length - 1]._onComplete = ()=> afterTween(activeIndex,nextActive)
-          }
-
-          tws.length && tws[0].start() 
+          animateActiveLayers.length && (tws = tws.concat(animateActiveLayers))
         } else {
-
-          if (animateActiveLayers.length){
-            tws = tws.concat(animateActiveLayers)
-            lastTweens = animateActiveLayers
-          }
-
-          if (animateBg.length){
-            tws = tws.concat(animateBg)
-            lastTweens.length && lastTweens[lastTweens.length - 1].chain(animateBg)
-            lastTweens = animateBg
-          } 
-
-          if (animateNextLayers.length){
-            tws = tws.concat(animateNextLayers)
-            lastTweens.length && lastTweens[lastTweens.length - 1].chain(animateNextLayers)
-            lastTweens = animateNextLayers
-          }
-
-          if (lastTweens.length) {
-            lastTweens[lastTweens.length - 1]._onComplete = ()=> afterTween(activeIndex,nextActive)
-          }
-          animateActiveLayers.length ? animateActiveLayers.map(x=>x.start())
-                                     : animateBg.length ? animatetBg.map(x=>x.start())
-                                     : animateNextLayers.length ? animateNextLayers.map(x=>x.start()) : 0
+          animateActiveLayers.length && (tws = tws.concat(animateActiveLayers))
+          animateNextLayers.length && (tws = tws.concat(animateNextLayers))
         }
-        pages && setActivePage( pages[nextActive] )
-        if (!lastTweens.length) {
+        if (tws.length) {
+          tws.reduce((x,y)=>x._duration + x._delay > y._duration + y._delay ? x : y )
+            ._onComplete = () => afterTween(activeIndex,nextActive)
+          tws.map(x=>x.start())
+        } else {
           afterTween(activeIndex,nextActive)
         }
+        pages && setActivePage( pages[nextActive] )
   
       // do carousel work
       } else if ( isCarousel ) { 
-        beforeTween(nextActive) // always before creating tween objects
+        beforeTween(activeIndex,nextActive) // always before creating tween objects
   
         tws = spicrConnect.carousel(element,slides,activeIndex,nextActive,slideDirection)
-
+        
         if (tws.length){
           tws[tws.length-1]._onComplete = () => afterTween(activeIndex,nextActive)
           if ( slides[activeIndex] && slides[activeIndex].offsetHeight !== slides[nextActive].offsetHeight) {
@@ -241,9 +210,10 @@ export default function( element, options ) {
                 duration = element.getAttribute('data-duration');
             tws.push( spicrConnect.fromTo(element, 
               { height: parseFloat(getComputedStyle(slides[activeIndex]).height) }, 
-              { height: parseFloat(getComputedStyle(slides[nextActive]).height) }, 
+              { height: parseFloat(getComputedStyle(slides[nextActive]).height) },
               { easing: easing ? easing : defaultEasing, 
-                duration: !isNaN(duration) ? parseInt(duration) : defaultDuration}))
+                duration: !isNaN(duration) ? parseInt(duration) : defaultDuration,
+                delay: defaultDelay}))
           }
           tws.map(x=>x.start())
         } else {

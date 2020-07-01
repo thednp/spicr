@@ -12,7 +12,8 @@ export default function(elem,items,active,next,direction) {
     data = getLayerData(elem),
     fromActive = {}, toActive = {}, 
     fromNext = {}, toNext = {},
-    activeLayers = items[active] && getLayers(items[active]),
+    activeItem = items[active],
+    activeLayers = activeItem && getLayers(activeItem),
     nextLayers = getLayers(items[next]),
     translate = data.translate,
     rotate = data.rotate,
@@ -23,7 +24,6 @@ export default function(elem,items,active,next,direction) {
     delay = data.delay||parseInt(duration)/2,
     easing = data.easing,
     optionsActive, optionsNext;
-    
 
   if (opacity) {
     fromActive.opacity  = 1; toActive.opacity  = 0;

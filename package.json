@@ -1,6 +1,6 @@
 {
   "name": "spicr",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Spicr Modern Slideshow Component",
   "main": "dist/js/spicr.min.js",
   "module": "dist/js/spicr.esm.js",
@@ -26,7 +26,7 @@
     "build-standalone-esm-min": "rollup --environment INPUTFILE:src/js/standalone.js,OUTPUTFILE:dist/js/spicr-standalone-esm.min.js,MIN:true,FORMAT:esm -c",
     "build-standalone-legacy": "rollup --environment INPUTFILE:src/js/standalone-legacy.js,OUTPUTFILE:demo/src/js/spicr-standalone-legacy.min.js,MIN:true,FORMAT:umd,STANDALONE -c",
     "build-standalone-matrix": "rollup --environment INPUTFILE:src/js/standalone-matrix.js,OUTPUTFILE:demo/src/js/spicr-standalone-matrix.min.js,MIN:true,FORMAT:umd,STANDALONE -c",
-    "do-custom": "rollup -c --environment",
+    "custom-build": "rollup -c --environment",
     "copy-build": "node compile.js INPUTFILE:dist/js/spicr.min.js OUTPUTFILE:demo/src/js/spicr.min.js COPY:true",
     "copy-standalone": "node compile.js INPUTFILE:dist/js/spicr-standalone.min.js OUTPUTFILE:demo/src/js/spicr-standalone.min.js COPY:true",
     "compile": "npm-run-all --parallel compile-* && npm run copy-compile",
@@ -48,12 +48,9 @@
   "keywords": [
     "spicr",
     "kute.js",
-    "site navigation",
-    "site menu",
-    "navigation",
-    "menu",
-    "javascript menu",
-    "javascript navigation",
+    "carousel",
+    "slider",
+    "content showcase",
     "native javascript"
   ],
   "author": "thednp",

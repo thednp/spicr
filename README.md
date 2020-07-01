@@ -128,6 +128,18 @@ You have 3 build tools for building custom builds
 * `$ npm run bundle` - to execute both the above in paralel
 * `$ npm run polyfill` - to build the polyfills
 
+# Custom JS Builds
+You can create your own custom builds, here's how:
+* create a new file for instance `src/js/my-spicr.js`, 
+* copy the content of any of the `index.js`, `standalone.js`, `standalone-legacy.js`, `standalone-matrix.js` files and customize to your need
+* run the below script
+
+* run `npm run custom-build INPUTFILE:src/my-spicr.js,OUTPUTFILE:path-to/your-build.js,FORMAT:cjs,MIN:false`
+  **  `INPUTFILE` - allows you to specify the source file path
+  **  `OUTPUTFILE` - allows you to specify the output file path
+  **  `MIN` - when true, it will compress the output
+  **  `FORMAT` - umd|cjs|esm and any format you specify or configure your rollup for
+
 # Custom CSS Builds
 You can create your own custom styling, here's a quickie:
 * create a new file for instance `src/scss/my-spicr.scss`, 
@@ -137,6 +149,11 @@ You can create your own custom styling, here's a quickie:
 ```
 node compile.js INPUTFILE:src/scss/my-spicr.scss OUTPUTFILE:path-to/src/css/my-spicr.min.css MIN:true
 ```
+Compiler options:
+*  `INPUTFILE` - allows you to specify the source file path
+*  `OUTPUTFILE` - allows you to specify the output file path
+*  `MIN` - when true, it will compress the output
+
 
 # License
 [MIT License](https://github.com/thednp/spicr/blob/master/LICENSE)

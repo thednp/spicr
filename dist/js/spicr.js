@@ -1,5 +1,5 @@
 /*!
-* Spicr v1.0.1 (http://thednp.github.io/spicr)
+* Spicr v1.0.2 (http://thednp.github.io/spicr)
 * Copyright 2017-2020 © thednp
 * Licensed under MIT (https://github.com/thednp/spicr/blob/master/LICENSE)
 */
@@ -57,49 +57,34 @@
     }
   }
 
-  function animateBackgrounds(slides,idx,next) {
+  function getLayers(elem) {
+    return Array.from(elem.getElementsByClassName('spicr-layer'))
+  }
+
+  function animateSliderLayers(slides,idx,next) {
     var activeItem = slides[idx] || slides[0],
+        allLayers = getLayers(activeItem),
+        isIn = activeItem.classList.contains('active'),
         nextItem = slides[next],
-        result = [],
-        bg = activeItem.getElementsByClassName('item-bg')[0],
         nextBg = nextItem && nextItem.getElementsByClassName('item-bg')[0],
-        nextData = nextBg && getLayerData(nextBg);
+        nextData = nextBg ? getLayerData(nextBg) : 0;
     for ( var x in nextData ) {
       if ( /translate|rotate/.test(x) ){
         for ( var y in nextData[x] ){
           nextData[x][y] = -nextData[x][y];
         }
-      } else if (x==='opacity'){
-        nextData[x] = 0;
       }
     }
-    if (idx === -1){
-      bg && result.push( spicrConnect.layer(bg,1) );
+    if (nextData) {
+      return allLayers.map(function (x){ return spicrConnect.layer(x,0,nextData); })
     } else {
-      bg && result.push( spicrConnect.layer(bg,0,nextData) );
-      nextBg && result.push( spicrConnect.layer(nextBg,1) );
+      return allLayers.map(function (x){ return spicrConnect.layer(x,isIn?0:1); })
     }
-    return result;
-  }
-
-  function getLayers(elem) {
-    var result = [],
-        all = elem.getElementsByClassName('spicr-layer'),
-        background = elem.getElementsByClassName('item-bg')[0];
-    Array.from(all).map(function (x){ return x!==background && result.push(x); });
-    return result;
-  }
-
-  function animateSliderLayers(elem) {
-    var allLayers = getLayers(elem), result = [],
-        isIn = !elem.classList.contains('active');
-    allLayers.map(function (x){
-      result.push(spicrConnect.layer(x,isIn));
-    });
-    return result
   }
 
   var defaultInterval = 5000;
+
+  var defaultDelay = 250;
 
   function Spicr( element, options ) {
     element = queryElement(element);
@@ -121,7 +106,7 @@
       pages = pageNav && pageNav.querySelectorAll( "[data-slide-to]" ),
       timer = null,
       slideDirection = null,
-      index = null,
+      index = 0,
       isAnimating = 0,
       isSlider = element.classList.contains('spicr-slider'),
       isCarousel = element.classList.contains('spicr-carousel');
@@ -174,10 +159,13 @@
       Array.from(pages).map(function (x){ return x.classList.remove('active'); });
       pageIndex && pageIndex.classList.add('active');
     }
-    function beforeTween(next){
+    function beforeTween(current,next){
       index = next;
       slides[next].classList.add('next');
       isAnimating = true;
+      if (isCarousel && current>-1 && slides[current].offsetHeight !== slides[next].offsetHeight) {
+        element.style.height = getComputedStyle(slides[current]).height;
+      }
     }
     function afterTween(activeIndex,nextItem) {
       slides[nextItem].classList.add('active');
@@ -221,52 +209,25 @@
         if ( nextActive < 0 ) { nextActive = slides.length - 1; }
         else if ( nextActive >= slides.length ){ nextActive = 0; }
         if ( isSlider ) {
-          beforeTween(nextActive);
-          var animateBg = activeIndex !== -1 ? animateBackgrounds(slides,activeIndex,nextActive) : animateBackgrounds(slides,activeIndex),
-              animateActiveLayers = activeIndex !== -1 ? animateSliderLayers(slides[activeIndex]) : animateSliderLayers(slides[0]),
-              animateNextLayers = activeIndex !== -1 && animateSliderLayers(slides[nextActive]),
-              lastTweens = [];
+          beforeTween(activeIndex,nextActive);
+          var animateActiveLayers = activeIndex !== -1 ? animateSliderLayers(slides,activeIndex,nextActive) : animateSliderLayers(slides,activeIndex),
+              animateNextLayers = activeIndex !== -1 && animateSliderLayers(slides,nextActive);
           if (activeIndex === -1){
-            if (animateBg.length) {
-              lastTweens = animateBg;
-              tws = tws.concat( animateBg );
-              if (animateActiveLayers.length) {
-                lastTweens = animateActiveLayers;
-                animateBg[animateBg.length - 1].chain( animateActiveLayers );
-              }
-            }
-            if (lastTweens.length) {
-              lastTweens[lastTweens.length - 1]._onComplete = function (){ return afterTween(activeIndex,nextActive); };
-            }
-            tws.length && tws[0].start();
+            animateActiveLayers.length && (tws = tws.concat(animateActiveLayers));
           } else {
-            if (animateActiveLayers.length){
-              tws = tws.concat(animateActiveLayers);
-              lastTweens = animateActiveLayers;
-            }
-            if (animateBg.length){
-              tws = tws.concat(animateBg);
-              lastTweens.length && lastTweens[lastTweens.length - 1].chain(animateBg);
-              lastTweens = animateBg;
-            }
-            if (animateNextLayers.length){
-              tws = tws.concat(animateNextLayers);
-              lastTweens.length && lastTweens[lastTweens.length - 1].chain(animateNextLayers);
-              lastTweens = animateNextLayers;
-            }
-            if (lastTweens.length) {
-              lastTweens[lastTweens.length - 1]._onComplete = function (){ return afterTween(activeIndex,nextActive); };
-            }
-            animateActiveLayers.length ? animateActiveLayers.map(function (x){ return x.start(); })
-                                       : animateBg.length ? animatetBg.map(function (x){ return x.start(); })
-                                       : animateNextLayers.length ? animateNextLayers.map(function (x){ return x.start(); }) : 0;
+            animateActiveLayers.length && (tws = tws.concat(animateActiveLayers));
+            animateNextLayers.length && (tws = tws.concat(animateNextLayers));
           }
-          pages && setActivePage( pages[nextActive] );
-          if (!lastTweens.length) {
+          if (tws.length) {
+            tws.reduce(function (x,y){ return x._duration + x._delay > y._duration + y._delay ? x : y; } )
+              ._onComplete = function () { return afterTween(activeIndex,nextActive); };
+            tws.map(function (x){ return x.start(); });
+          } else {
             afterTween(activeIndex,nextActive);
           }
+          pages && setActivePage( pages[nextActive] );
         } else if ( isCarousel ) {
-          beforeTween(nextActive);
+          beforeTween(activeIndex,nextActive);
           tws = spicrConnect.carousel(element,slides,activeIndex,nextActive,slideDirection);
           if (tws.length){
             tws[tws.length-1]._onComplete = function () { return afterTween(activeIndex,nextActive); };
@@ -277,7 +238,8 @@
                 { height: parseFloat(getComputedStyle(slides[activeIndex]).height) },
                 { height: parseFloat(getComputedStyle(slides[nextActive]).height) },
                 { easing: easing ? easing : defaultEasing,
-                  duration: !isNaN(duration) ? parseInt(duration) : defaultDuration}));
+                  duration: !isNaN(duration) ? parseInt(duration) : defaultDuration,
+                  delay: defaultDelay}));
             }
             tws.map(function (x){ return x.start(); });
           } else {
@@ -310,14 +272,13 @@
     throw Error('Spicr requires KUTE.js ^2.0.10')
   }
 
-  var defaultDelay = 150;
-
   function carouselTFunctions(elem,items,active,next,direction) {
     var carouselTweens = [],
       data = getLayerData(elem),
       fromActive = {}, toActive = {},
       fromNext = {}, toNext = {},
-      activeLayers = items[active] && getLayers(items[active]),
+      activeItem = items[active],
+      activeLayers = activeItem && getLayers(activeItem),
       nextLayers = getLayers(items[next]),
       translate = data.translate,
       rotate = data.rotate,
@@ -400,6 +361,7 @@
 
   function layerTFunctions(elem,isInAnimation,nextData) {
     var data = nextData ? nextData : getLayerData(elem),
+      isBg = elem.classList.contains('item-bg'),
       from = {}, to = {},
       translate = data.translate,
       rotate = data.rotate,
@@ -407,11 +369,13 @@
       opacity = data.opacity,
       origin = data.origin,
       duration = data.duration,
-      delay = data.delay,
+      delay = data.delay || (!isBg ? defaultDelay : 0),
       easing = data.easing,
       tweenOptions;
     easing = /InOut/.test(easing) || nextData ? easing : ( isInAnimation ? easing.replace('In','Out') : easing.replace('Out','In') );
     delay = isInAnimation ? delay : 0;
+    duration = isInAnimation ? duration : !isBg ? duration*1.5 : duration;
+    opacity = !isInAnimation && isBg && nextData ? 0 : opacity;
     if (opacity) {
       from.opacity = isInAnimation?0:1;
       to.opacity = isInAnimation?1:0;

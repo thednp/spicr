@@ -1,2 +1,2 @@
-const defaultDelay = 150
+const defaultDelay = 250
 export default defaultDelay

@@ -100,6 +100,22 @@ hr {
 .text-teal { color: #009688;}
 .text-strong { font-weight: bold }
 
+a:hover,
+a:focus {
+  &.text-light { color: rgba(255,255,255,1)}
+  &.text-dark { color: rgba(0,0,0,1)}
+  &.text-olive { color: lighen(#9C27B0,15%)}
+  &.text-indigo { color: lighen(#673AB7,15%)}
+  &.text-green { color: lighen(#7b9e28,15%)}
+  &.text-red { color: lighen(#e91b1f,15%)}
+  &.text-yellow { color: darken(#ffd626,15%)}
+  &.text-blue { color: lighen(#159bd8,15%)}
+  &.text-pink { color: lighen(#E91E63,15%)}
+  &.text-orange { color: lighen(#FF5722,15%)}
+  &.text-lime { color: darken(#CDDC39,15%)}
+  &.text-teal { color: lighen(#009688,15%)}
+}
+
 .text-light { 
   h1,h2,h3,h4,b,strong {
     color: #fff;
