@@ -89,16 +89,22 @@ export default function(elem,items,active,next,direction) {
     optionsActive.delay = defaultDelay*i
     carouselTweens.push( spicrConnect.fromTo(x, fromActive, toActive, optionsActive ) );
     if (origin){
-      let o = origin ? processLayerData(x,origin) : {}
-      x.style.transformOrigin = `${'x'in o?o.x+'px':'50%'} ${'y'in o?o.y+'px':'50%'} ${'z'in o?o.z+'px':''}`
+      let o = processLayerData(x,origin),
+          originX = 'x' in o ? (/%/.test(o.x) ? o.x : o.x + 'px') : '50%',
+          originY = 'y' in o ? (/%/.test(o.y) ? o.y : o.y + 'px') : '50%',
+          originZ = 'z' in o ? o.z + 'px' : ''
+      x.style.transformOrigin = `${originX} ${originY} ${originZ}`
     }
   })
   nextLayers.map((x,i)=>{
     optionsNext.delay = (delay+50)*i
     carouselTweens.push( spicrConnect.fromTo(x, fromNext, toNext, optionsNext ) );
     if (origin){
-      let o = origin ? processLayerData(x,origin) : {}
-      x.style.transformOrigin = `${'x'in o?o.x+'px':'50%'} ${'y'in o?o.y+'px':'50%'} ${'z'in o?o.z+'px':''}`
+      let o = processLayerData(x,origin),
+          originX = 'x' in o ? (/%/.test(o.x) ? o.x : o.x + 'px') : '50%',
+          originY = 'y' in o ? (/%/.test(o.y) ? o.y : o.y + 'px') : '50%',
+          originZ = 'z' in o ? o.z + 'px' : ''
+      x.style.transformOrigin = `${originX} ${originY} ${originZ}`
     }
   })
 

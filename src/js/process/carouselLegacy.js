@@ -99,9 +99,12 @@ export default function(elem,items,active,next,direction) {
   activeLayers && activeLayers.map((x,i)=>{
     optionsActive.delay = defaultDelay*i
     carouselTweens.push( spicrConnect.fromTo(x, fromActive, toActive, optionsActive ) );
-    if (origin && support3DTransform){
-      let o = origin ? processLayerData(x,origin) : {}
-      x.style[transformOriginLegacy] = `${'x'in o?o.x+'px':'50%'} ${'y'in o?o.y+'px':'50%'} ${'z'in o?o.z+'px':''}`
+    if (origin && support3DTransform) { // origin axis can be 0
+      let o = processLayerData(x,origin),
+          originX = 'x' in o ? (/%/.test(o.x) ? o.x : o.x + 'px') : '50%',
+          originY = 'y' in o ? (/%/.test(o.y) ? o.y : o.y + 'px') : '50%',
+          originZ = 'z' in o ? o.z + 'px' : ''
+      x.style[transformOriginLegacy] = `${originX} ${originY} ${originZ}` 
     }
   })
 
@@ -109,8 +112,11 @@ export default function(elem,items,active,next,direction) {
     optionsNext.delay = (delay+50)*i
     carouselTweens.push( spicrConnect.fromTo(x, fromNext, toNext, optionsNext ) );
     if (origin && support3DTransform){
-      let o = origin ? processLayerData(x,origin) : {}
-      x.style[transformOriginLegacy] = `${'x'in o?o.x+'px':'50%'} ${'y'in o?o.y+'px':'50%'} ${'z'in o?o.z+'px':''}`
+      let o = processLayerData(x,origin),
+          originX = 'x' in o ? (/%/.test(o.x) ? o.x : o.x + 'px') : '50%',
+          originY = 'y' in o ? (/%/.test(o.y) ? o.y : o.y + 'px') : '50%',
+          originZ = 'z' in o ? o.z + 'px' : ''
+      x.style[transformOriginLegacy] = `${originX} ${originY} ${originZ}` 
     }    
   })
 

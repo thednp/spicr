@@ -14,7 +14,7 @@ export default function(elem) {
   return {
     translate : translate         ? processLayerData(elem,translate) : '',
     rotate    : rotate            ? processLayerData(elem,rotate) : '', 
-    origin    : origin            ? processLayerData(elem,origin) : '', 
+    origin    : origin            ? processLayerData(elem,origin,1) : '', 
     scale     : scale             ? parseFloat(scale) : '',
     opacity   : opacity!=='false' ? 1 : 0,
     duration  : !isNaN(duration)  ? parseInt(duration) : defaultDuration,

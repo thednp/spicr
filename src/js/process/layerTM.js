@@ -30,8 +30,11 @@ export default function(elem,isInAnimation,nextData) {
   if ( scale || translate || rotate) {
     from.transform = {}
     to.transform = {}
-    if (origin){
-      elem.style.transformOrigin = `${'x'in origin?origin.x+'px':'50%'} ${'y'in origin?origin.y+'px':'50%'} ${'z'in origin?origin.z+'px':''}` // origin axis can be 0
+    if (origin) { // origin axis can be 0
+      let originX = 'x' in origin ? (/%/.test(origin.x) ? origin.x : origin.x + 'px') : '50%',
+          originY = 'y' in origin ? (/%/.test(origin.y) ? origin.y : origin.y + 'px') : '50%',
+          originZ = 'z' in origin ? origin.z + 'px' : ''
+      elem.style.transformOrigin = `${originX} ${originY} ${originZ}` 
     }
   }
 

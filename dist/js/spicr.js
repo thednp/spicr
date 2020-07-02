@@ -22,12 +22,13 @@
 
   var spicrConnect = {};
 
-  function processLayerData(elem,attributeString){
+  function processLayerData(elem,attributeString,isOrigin){
     var attributesArray = attributeString.trim().split(/[,|;]/), obj = {};
     attributesArray.map(function (x){
       var prop = x.split(/[:|=]/), pName = prop[0], pValue = prop[1],
       offsetType = /y/i.test(pName)||/v/i.test(pValue) ? 'offsetHeight' : 'offsetWidth';
-      obj[pName] = /%/.test(pValue) ? parseFloat(pValue)*elem[offsetType]/100 : parseFloat(pValue);
+      obj[pName] = isOrigin && /%/.test(pValue) && !/z/i.test(pName) ? pValue
+                 : /%/.test(pValue) ? parseFloat(pValue)*elem[offsetType]/100 : parseFloat(pValue);
     });
     return obj;
   }
@@ -48,7 +49,7 @@
     return {
       translate : translate         ? processLayerData(elem,translate) : '',
       rotate    : rotate            ? processLayerData(elem,rotate) : '',
-      origin    : origin            ? processLayerData(elem,origin) : '',
+      origin    : origin            ? processLayerData(elem,origin,1) : '',
       scale     : scale             ? parseFloat(scale) : '',
       opacity   : opacity!=='false' ? 1 : 0,
       duration  : !isNaN(duration)  ? parseInt(duration) : defaultDuration,
@@ -344,16 +345,22 @@
       optionsActive.delay = defaultDelay*i;
       carouselTweens.push( spicrConnect.fromTo(x, fromActive, toActive, optionsActive ) );
       if (origin){
-        var o = origin ? processLayerData(x,origin) : {};
-        x.style.transformOrigin = ('x'in o?o.x+'px':'50%') + " " + ('y'in o?o.y+'px':'50%') + " " + ('z'in o?o.z+'px':'');
+        var o = processLayerData(x,origin),
+            originX = 'x' in o ? (/%/.test(o.x) ? o.x : o.x + 'px') : '50%',
+            originY = 'y' in o ? (/%/.test(o.y) ? o.y : o.y + 'px') : '50%',
+            originZ = 'z' in o ? o.z + 'px' : '';
+        x.style.transformOrigin = originX + " " + originY + " " + originZ;
       }
     });
     nextLayers.map(function (x,i){
       optionsNext.delay = (delay+50)*i;
       carouselTweens.push( spicrConnect.fromTo(x, fromNext, toNext, optionsNext ) );
       if (origin){
-        var o = origin ? processLayerData(x,origin) : {};
-        x.style.transformOrigin = ('x'in o?o.x+'px':'50%') + " " + ('y'in o?o.y+'px':'50%') + " " + ('z'in o?o.z+'px':'');
+        var o = processLayerData(x,origin),
+            originX = 'x' in o ? (/%/.test(o.x) ? o.x : o.x + 'px') : '50%',
+            originY = 'y' in o ? (/%/.test(o.y) ? o.y : o.y + 'px') : '50%',
+            originZ = 'z' in o ? o.z + 'px' : '';
+        x.style.transformOrigin = originX + " " + originY + " " + originZ;
       }
     });
     return carouselTweens
@@ -383,8 +390,11 @@
     if ( scale || translate || rotate) {
       from.transform = {};
       to.transform = {};
-      if (origin){
-        elem.style.transformOrigin = ('x' in origin?origin.x+'px':'50%') + " " + ('y' in origin?origin.y+'px':'50%') + " " + ('z' in origin?origin.z+'px':'');
+      if (origin) {
+        var originX = 'x' in origin ? (/%/.test(origin.x) ? origin.x : origin.x + 'px') : '50%',
+            originY = 'y' in origin ? (/%/.test(origin.y) ? origin.y : origin.y + 'px') : '50%',
+            originZ = 'z' in origin ? origin.z + 'px' : '';
+        elem.style.transformOrigin = originX + " " + originY + " " + originZ;
       }
     }
     if ( scale ) {
