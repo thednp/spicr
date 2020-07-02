@@ -120,7 +120,7 @@
                     </a>
                   </li>
                   <li>
-                    <a target="_blank" href="https://twitter.com/home?status=Spread the word about #Spicr by @dnp_theme and download here https://thednp.github.io/spicr/index.html" title="Share Spicr on Twitter">
+                    <a target="_blank" href="https://twitter.com/home?status=Spread the word about Spicr by @dnp_theme and download here https://thednp.github.io/spicr/index.html" title="Share Spicr on Twitter">
                       <svg class="menu-icon" viewBox="0 0 1024 1024">
                         <path d="M731.429 348.571c-21.714 9.714-44.571 16-69.143 19.429 25.143-14.857 44-38.857 53.143-66.857-23.429 13.714-49.143 24-76.571 29.143-21.714-23.429-53.143-37.714-87.429-37.714-66.286 0-120 53.714-120 120 0 9.143 0.571 18.857 2.857 27.429-100-5.143-188.571-52.571-248-125.714-10.286 17.714-16.571 38.857-16.571 60.571 0 41.714 19.429 78.286 52 100-20-0.571-38.857-6.286-57.143-14.857v1.143c0 58.286 44 106.857 98.857 117.714-10.286 2.857-18.286 4.571-29.143 4.571-7.429 0-14.857-1.143-22.286-2.286 15.429 47.429 59.429 82.286 112 83.429-41.143 32-92.571 51.429-149.143 51.429-9.714 0-19.429-0.571-28.571-1.714 53.143 33.714 116 53.714 184 53.714 220.571 0 341.714-182.857 341.714-341.714 0-5.143 0-10.286-0.571-15.429 23.429-16.571 44-37.714 60-62.286zM877.714 237.714v548.571c0 90.857-73.714 164.571-164.571 164.571h-548.571c-90.857 0-164.571-73.714-164.571-164.571v-548.571c0-90.857 73.714-164.571 164.571-164.571h548.571c90.857 0 164.571 73.714 164.571 164.571z"></path>
                       </svg>
@@ -357,8 +357,14 @@
                 <h3 class="featurette-heading m-0"><span>Working locally</span></h3>
                 <p>If you host the files on your project folders, download the <a href="https://github.com/thednp/spicr/archive/master.zip">Spicr</a> package at github, 
                   and <a href="https://github.com/thednp/kute.js/archive/master.zip">KUTE.js</a>, unpack them, copy the files from both the <code>dist</code> folder into your 
-                  application's <code>assets</code> folder, then simply drop these lines before your ending <code>&lt;/body></code>
-                  tag.</p>
+                  application's <code>assets</code> folder.
+                  
+                  <p>First, to load the CSS file drop this line in your site <code>&lt;head></code>:</p>
+
+<pre><code class="language-markup">&lt;link type="text/css" href="../assets/css/spicr.min.css" rel="stylesheet"&gt;
+</code></pre>
+
+                  <p>Next, to load the JavaScript files, simply drop these lines before your ending <code>&lt;/body></code> tag.</p>
               
 
 <pre><code class="language-markup">&lt;script src="../assets/js/kute.min.js">&lt;/script>
@@ -451,7 +457,7 @@
                     <li><b>data-duration</b> attribute allows you to set the <b>duration</b> for all the <code>.spicr-layer</code> animation of a <code>.spicr-carousel</code> 
                       Element or each layer of a <code>.spicr-slider</code> Element. If not set, the <i>defaultDuration</i> of <code>500</code>ms is used.</li>
                     <li><b>data-delay</b> attribute allows you to set the <b>delay</b> for all the <code>.spicr-layer</code> animation of a <code>.spicr-carousel</code> 
-                      Element or each layer of a <code>.spicr-slider</code> Element. If not set, the <i>defaultDelay</i> of <code>150</code>ms is used. When the layer is a 
+                      Element or each layer of a <code>.spicr-slider</code> Element. If not set, the <i>defaultDelay</i> of <code>250</code>ms is used. When the layer is a 
                       child of a <code>.spicr-slider</code> Element, this delay value is ignored when animating layers of the current active item out of view. When set on a 
                       <code>.spicr-carousel</code> Element, this value is used to create a stagger effect for all the <code>.spicr-layer</code> elements depending on the slide 
                       direction: if sliding left, delays are 0, 150, 300, etc, or when sliding right, the values are 300, 150, 0.</li>
@@ -653,15 +659,14 @@ document.addEventListener('turbolinks:load',function(){
             <li>Generally the <code>.spicr-slider</code> instance knows it must animate first a background <code>.item-bg.spicr-layer</code> Element if found, 
               then other content items with <code>.spicr-layer</code> class.</li>
             <li>The first element of the <code>&lt;div class="spicr-pages"></code> must be active, means having the <code>active</code> class.</li>
-            <li>The <code>data-interval</code> is either <em>false</em> or an <i>integer</i> number, the default value is <code>5000</code> and that 
-              is in milliseconds.</li>
+            <li>The <code>data-interval</code> is either <em>false</em> or an <i>integer</i> number, the default value is <code>5000</code>ms.</li>
             <li>The <code>.spicr-pages</code> Element or <code>.spicr-control</code> Elements provide navigation to your initialization, first allows 
               users to jump to a certain item and the second allows the user to slide items back and forth. At least one of the two is recommended to be 
               used so that users can have a way to interact and read the desired content. This is where you can get very creative.</li>
           </ul>
 
           <h3 id="slider-item" class="my-0">Slider Item Markup</h3>
-          <p>OK now it's time to take a look at a slider item.</p>
+          <p>The following markup is a sample slider <code>.item</code>:</p>
 
 <pre><code class="language-markup">&lt;div class="item active"&gt;
   &lt;!-- this is the background layer --&gt;
@@ -698,7 +703,7 @@ document.addEventListener('turbolinks:load',function(){
           <h3 id="slider-demo" class="my-0">Slider Example</h3>
           <p>Based on the above sample codes, let's have a quick demo:</p>
 
-          <div id="mySpicrSlider" data-function="spicr" class="spicr spicr-slider mb-4 h-33vh" data-interval="false">
+          <div id="mySpicrSlider" data-function="spicr" class="spicr spicr-slider mb-4 h-33vh" data-interval="false" style="background:#333">
             <div class="spicr-inner h-100">
               <div class="item h-100 active">
                 <div class="item-bg spicr-layer bg-olive" data-duration="700" data-translate="y:100%" data-easing="easingCubicOut"></div>
@@ -745,6 +750,14 @@ document.addEventListener('turbolinks:load',function(){
                   </div>
                 </div>
               </div>
+              <div class="item h-100">
+                <div class="d-flex h-100 px-4 py-3 align-items-center text-center perspective">
+                  <div class="spicr-layer">
+                    <h3 class="m-0">No background</h3>							  
+                    <p>This item has no background.</p>							  
+                  </div>
+                </div>
+              </div>              
             </div>
             <!-- pages navigation -->
             <ol class="spicr-pages d-flex flex-row justify-content-center">
@@ -753,14 +766,16 @@ document.addEventListener('turbolinks:load',function(){
               <li data-slide-to="2"></li>
               <li data-slide-to="3"></li>
               <li data-slide-to="4"></li>
+              <li data-slide-to="5"></li>
             </ol>
             <a class="left spicr-control" data-slide="prev"><span class="arrow-prev" style="margin-top: -10px">&laquo;</span></a>
             <a class="right spicr-control" data-slide="next"><span class="arrow-next" style="margin-top: -10px">&raquo;</span></a>  
           </div>
 
           <p>For this demo we've bypassed the default <code>$slider-height:600px;</code> by using a <code>h-100</code> class for the 
-            <code>&lt;div class="item"></code> and other wrappers and set a fixed height of 35vh to the target <code>&lt;div class="spicr-slider"></code>
-            Element.</p>
+            <code>&lt;div class="item"></code> and other wrappers and set a fixed height of 33vh to the target <code>&lt;div class="spicr-slider"></code>
+            Element. The demo also showcases how the <code>.spicr-slider</code> instance handles various cases of incomplete settings or incorrect 
+            markup without crashing or any error.</p>
           <p>If you inspect the markup demo you will also discover other gems like flexbox, alignments, spacing and other goodies.</p>
 
           <hr class="featurette-divider">
@@ -927,13 +942,14 @@ document.addEventListener('turbolinks:load',function(){
               <ul>
                 <li>This example showcases a basic, classic horizontal slide animation via the <code>data-translate="x:100%"</code> attribute.</li>
                 <li>For this demo we've also removed the opacity transition via the <code>data-opacity="false"</code> attribute.</li>
+                <li>This is a case where you want to keep the <b>overflow: hidden</b> for your <code>.spicr-carousel</code> Element.</li>
               </ul>
             </div>
           </div>
 
           <div class="row featurette">
             <div class="col-md-6">
-              <div id="myCarousel3" data-function="spicr" class="spicr spicr-carousel overflow-visible mb-4" data-pause="" data-interval="0" data-transform-origin="z:-50%v" data-rotate="x:90" data-duration="2000" data-easing="easingCubicInOut">
+              <div id="myCarousel3" data-function="spicr" class="spicr spicr-carousel overflow-visible mb-4" data-pause="" data-interval="0" data-transform-origin="z:-50%" data-rotate="y:90" data-duration="1000" data-easing="easingCubicInOut">
                 <div class="spicr-inner text-light">
                   <div class="item active perspective-1000">
                     <div class="spicr-layer">
@@ -977,7 +993,7 @@ document.addEventListener('turbolinks:load',function(){
                 </div>
               </div><!-- /.spicr -->
 
-              <div id="myCarousel4" data-function="spicr" class="spicr spicr-carousel overflow-visible mb-4" data-pause="false" data-interval="0" data-transform-origin="z:50%" data-rotate="y:90" data-duration="2000" data-easing="easingCubicInOut">
+              <div id="myCarousel4" data-function="spicr" class="spicr spicr-carousel overflow-visible mb-4" data-pause="false" data-interval="0" data-transform-origin="z:50%v" data-rotate="x:90" data-duration="1000" data-easing="easingCubicInOut">
                 <div class="spicr-inner text-light">
                   <div class="item active perspective-1500">
                     <div class="spicr-layer">
@@ -1026,10 +1042,10 @@ document.addEventListener('turbolinks:load',function(){
               <p class="m-0"><b>Example breakdown</b>:</p>
               <ul>
                 <li>For these two demos we've set a different <b>overflow</b> via the <code>overflow-visible</code> class, for better visual presentation.</li>
-                <li>This <b>first example</b> showcases a cube animation with the <code>data-rotate="x:90"</code> and <code>data-transform-origin="z:-50%v"</code> attributes,
-                  the animation looks like the items form a cube <b>in front of the viewer</b>.</li>
-                <li>This <b>second example</b> showcases a cube animation with the <code>data-rotate="y:90"</code> and <code>data-transform-origin="z:50%"</code> attributes,
-                  the animations looks like the items form a cube <b>around the viewer</b>.</li>
+                <li>This <b>first example</b> showcases a cube animation with the <code>data-rotate="y:90"</code> and <code>data-transform-origin="z:-50%"</code> attributes,
+                  the animations looks like the items form a cube <b>in front of the viewer</b>.</li>
+                <li>This <b>second example</b> showcases a cube animation with the <code>data-rotate="x:90"</code> and <code>data-transform-origin="z:50%v"</code> attributes,
+                  the animation looks like the items form a cube <b>around the viewer</b>.</li>
                 <li>For this kind of setup you might want to use a fixed height, a <code>vw</code> based <code>line-height</code> for your <code>.spicr-carousel</code> 
                   items or a combination of both, to make sure they always have the same size to produces a consistent animation.</li>
               </ul>
@@ -1119,22 +1135,27 @@ document.addEventListener('turbolinks:load',function(){
         <h2 id="quicks" class="featurette-heading">Spicr <span>Quirks</span></h2>
         <ul>
           <li>The Spicr default distribution file <i>spicr.min.js</i> is compatible with the default KUTE.js distribution file <i>kute.min.js</i> which 
-            includes the <code>transformFunctions</code> component. This component is designed for modern browsers and comes with a special KUTE.js 
-            custom build with support for IE9+ browsers which uses the new and improved <code>transformLegacy</code> component from KUTE.js. When building 
-            a legacy custom build, you also have the polyfill that covers support for IE9+ browsers.</li>
-          <li>This very demo page works on IE9+. and uses a special custom build <i>spicr-standalone-legacy.js</i> mentioned above and a special 
-            <i>polyfill-legacy.js</i>. In addition, some special SCSS sources with fallbacks have been developed for maximum consistency.</li>
+            includes the <code>transformFunctions</code> component, one of the many combinations for modern browsers.</li>
+          <li>Spicr comes with a special custom build which incudes a custom-built KUTE.js, the <i>spicr-standalone.min.js</i> file, one of the default 
+            distribution files also geared towards modern browsers.</li>
           <li>On initialization, Spicr will check the target Element class, contents and attributes of the target and child elements and animate first 
             <code>&lt;div class="item"></code> if it doesn't have the <code>active</code> class.</li>
+          <li>Spicr will not update transform-origin on window resize, but will recalculate it on the next cycle.</li>
           <li>Depending on the attributes specific for its DATA API, Spicr will process all your attributes' values and feed KUTE.js with pre-processed
             values for immediate tween initialization.</li>
           <li>The Spicr component will attach the initialization object to the target into the <code>element.Spicr</code> object, giving you access to
             the initialization object even for DATA API initialized targets.</li>
           <li>There are a set of standalone versions that include custom KUTE.js builds (also tons of build options) just in case you want to use KUTE.js 
-            exclusively with Spicr, so you can go either way.</li>
+            exclusively with Spicr or other animations, but you can go either way.</li>
           <li>For various builds and compatibility requirements, Spicr comes with a series of value processing specific to each KUTE.js build (included 
             or not) to make sure the values are exactly what your chosen KUTE.js components expect.</li>
           <li>Reinitializing the Spicr for a specific target just to change options should work fine, but will disrupt any and all active animations.</li>
+          <li>Another standalone build is designed to support IE9+ browsers and uses the new and improved KUTE.js <code>transformLegacy</code> 
+            component and is called <i>spicr-standalone-legacy.js</i>.</li>
+          <li>When building a legacy custom build, you also have the polyfill that covers support for IE9+ browsers, a build file called 
+            <i>polyfill-legacy.js</i>.</li>
+          <li>This very demo page works on IE9+ and uses the <i>spicr-standalone-legacy.js</i> mentioned above and some special fallbacks have been developed 
+            for various content items, mainly grid and flexbox.</li>
           <li>The component doesn't support nested Spicr initializations.</li>
         </ul>
         <hr class="featurette-divider">
