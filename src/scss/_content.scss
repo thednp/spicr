@@ -70,8 +70,8 @@ hr {
 .btns { display: flex; flex: 1 1 auto; justify-content: center; text-align: center; }
 .btns .btn { display: inline; width: auto; } // reset width
 .btns .btn+.btn {margin-left: 0.25rem;}
-.btn { display: inline-block; /*flex: 1 0 100px;*/ padding: 0.5rem 1rem; line-height: 1; color:#fff; border:0; background-color: #999; }
-.btn.active { background-color: #159bd8 }
+.btn { display: inline-block; /*flex: 1 0 100px;*/ padding: 0.5rem 1rem; line-height: 1; color:#fff; border:0; background-color: #999; transition: all 0.5s linear }
+.btn.active, .btn.active:hover { background-color: #159bd8 }
 .btn:hover, .btn:active, .btn:focus { color: #fff; text-decoration: none; background-color: #777}
 .btn-pink, .bg-pink {background-color: #cd1a62} .btn-pink:hover, .btn-pink:active, .btn-pink:focus { background-color: #592673 }
 .btn-olive, .bg-olive {background-color: #9C27B0} .btn-olive:hover, .btn-olive:active, .btn-olive:focus { background-color: #159bd8 }

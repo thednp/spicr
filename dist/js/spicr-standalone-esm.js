@@ -1,5 +1,5 @@
 /*!
-* Spicr v1.0.3 (http://thednp.github.io/spicr)
+* Spicr v1.0.4 (http://thednp.github.io/spicr)
 * Copyright 2017-2020 © thednp
 * Licensed under MIT (https://github.com/thednp/spicr/blob/master/LICENSE)
 */
@@ -13,6 +13,23 @@ var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 var supportTouch = ('ontouchstart' in window || navigator.msMaxTouchPoints) || false;
 
 var mouseHoverEvents = ('onmouseleave' in document) ? [ 'mouseenter', 'mouseleave'] : [ 'mouseover', 'mouseout' ];
+
+var supportPassive = (function () {
+  var result = false;
+  try {
+    var opts = Object.defineProperty({}, 'passive', {
+      get: function() {
+        result = true;
+      }
+    });
+    document.addEventListener('DOMContentLoaded', function wrap(){
+      document.removeEventListener('DOMContentLoaded', wrap, opts);
+    }, opts);
+  } catch (e) {}
+  return result;
+})();
+
+var passiveHandler = supportPassive ? { passive: true } : false;
 
 var spicrConnect = {};
 
@@ -34,20 +51,20 @@ var defaultEasing = 'easingCubicOut';
 function getLayerData(elem) {
   var translate = elem.getAttribute('data-translate'),
       rotate = elem.getAttribute('data-rotate'),
-      scale = elem.getAttribute('data-scale'),
+      scale = parseFloat(elem.getAttribute('data-scale')),
       origin = elem.getAttribute('data-transform-origin'),
       opacity = elem.getAttribute('data-opacity'),
-      duration = elem.getAttribute('data-duration'),
-      delay = elem.getAttribute('data-delay'),
+      duration = parseInt(elem.getAttribute('data-duration')),
+      delay = parseInt(elem.getAttribute('data-delay')),
       easing = elem.getAttribute('data-easing');
   return {
     translate : translate         ? processLayerData(elem,translate) : '',
     rotate    : rotate            ? processLayerData(elem,rotate) : '',
     origin    : origin            ? processLayerData(elem,origin,1) : '',
-    scale     : scale             ? parseFloat(scale) : '',
+    scale     : !isNaN(scale)     ? scale : '',
     opacity   : opacity!=='false' ? 1 : 0,
-    duration  : !isNaN(duration)  ? parseInt(duration) : defaultDuration,
-    delay     : !isNaN(delay)     ? parseInt(delay) : 0,
+    duration  : !isNaN(duration)  ? duration : defaultDuration,
+    delay     : !isNaN(delay)     ? delay : 0,
     easing    : easing            ? easing : defaultEasing
   }
 }
@@ -84,11 +101,13 @@ var defaultDelay = 250;
 function Spicr( element, options ) {
   element = queryElement(element);
   options = options || {};
-  var self = this, tws = self.tweens = [],
+  var self = this, tws = self.tweens = [], vars = {},
     pauseEvents = supportTouch && isMobile ? ['touchstart','touchend'] : mouseHoverEvents,
     intervalData = element.getAttribute('data-interval'),
     pauseData = element.getAttribute('data-pause'),
-    pauseOption = options.pause === false || pauseData === 'false' ? false : 'hover',
+    touchData = element.getAttribute('data-touch'),
+    pauseOption = options.pause === false || pauseData === 'false' ? 0 : 'hover',
+    touchOption = options.touch === false || touchData === 'false' ? 0 : 1,
     intervalOption = options.interval === false || parseInt(intervalData) === 0 || intervalData === 'false' ? 0
                     : typeof options.interval === 'number' ? options.interval
                     : isNaN(intervalData) ? defaultInterval
@@ -148,7 +167,48 @@ function Spicr( element, options ) {
     }
     if (rightArrow) { rightArrow[action]( "click", controlsHandler); }
     if (leftArrow) { leftArrow[action]( "click", controlsHandler); }
+    touchOption && slides.length > 1 && element[action]( 'touchstart', touchDownHandler, passiveHandler );
     if (pageNav) { pageNav[action]("click", pageHandler); }
+  }
+  function touchDownHandler(e) {
+    if ( vars.isTouch ) { return; }
+    vars.startX = e.changedTouches[0].pageX;
+    if ( element.contains(e.target) ) {
+      vars.isTouch = true;
+      toggleTouchEvents(1);
+    }
+  }
+  function toggleTouchEvents(action) {
+    action = action ? 'addEventListener' : 'removeEventListener';
+    element[action]( 'touchmove', touchMoveHandler, passiveHandler );
+    element[action]( 'touchend', touchEndHandler, passiveHandler );
+  }
+  function touchMoveHandler(e) {
+    if ( !vars.isTouch ) { return; }
+    vars.currentX = e.changedTouches[0].pageX;
+    if ( e.type === 'touchmove' && e.changedTouches.length > 1 ) {
+      e.preventDefault();
+      return false;
+    }
+  }
+  function touchEndHandler (e) {
+    if ( !vars.isTouch || isAnimating ) { return }
+    vars.endX = vars.currentX || e.changedTouches[0].pageX;
+    if ( vars.isTouch ) {
+      if ( (!element.contains(e.target) || !element.contains(e.relatedTarget) )
+          && Math.abs(vars.startX - vars.endX) < 75 ) {
+        return false;
+      } else {
+        if ( vars.currentX < vars.startX ) {
+          index++;
+        } else if ( vars.currentX > vars.startX ) {
+          index--;
+        }
+        vars.isTouch = false;
+        self.slideTo(index);
+      }
+      toggleTouchEvents();
+    }
   }
   function setActivePage ( pageIndex ) {
     Array.from(pages).map(function (x){ return x.classList.remove('active'); });
@@ -225,17 +285,15 @@ function Spicr( element, options ) {
         beforeTween(activeIndex,nextActive);
         tws = spicrConnect.carousel(element,slides,activeIndex,nextActive,slideDirection);
         if (tws.length){
-          tws[tws.length-1]._onComplete = function () { return afterTween(activeIndex,nextActive); };
           if ( slides[activeIndex] && slides[activeIndex].offsetHeight !== slides[nextActive].offsetHeight) {
-            var easing = element.getAttribute('data-easing'),
-                duration = element.getAttribute('data-duration');
             tws.push( spicrConnect.fromTo(element,
               { height: parseFloat(getComputedStyle(slides[activeIndex]).height) },
               { height: parseFloat(getComputedStyle(slides[nextActive]).height) },
-              { easing: easing ? easing : defaultEasing,
-                duration: !isNaN(duration) ? parseInt(duration) : defaultDuration,
-                delay: defaultDelay}));
+              { easing: defaultEasing,
+                duration: defaultDuration,
+                delay: Math.max.apply(Math,tws.map(function (x){ return x._delay+x._duration; })) || defaultDelay}));
           }
+          tws[tws.length-1]._onComplete = function () { return afterTween(activeIndex,nextActive); };
           tws.map(function (x){ return x.start(); });
         } else {
           afterTween(activeIndex,nextActive);
@@ -247,6 +305,7 @@ function Spicr( element, options ) {
   this.dispose = function(){
     isAnimating && tws.map(function (x){ return x.stop(); });
     spicrConnect.reset(element);
+    vars = {};
     toggleEvents();
     clearInterval( timer );
     delete element.Spicr;

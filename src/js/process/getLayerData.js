@@ -5,20 +5,20 @@ import defaultEasing from '../options/defaultEasing.js'
 export default function(elem) { 
   let translate = elem.getAttribute('data-translate'), 
       rotate = elem.getAttribute('data-rotate'),
-      scale = elem.getAttribute('data-scale'),
+      scale = parseFloat(elem.getAttribute('data-scale')),
       origin = elem.getAttribute('data-transform-origin'),
       opacity = elem.getAttribute('data-opacity'),
-      duration = elem.getAttribute('data-duration'),
-      delay = elem.getAttribute('data-delay'),
+      duration = parseInt(elem.getAttribute('data-duration')),
+      delay = parseInt(elem.getAttribute('data-delay')),
       easing = elem.getAttribute('data-easing')
   return {
     translate : translate         ? processLayerData(elem,translate) : '',
     rotate    : rotate            ? processLayerData(elem,rotate) : '', 
     origin    : origin            ? processLayerData(elem,origin,1) : '', 
-    scale     : scale             ? parseFloat(scale) : '',
+    scale     : !isNaN(scale)     ? scale : '',
     opacity   : opacity!=='false' ? 1 : 0,
-    duration  : !isNaN(duration)  ? parseInt(duration) : defaultDuration,
-    delay     : !isNaN(delay)     ? parseInt(delay) : 0,
+    duration  : !isNaN(duration)  ? duration : defaultDuration,
+    delay     : !isNaN(delay)     ? delay : 0,
     easing    : easing            ? easing : defaultEasing
   }
 }

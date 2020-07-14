@@ -2,6 +2,7 @@ import queryElement from 'shorter-js/src/misc/queryElement.js'
 import isMobile from 'shorter-js/src/boolean/isMobile.js'
 import supportTouch from 'shorter-js/src/boolean/supportTouch.js'
 import mouseHoverEvents from 'shorter-js/src/strings/mouseHoverEvents.js'
+import passiveHandler from 'shorter-js/src/misc/passiveHandler.js'
 
 import spicrConnect from './util/spicrConnect.js'
 import animateSliderLayers from './process/animateSliderLayers.js'
@@ -21,7 +22,7 @@ export default function( element, options ) {
   options = options || {};
   
   // internal bind
-  let self = this, tws = self.tweens = [],
+  let self = this, tws = self.tweens = [], vars = {},
 
     // SPICR UTILITIES
     pauseEvents = supportTouch && isMobile ? ['touchstart','touchend'] : mouseHoverEvents,
@@ -29,9 +30,11 @@ export default function( element, options ) {
     // SPICR DATA API
     intervalData = element.getAttribute('data-interval'),
     pauseData = element.getAttribute('data-pause'),
+    touchData = element.getAttribute('data-touch'),
 
     // options
-    pauseOption = options.pause === false || pauseData === 'false' ? false : 'hover', // false / hover
+    pauseOption = options.pause === false || pauseData === 'false' ? 0 : 'hover', // false / hover
+    touchOption = options.touch === false || touchData === 'false' ? 0 : 1, // boolean
 
     intervalOption = options.interval === false || parseInt(intervalData) === 0 || intervalData === 'false' ? 0
                     : typeof options.interval === 'number' ? options.interval
@@ -107,10 +110,60 @@ export default function( element, options ) {
     }
     if (rightArrow) { rightArrow[action]( "click", controlsHandler) }
     if (leftArrow) { leftArrow[action]( "click", controlsHandler) }
+
+    touchOption && slides.length > 1 && element[action]( 'touchstart', touchDownHandler, passiveHandler )
   
     // pages
     if (pageNav) { pageNav[action]("click", pageHandler) }
   }
+  function touchDownHandler(e) {
+    if ( vars.isTouch ) { return; } 
+      
+    vars.startX = e.changedTouches[0].pageX;
+
+    if ( element.contains(e.target) ) {
+      vars.isTouch = true;
+      toggleTouchEvents(1);
+    }
+  }
+  // touch events
+  function toggleTouchEvents(action) {
+    action = action ? 'addEventListener' : 'removeEventListener';
+    element[action]( 'touchmove', touchMoveHandler, passiveHandler )
+    element[action]( 'touchend', touchEndHandler, passiveHandler )
+  }  
+  function touchMoveHandler(e) {
+    if ( !vars.isTouch ) { return; }
+
+    vars.currentX = e.changedTouches[0].pageX;
+    
+    // cancel touch if more than one changedTouches detected
+    if ( e.type === 'touchmove' && e.changedTouches.length > 1 ) {
+      e.preventDefault();
+      return false;
+    }
+  }
+  function touchEndHandler (e) {
+    if ( !vars.isTouch || isAnimating ) { return }
+    
+    vars.endX = vars.currentX || e.changedTouches[0].pageX;
+
+    if ( vars.isTouch ) {
+      if ( (!element.contains(e.target) || !element.contains(e.relatedTarget) ) 
+          && Math.abs(vars.startX - vars.endX) < 75 ) {
+        return false;
+      } else {
+        if ( vars.currentX < vars.startX ) {
+          index++;
+        } else if ( vars.currentX > vars.startX ) {
+          index--;        
+        }
+        vars.isTouch = false;
+        self.slideTo(index);
+      }
+      toggleTouchEvents(); // remove
+    }
+  }  
   function setActivePage ( pageIndex ) {
     Array.from(pages).map(x=>x.classList.remove('active'))
     pageIndex && pageIndex.classList.add('active')
@@ -189,7 +242,7 @@ export default function( element, options ) {
           animateNextLayers.length && (tws = tws.concat(animateNextLayers))
         }
         if (tws.length) {
-          tws.reduce((x,y)=>x._duration + x._delay > y._duration + y._delay ? x : y )
+          tws.reduce((x,y)=> x._duration + x._delay > y._duration + y._delay ? x : y )
             ._onComplete = () => afterTween(activeIndex,nextActive)
           tws.map(x=>x.start())
         } else {
@@ -204,17 +257,16 @@ export default function( element, options ) {
         tws = spicrConnect.carousel(element,slides,activeIndex,nextActive,slideDirection)
         
         if (tws.length){
-          tws[tws.length-1]._onComplete = () => afterTween(activeIndex,nextActive)
           if ( slides[activeIndex] && slides[activeIndex].offsetHeight !== slides[nextActive].offsetHeight) {
-            let easing = element.getAttribute('data-easing'),
-                duration = element.getAttribute('data-duration');
             tws.push( spicrConnect.fromTo(element, 
               { height: parseFloat(getComputedStyle(slides[activeIndex]).height) }, 
               { height: parseFloat(getComputedStyle(slides[nextActive]).height) },
-              { easing: easing ? easing : defaultEasing, 
-                duration: !isNaN(duration) ? parseInt(duration) : defaultDuration,
-                delay: defaultDelay}))
+              { easing: defaultEasing, 
+                duration: defaultDuration,
+                delay: Math.max.apply(Math,tws.map(x=>x._delay+x._duration)) || defaultDelay}))
           }
+          tws[tws.length-1]._onComplete = () => afterTween(activeIndex,nextActive)
+
           tws.map(x=>x.start())
         } else {
           afterTween(activeIndex,nextActive)
@@ -226,6 +278,7 @@ export default function( element, options ) {
   this.dispose = function(){
     isAnimating && tws.map(x=>x.stop())
     spicrConnect.reset(element)
+    vars = {}
     toggleEvents()
     clearInterval( timer )
     delete element.Spicr
