@@ -431,6 +431,18 @@
                   <p>While for <code>.spicr-carousel</code> you can set all animation settings on the target Element itself, for <code>.spicr-slider</code> you can set
                     all animation settings to the <code>spicr-layer</code> Elements individually. Some of these animation settings are exclusively for DATA API.</p>
 
+                  <h3 class="featurette-heading m-0"><span>Component Options API</span></h3>
+                  <ul>
+                    <li><b>data-function</b> attribute exposes the <code>.spicr</code> Element to the Spicr component initialization.</li>
+                    <li><b>data-touch</b> attribute enables/disables the navigation via the touch swipe events for the target Element <b>only</b> on mobile devices. 
+                      The default value is <code>true</code>.</li>
+                    <li><b>data-interval</b> attribute enables the automatic transition when a Number is provided or disables it when set to <code>false</code>. 
+                      The default value is <code>5000</code> miliseconds.</li>
+                    <li><b>data-pause</b> attribute enables the <code>hover</code> / <code>touchstart</code> event handlers to pause the initialization on triggering 
+                      these events. When paused the initialized Element also has the <code>paused</code> class. To disable this functionality, the attribute can be set to
+                      <code>false</code>. The default value is <code>hover</code> and also apply to mobile devices.</li>
+                  </ul>
+
                   <h3 class="featurette-heading m-0"><span>Supported Properties</span></h3>
                   <ul>
                     <li><b>data-translate</b> attribute allows you to set the <b>translation</b> for <code>.spicr-layer</code> on all X, Y and Z axes for all layers of 
@@ -629,7 +641,7 @@ document.addEventListener('turbolinks:load',function(){
             The basic slider markup is designed to be simple, effective and allow for maximum content flexibility:</p>
 
 <pre><code class="language-markup">&lt;!-- spicr-slider basic markup --&gt;
-&lt;div data-function="spicr" class="spicr spicr-slider" data-interval="false"&gt;
+&lt;div data-function="spicr" class="spicr spicr-slider" data-interval="false" data-touch="false"&gt;
   &lt;div class="spicr-inner"&gt;
     &lt;div class="item active"&gt;
       &lt;!-- item content --&gt;
@@ -662,6 +674,7 @@ document.addEventListener('turbolinks:load',function(){
               then other content items with <code>.spicr-layer</code> class.</li>
             <li>The first element of the <code>&lt;div class="spicr-pages"></code> must be active, means having the <code>active</code> class.</li>
             <li>The <code>data-interval</code> is either <em>false</em> or an <i>integer</i> number, the default value is <code>5000</code>ms.</li>
+            <li>The <code>data-touch</code> is either <i>true</i> or <i>false</i>, the default value is <code>true</code>.</li>
             <li>The <code>.spicr-pages</code> Element or <code>.spicr-control</code> Elements provide navigation to your initialization, first allows 
               users to jump to a certain item and the second allows the user to slide items back and forth. At least one of the two is recommended to be 
               used so that users can have a way to interact and read the desired content. This is where you can get very creative.</li>
@@ -794,7 +807,7 @@ document.addEventListener('turbolinks:load',function(){
           <p>The required markup to create a carousel is similar but the animation DATA API apply to the target Element itself, so let's have a look:</p>
 
 <pre><code class="language-markup">&lt;!-- spicr-carousel basic markup --&gt;
-&lt;div class="spicr spicr-carousel" data-function="spicr" data-interval="false" 
+&lt;div class="spicr spicr-carousel" data-function="spicr" data-interval="false" data-touch="false"
      data-duration="700" data-delay="200" data-easing="easingCircularInOut" 
      data-translate="x:100%" data-rotate="x:90"&gt;
   &lt;div class="spicr-inner"&gt;
@@ -824,6 +837,8 @@ document.addEventListener('turbolinks:load',function(){
             <li>The first <code>&lt;div class="item"></code> must always be active, which means having the <code>active</code> class or else Spicr will
               animate its layers and make it active on initialization.</li>
             <li>The <code>data-interval</code> is either <em>false</em> or an <i>integer</i> Number, the default value is <code>5000</code>ms.</li>
+            <li>The <code>data-touch</code> is either <i>true</i> or <i>false</i>. For <code>.spicr-carousel</code> instances this option can be disabled
+              to avoid confusing the user. The default value is <code>true</code>.</li>
             <li>The <code>&lt;div class="spicr-pages"></code> can use either elements with <code>data-slide-to="<i>Number</i>"</code> attribute or the 
               <code>data-slide="next/prev"</code> attribute or both types as we will see in an example soon. In addition, the component provides 
               positional classes like <i>bottom-left</i> or <i>top-right</i> to be used for your carousel instance navigation.</li>
