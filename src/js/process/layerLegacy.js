@@ -23,7 +23,6 @@ export default function(elem,isInAnimation,nextData) {
   delay = isInAnimation ? delay : 0;
   duration = isInAnimation ? duration : !isBg ? duration*1.5 : duration;
   opacity = !isInAnimation && isBg && nextData ? 0 : opacity;
-
   if (opacity) {
     from.opacity = isInAnimation?0:1; 
     to.opacity = isInAnimation?1:0;

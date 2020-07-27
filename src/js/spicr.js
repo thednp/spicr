@@ -234,7 +234,7 @@ export default function( element, options ) {
 
         let animateActiveLayers = activeIndex !== -1 ? animateSliderLayers(slides,activeIndex,nextActive) : animateSliderLayers(slides,activeIndex),
             animateNextLayers = activeIndex !== -1 && animateSliderLayers(slides,nextActive)
-  
+
         if (activeIndex === -1){
           animateActiveLayers.length && (tws = tws.concat(animateActiveLayers))
         } else {
