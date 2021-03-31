@@ -3,43 +3,43 @@ body {
   line-height: 2rem; /* ~25px */
 }
 
-p, ul, ol { margin: 0 0 1.5rem }
-h1, h2, h3, h4, strong {color: #111}
+p, ul, ol { margin: 0 0 1.5rem; }
+h1, h2, h3, h4, strong {color: #111;}
 
-h1 { font-size: 54px; letter-spacing:-4px; }
-h2 { font-size: 46px; letter-spacing:-3px; }
-h3 { font-size: 36px; letter-spacing:-2px; }
-h4 { font-size: 24px; letter-spacing:-1px; }
+h1 { font-size: 54px; letter-spacing: -4px; }
+h2 { font-size: 46px; letter-spacing: -3px; }
+h3 { font-size: 36px; letter-spacing: -2px; }
+h4 { font-size: 24px; letter-spacing: -1px; }
 
 h1,
 h2,
 h3,
-h4 { font-weight: bold; margin-bottom: 1.5rem }
-[class*="col"] > h4 {margin: 0}
+h4 { margin-bottom: 1.5rem; font-weight: bold; }
+[class*="col"] > h4 {margin: 0;}
 
 h1 span,
 h2 span,
 h3 span,
-h4 span { font-weight:normal }
+h4 span { font-weight: normal; }
 
-.text-left { text-align: left }
-.text-center { text-align: center }
-.text-right { text-align: right }
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
 
 @media (min-width: $breakpoint) {
   $bp: get-breakpoint-name();
 
-  .text-#{$bp}-left { text-align: left }
-  .text-#{$bp}-center { text-align: center }
-  .text-#{$bp}-right { text-align: right }
+  .text-#{$bp}-left { text-align: left; }
+  .text-#{$bp}-center { text-align: center; }
+  .text-#{$bp}-right { text-align: right; }
 
   // @debug "(#{$bp},#{$breakpoint},#{index($breakpoints, $breakpoint)});  value-type '#{type-of($bp)}:' ";
 }
 
 .center-block {
   display: block;
-  margin-left: auto;
   margin-right: auto;
+  margin-left: auto;
 }
 .float-right {
   float: right !important;

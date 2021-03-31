@@ -1,6 +1,6 @@
 // @import 'variables';
 
-@function get-breakpoint-name(){
+@function get-breakpoint-name() {
   $bp: md;
 
   @each $name, $i in $breakpoints {

@@ -1,17 +1,18 @@
-import Spicr from '../spicr.js'
+import Spicr from '../spicr.js';
 
 // DATA API
-export default function initComponent(lookup) {
-  lookup = lookup ? lookup : document;
-  let Spicrs = Array.from(lookup.querySelectorAll('[data-function="spicr"]'));
-  Spicrs.map(x=>new Spicr(x))
+export default function initComponent(input) {
+  const lookup = input instanceof Element ? input : document;
+  const Spicrs = Array.from(lookup.querySelectorAll('[data-function="spicr"]'));
+  Spicrs.forEach((x) => new Spicr(x));
 }
 
 // export to "global"
-Spicr.initComponent = initComponent
+Spicr.initComponent = initComponent;
 
 // initialize when loaded
-document.body ? initComponent() : document.addEventListener('DOMContentLoaded', function initScrollWrapper(){
-  initComponent()
-  document.removeEventListener('DOMContentLoaded', initScrollWrapper)
-});
+if (document.body) {
+  initComponent();
+} else {
+  document.addEventListener('DOMContentLoaded', initComponent, { once: true });
+}

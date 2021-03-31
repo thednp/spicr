@@ -1,6 +1,6 @@
 /*!
-* Spicr v1.0.4 (http://thednp.github.io/spicr)
-* Copyright 2017-2020 © thednp
+* Spicr v1.0.7-alpha1 (http://thednp.github.io/spicr)
+* Copyright 2017-2021 © thednp
 * Licensed under MIT (https://github.com/thednp/spicr/blob/master/LICENSE)
 */
 .spicr {
@@ -35,25 +35,25 @@
 .spicr-control {
   position: absolute;
   top: 0;
-  left: 0;
   bottom: 0;
+  left: 0;
   width: 15%;
-  opacity: 0.5;
   font-size: 20px;
-  color: #ffffff;
+  color: #fff;
   text-align: center;
+  opacity: 0.5;
 }
 .spicr-control.right {
-  left: auto;
   right: 0;
+  left: auto;
 }
 .spicr-control:focus {
   color: #fff;
 }
 .spicr-control:hover {
-  outline: 0;
-  color: #ffffff;
+  color: #fff;
   text-decoration: none;
+  outline: 0;
   opacity: 0.9;
 }
 .spicr-control .arrow-prev, .spicr-control .arrow-next {
@@ -70,9 +70,9 @@
 }
 
 .spicr-pages {
-  margin: 0;
-  padding: 0;
   position: absolute;
+  padding: 0;
+  margin: 0;
 }
 .spicr-pages li {
   display: inline-block;
@@ -91,8 +91,8 @@
   right: 0;
 }
 .spicr-pages.bottom-right {
-  bottom: 0;
   right: 0;
+  bottom: 0;
 }
 
 .spicr-control,
@@ -118,13 +118,13 @@
   height: 600px;
 }
 .spicr-slider .item-bg {
-  background-size: cover;
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
   position: absolute;
   top: 0;
   width: 100%;
   height: 100%;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size: cover;
 }
 .spicr-slider h1, .spicr-slider h2, .spicr-slider h3, .spicr-slider h4 {
   color: #fff;
@@ -146,21 +146,21 @@
   width: 20px;
   height: 10px;
   margin: 0 1px;
-  border: 1px solid #ffffff;
+  vertical-align: middle;
   cursor: pointer;
   background-color: transparent;
-  vertical-align: middle;
+  border: 1px solid #fff;
 }
 .spicr-slider .spicr-pages li.active {
   width: 22px;
   height: 10px;
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 .spicr-carousel {
-  clear: both;
   display: inline-block;
   width: 100%;
+  clear: both;
 }
 .spicr-carousel[data-opacity=false] .next .spicr-layer {
   transform: translate3d(-100%, 0, 0);

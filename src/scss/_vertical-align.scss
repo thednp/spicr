@@ -1,20 +1,20 @@
-.vertical-align-top { vertical-align:top }
-.vertical-align-middle { vertical-align:middle }
-.vertical-align-bottom { vertical-align:bottom }
-.vertical-align-baseline { vertical-align:baseline }
-.vertical-align-text-top { vertical-align:text-top }
-.vertical-align-text-bottom { vertical-align:text-bottom }
+.vertical-align-top { vertical-align: top; }
+.vertical-align-middle { vertical-align: middle; }
+.vertical-align-bottom { vertical-align: bottom; }
+.vertical-align-baseline { vertical-align: baseline; }
+.vertical-align-text-top { vertical-align: text-top; }
+.vertical-align-text-bottom { vertical-align: text-bottom; }
 
 
 
-@media (min-width: $breakpoint){
+@media (min-width: $breakpoint) {
   $bp: get-breakpoint-name();
   // .flex-#{$bp}-row { flex-direction: row }
-  .vertical-align-#{$bp}-top { vertical-align:top }
-  .vertical-align-#{$bp}-middle { vertical-align:middle }
-  .vertical-align-#{$bp}-bottom { vertical-align:bottom }
-  .vertical-align-#{$bp}-baseline { vertical-align:baseline }
-  .vertical-align-#{$bp}-text-top { vertical-align:text-top }
-  .vertical-align-#{$bp}-text-bottom { vertical-align:text-bottom }
+  .vertical-align-#{$bp}-top { vertical-align: top; }
+  .vertical-align-#{$bp}-middle { vertical-align: middle; }
+  .vertical-align-#{$bp}-bottom { vertical-align: bottom; }
+  .vertical-align-#{$bp}-baseline { vertical-align: baseline; }
+  .vertical-align-#{$bp}-text-top { vertical-align: text-top; }
+  .vertical-align-#{$bp}-text-bottom { vertical-align: text-bottom; }
 
 }

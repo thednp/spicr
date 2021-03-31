@@ -1,36 +1,36 @@
 .navbar-wrapper {
-  background: rgba(255,255,255,.1);
   position: fixed;
-  width:100%;
-  top:0;
+  top: 0;
   z-index: 3;
+  width: 100%;
+  background: rgba(255,255,255,.1);
 }
 .navbar .brand {font-weight: bold;}
-.navbar {background:transparent}
+.navbar {background: transparent;}
 .navbar .brand,
-.navbar-content {padding: 0.5rem 0; background-color: transparent;}
-.navbar-toggle {margin: auto 0}
+.navbar-content {padding: .5rem 0; background-color: transparent;}
+.navbar-toggle {margin: auto 0;}
 
-@media (min-width: $breakpoint){
+@media (min-width: $breakpoint) {
   .navbar .brand {margin-right: 1rem;}
   .nav>li.active>span, .nav>li.active>a {
-    background: transparent;
     color: #fff;
+    background: transparent;
   }
-  .nav>li.open>span, .nav>li.open>a, 
+  .nav>li.open>span, .nav>li.open>a,
   .nav>li:hover>span, .nav>li:hover>a,
-  .nav>li.active.open>span, .nav>li.active.open>a, 
+  .nav>li.active.open>span, .nav>li.active.open>a,
   .nav>li.active:hover>span, .nav>li.active:hover>a,
-  ul.subnav>li.open>span, ul.subnav>li.open>a, 
+  ul.subnav>li.open>span, ul.subnav>li.open>a,
   ul.subnav>li:hover>span, ul.subnav>li:hover>a {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,.1);
   }
   .subnav {
     &, &.subnav {
-      background: rgba(0,0,0,0.75);
+      background: rgba(0,0,0,.75);
     }
-    box-shadow: none
+    box-shadow: none;
   }
-  .subnav li > a, 
-  .subnav li > span { color: rgba(255,255,255,0.55)}
+  .subnav li > a,
+  .subnav li > span { color: rgba(255,255,255,.55);}
 }

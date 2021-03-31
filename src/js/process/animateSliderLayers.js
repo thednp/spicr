@@ -1,26 +1,25 @@
-import spicrConnect from '../util/spicrConnect.js'
-import getLayerData from './getLayerData.js'
-import getLayers from './getLayers.js'
+import spicrConnect from '../util/spicrConnect.js';
+import getLayerData from './getLayerData.js';
+import getLayers from './getLayers.js';
 
-export default function(slides,idx,next) { // function to animate slider item background
-  let activeItem = slides[idx] || slides[0],
-      allLayers = getLayers(activeItem),
-      isIn = activeItem.classList.contains('active'),
-      nextItem = slides[next],
-      nextBg = nextItem && nextItem.getElementsByClassName('item-bg')[0],
-      nextData = nextBg ? getLayerData(nextBg) : 0;
-
-  for ( let x in nextData ) {
-    if ( /translate|rotate/.test(x) ){
-      for ( let y in nextData[x] ){
-        nextData[x][y] = -nextData[x][y]
-      }
-    }
-  }
+// function to animate slider item background
+export default function animateSliderLayers(slides, idx, next) {
+  const activeItem = slides[idx] || slides[0];
+  const allLayers = getLayers(activeItem);
+  const isIn = activeItem.classList.contains('active');
+  const nextItem = slides[next];
+  const nextBg = nextItem && nextItem.getElementsByClassName('item-bg')[0];
+  const nextData = nextBg ? getLayerData(nextBg) : 0;
 
   if (nextData) {
-    return allLayers.map(x=>spicrConnect.layer(x,0,nextData))
-  } else {
-    return allLayers.map(x=>spicrConnect.layer(x,isIn?0:1))
+    Object.keys(nextData).forEach((x) => {
+      if (/translate|rotate/.test(x) && nextData[x] instanceof Object) {
+        Object.keys(nextData[x]).forEach((y) => {
+          nextData[x][y] = -nextData[x][y];
+        });
+      }
+    });
+    return allLayers.map((x) => spicrConnect.layer(x, 0, nextData));
   }
+  return allLayers.map((x) => spicrConnect.layer(x, isIn ? 0 : 1));
 }

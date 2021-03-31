@@ -1,39 +1,39 @@
 // trying to emulate some flexbox alignments on ie9
 $bp: get-breakpoint-name();
 
-.d-flex { display: table; width: 100% }
-.d-flex > * { display: table-cell }
+.d-flex { display: table; width: 100%; }
+.d-flex > * { display: table-cell; }
 
-.align-items-start > * { vertical-align: top }
-.align-items-end > * { vertical-align: bottom }
-.align-items-center > * { vertical-align: middle }
+.align-items-start > * { vertical-align: top; }
+.align-items-end > * { vertical-align: bottom; }
+.align-items-center > * { vertical-align: middle; }
 
-.align-self-start { vertical-align: top }
-.align-self-end { vertical-align: bottom }
-.align-self-center { vertical-align: middle }
+.align-self-start { vertical-align: top; }
+.align-self-end { vertical-align: bottom; }
+.align-self-center { vertical-align: middle; }
 
 .align-content-start,
-.align-content-start > * { vertical-align: top }
+.align-content-start > * { vertical-align: top; }
 .align-content-end,
-.align-content-end > * { vertical-align: bottom }
+.align-content-end > * { vertical-align: bottom; }
 .align-content-center,
-.align-content-center > * { vertical-align: middle }
+.align-content-center > * { vertical-align: middle; }
 
-.justify-content-center {text-align: center}
+.justify-content-center {text-align: center;}
 
-@media (min-width: $breakpoint){
-  .align-items-#{$bp}-start > * { vertical-align: top }
-  .align-items-#{$bp}-end > * { vertical-align: bottom }
-  .align-items-#{$bp}-center > * { vertical-align: middle }
+@media (min-width: $breakpoint) {
+  .align-items-#{$bp}-start > * { vertical-align: top; }
+  .align-items-#{$bp}-end > * { vertical-align: bottom; }
+  .align-items-#{$bp}-center > * { vertical-align: middle; }
 
-  .align-self-#{$bp}-start { vertical-align: top }
-  .align-self-#{$bp}-end { vertical-align: bottom }
-  .align-self-#{$bp}-center { vertical-align: middle }
+  .align-self-#{$bp}-start { vertical-align: top; }
+  .align-self-#{$bp}-end { vertical-align: bottom; }
+  .align-self-#{$bp}-center { vertical-align: middle; }
 
   .align-content-#{$bp}-start,
-  .align-content-#{$bp}-start > * { vertical-align: top }
+  .align-content-#{$bp}-start > * { vertical-align: top; }
   .align-content-#{$bp}-end,
-  .align-content-#{$bp}-end > * { vertical-align: bottom }
+  .align-content-#{$bp}-end > * { vertical-align: bottom; }
   .align-content-#{$bp}-center,
-  .align-content-#{$bp}-center > * { vertical-align: middle }
+  .align-content-#{$bp}-center > * { vertical-align: middle; }
 }

@@ -1,6 +1,6 @@
 /*!
-* Spicr Polyfill v1.0.3 (http://thednp.github.io/spicr)
-* Copyright 2017-2020 © thednp
+* Spicr Polyfill v1.0.7-alpha1 (http://thednp.github.io/spicr)
+* Copyright 2017-2021 © thednp
 * Licensed under MIT (https://github.com/thednp/navbar.js/blob/master/LICENSE)
 */
 "use strict";
@@ -21,7 +21,8 @@ if (!Array.from) {
       var len = toInteger(value);
       return Math.min(Math.max(len, 0), maxSafeInteger);
     };
-    return function from(arrayLike) {
+
+    return function from(arrayLike/*, mapFn, thisArg */) {
       var C = this, items = Object(arrayLike);
       if (arrayLike == null) {
         throw new TypeError('Array.from requires an array-like object - not null or undefined');
@@ -31,12 +32,14 @@ if (!Array.from) {
         if (!isCallable(mapFn)) {
           throw new TypeError('Array.from: when provided, the second argument must be a function');
         }
+
         if (arguments.length > 2) {
           T = arguments[2];
         }
       }
       var len = toLength(items.length);
       var A = isCallable(C) ? Object(new C(len)) : new Array(len);
+
       var k = 0;
       var kValue;
       while (k < len) {
@@ -55,7 +58,7 @@ if (!Array.from) {
 }
 
 if (!Array.prototype.includes) {
-  Array.prototype.includes = function(searchElement  ) {
+  Array.prototype.includes = function(searchElement /*, fromIndex*/ ) {
     var O = Object(this);
     var len = parseInt(O.length) || 0;
     if (len === 0) {
@@ -86,7 +89,7 @@ if (!String.prototype.includes) {
   String.prototype.includes = function(search, start) {
     if (search instanceof RegExp) {
       throw TypeError('first argument must not be a RegExp');
-    }
+    } 
     if (start === undefined) { start = 0; }
     return this.indexOf(search, start) !== -1;
   };

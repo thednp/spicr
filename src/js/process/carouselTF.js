@@ -1,111 +1,142 @@
-import spicrConnect from '../util/spicrConnect.js'
-import getLayers from './getLayers.js'
+import spicrConnect from '../util/spicrConnect.js';
+import getLayers from './getLayers.js';
 
-import defaultDuration from '../options/defaultDuration.js'
-import defaultDelay from '../options/defaultDelay.js'
-import getLayerData from './getLayerData.js'
-import processLayerData from './processLayerData.js'
+import defaultSpicrOptions from '../options/defaultOptions.js';
+
+import getLayerData from './getLayerData.js';
+import processLayerData from './processLayerData.js';
 
 // tweenCarousel to work with KUTE.js transformFunctions component
-export default function(elem,items,active,next,direction) { 
-  let carouselTweens = [],
-    data = getLayerData(elem), 
-    fromActive = {}, toActive = {}, 
-    fromNext = {}, toNext = {},
-    activeItem = items[active],
-    activeLayers = activeItem && getLayers(activeItem),
-    nextLayers = getLayers(items[next]),
-    translate = data.translate,
-    rotate = data.rotate,
-    scale = data.scale,
-    origin = elem.getAttribute('data-transform-origin'),
-    opacity = data.opacity, // opacity is boolean and optional
-    duration = data.duration||defaultDuration,
-    delay = data.delay||parseInt(duration)/2,
-    easing = data.easing,
-    optionsActive, optionsNext;
+export default function carouselTF(elem, items, active, next, direction) {
+  const carouselTweens = [];
+  const data = getLayerData(elem);
+  const fromActive = {};
+  const toActive = {};
+  const fromNext = {};
+  const toNext = {};
+  const activeItem = items[active];
+  const activeLayers = activeItem && getLayers(activeItem);
+  const nextLayers = getLayers(items[next]);
+  const { translate } = data;
+  const { rotate } = data;
+  const { scale } = data;
+  const origin = elem.getAttribute('data-transform-origin');
+  const { opacity } = data; // opacity is optional | boolean
+  const { easing } = data;
+
+  let duration = data.duration || defaultSpicrOptions.duration;
+  let delay = data.delay || +duration / 2;
 
   if (opacity) {
-    fromActive.opacity  = 1; toActive.opacity  = 0;
-    fromNext.opacity    = 0; toNext.opacity    = 1;
+    fromActive.opacity = 1;
+    toActive.opacity = 0;
+    fromNext.opacity = 0;
+    toNext.opacity = 1;
   }
 
-  if ( scale || translate || rotate) {
-    fromActive.transform = {}
-    toActive.transform = {}
-    fromNext.transform = {}
-    toNext.transform = {}
-  }  
-
-  if ( scale ) { 
-    fromActive.transform.scale = 1; toActive.transform.scale = scale; 
-    fromNext.transform.scale = scale; toNext.transform.scale = 1; 
-  }
-  if ( translate ) {
-    fromActive.transform.translate3d = [0,0,0]
-    toActive.transform.translate3d = [
-      translate.x ? (direction?-translate.x:translate.x) : 0,
-      translate.y ? (direction?-translate.y:translate.y) : 0,
-      translate.z ? (direction?-translate.z:translate.z) : 0
-    ]
-    fromNext.transform.translate3d = [
-      translate.x ? (direction?translate.x:-translate.x) : 0,
-      translate.y ? (direction?translate.y:-translate.y) : 0,
-      translate.z ? (direction?translate.z:-translate.z) : 0
-    ]
-    toNext.transform.translate3d = [0,0,0]
-  }  
-  if ( rotate ) { 
-    fromActive.transform.rotate3d = [0,0,0]
-    toActive.transform.rotate3d = [
-      rotate.x ? (direction?-rotate.x:rotate.x) : 0,
-      rotate.y ? (direction?-rotate.y:rotate.y) : 0,
-      rotate.z ? (direction?-rotate.z:rotate.z) : 0
-    ]
-    fromNext.transform.rotate3d = [
-      rotate.x ? (direction?rotate.x:-rotate.x) : 0,
-      rotate.y ? (direction?rotate.y:-rotate.y) : 0,
-      rotate.z ? (direction?rotate.z:-rotate.z) : 0
-    ]
-    toNext.transform.rotate3d = [0,0,0]
+  if (scale || translate || rotate) {
+    fromActive.transform = {};
+    toActive.transform = {};
+    fromNext.transform = {};
+    toNext.transform = {};
   }
 
-  if (!opacity && !rotate && !translate && !scale){
-    duration = 50
-    delay = 0
+  if (scale) {
+    fromActive.transform.scale = 1;
+    toActive.transform.scale = scale;
+    fromNext.transform.scale = scale;
+    toNext.transform.scale = 1;
   }
-  optionsActive = optionsNext = { easing: easing, duration: duration };
+
+  if (translate) {
+    fromActive.transform.translate3d = [0, 0, 0];
+    let translateX = 0;
+    let translateY = 0;
+    let translateZ = 0;
+    if ('x' in translate) translateX = direction ? -translate.x : translate.x;
+    if ('y' in translate) translateY = direction ? -translate.y : translate.y;
+    if ('Z' in translate) translateZ = direction ? -translate.z : translate.z;
+    toActive.transform.translate3d = [translateX, translateY, translateZ];
+    let fromTX = 0;
+    let fromTY = 0;
+    let fromTZ = 0;
+    if ('x' in translate) fromTX = direction ? translate.x : -translate.x;
+    if ('y' in translate) fromTY = direction ? translate.y : -translate.y;
+    if ('Z' in translate) fromTZ = direction ? translate.z : -translate.z;
+    fromNext.transform.translate3d = [fromTX, fromTY, fromTZ];
+    toNext.transform.translate3d = [0, 0, 0];
+  }
+  if (rotate) {
+    fromActive.transform.rotate3d = [0, 0, 0];
+    let rotX = 0;
+    let rotY = 0;
+    let rotZ = 0;
+    if ('x' in rotate) rotX = direction ? -rotate.x : rotate.x;
+    if ('y' in rotate) rotY = direction ? -rotate.y : rotate.y;
+    if ('Z' in rotate) rotZ = direction ? -rotate.z : rotate.z;
+    toActive.transform.rotate3d = [rotX, rotY, rotZ];
+    let fromRX = 0;
+    let fromRY = 0;
+    let fromRZ = 0;
+    if ('x' in rotate) fromRX = direction ? rotate.x : -rotate.x;
+    if ('y' in rotate) fromRY = direction ? rotate.y : -rotate.y;
+    if ('Z' in rotate) fromRZ = direction ? rotate.z : -rotate.z;
+    fromNext.transform.rotate3d = [fromRX, fromRY, fromRZ];
+    toNext.transform.rotate3d = [0, 0, 0];
+  }
 
   if (!direction) {
-    activeLayers && activeLayers.reverse()
-    nextLayers.reverse()
+    if (activeLayers) activeLayers.reverse();
+    nextLayers.reverse();
   }
-  activeLayers && activeLayers.map((x,i)=>{
-    optionsActive.delay = defaultDelay*i
-    carouselTweens.push( spicrConnect.fromTo(x, fromActive, toActive, optionsActive ) );
-    if (origin){
-      let o = processLayerData(x,origin),
-          originX = 'x' in o ? (/%/.test(o.x) ? o.x : o.x + 'px') : '50%',
-          originY = 'y' in o ? (/%/.test(o.y) ? o.y : o.y + 'px') : '50%',
-          originZ = 'z' in o ? o.z + 'px' : ''
-      x.style.transformOrigin = `${originX} ${originY} ${originZ}`
-    }
-  })
 
-  nextLayers.map((x,i)=>{
-    optionsNext.delay = (delay+50)*i
-    carouselTweens.push( spicrConnect.fromTo(x, fromNext, toNext, optionsNext ) );
-    if (origin){
-      // let o = origin ? processLayerData(x,origin) : {}
-      // x.style.transformOrigin = `${'x'in o?o.x+'px':'50%'} ${'y'in o?o.y+'px':'50%'} ${'z'in o?o.z+'px':''}`
-      let o = processLayerData(x,origin),
-          originX = 'x' in o ? (/%/.test(o.x) ? o.x : o.x + 'px') : '50%',
-          originY = 'y' in o ? (/%/.test(o.y) ? o.y : o.y + 'px') : '50%',
-          originZ = 'z' in o ? o.z + 'px' : ''
-      x.style.transformOrigin = `${originX} ${originY} ${originZ}`
-    }
-    
-  })
+  if (!opacity && !rotate && !translate && !scale) {
+    duration = 50;
+    delay = 0;
+  }
 
-  return carouselTweens     
+  const optionsActive = { easing, duration };
+  const optionsNext = optionsActive;
+
+  if (activeLayers) {
+    activeLayers.forEach((x, i) => {
+      optionsActive.delay = defaultSpicrOptions.delay * i;
+      carouselTweens.push(spicrConnect.fromTo(x, fromActive, toActive, optionsActive));
+      if (origin) {
+        const o = processLayerData(x, origin);
+        let originX = '50%';
+        let originY = '50%';
+        const originZ = 'z' in o ? ` ${o.z}px` : '';
+
+        if ('x' in o) {
+          originX = /%/.test(o.x) ? o.x : `${o.x}px`;
+        }
+        if ('y' in o) {
+          originY = /%/.test(o.y) ? o.y : `${o.y}px`;
+        }
+        x.style.transformOrigin = `${originX} ${originY}${originZ}`;
+      }
+    });
+  }
+
+  nextLayers.forEach((x, i) => {
+    optionsNext.delay = (delay + 50) * i;
+    carouselTweens.push(spicrConnect.fromTo(x, fromNext, toNext, optionsNext));
+    if (origin) {
+      const o = processLayerData(x, origin);
+      let originX = '50%';
+      let originY = '50%';
+      const originZ = 'z' in o ? ` ${o.z}px` : '';
+
+      if ('x' in o) {
+        originX = /%/.test(o.x) ? o.x : `${o.x}px`;
+      }
+      if ('y' in o) {
+        originY = /%/.test(o.y) ? o.y : `${o.y}px`;
+      }
+      x.style.transformOrigin = `${originX} ${originY}${originZ}`;
+    }
+  });
+
+  return carouselTweens;
 }
