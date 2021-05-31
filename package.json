@@ -1,6 +1,6 @@
 {
   "name": "spicr",
-  "version": "1.0.7-alpha1",
+  "version": "1.0.8",
   "description": "Spicr Modern Slideshow Component",
   "main": "dist/js/spicr.min.js",
   "module": "dist/js/spicr.esm.js",
@@ -64,9 +64,9 @@
   },
   "homepage": "http://thednp.github.io/spicr",
   "dependencies": {
-    "kute.js": "^2.1.1-alpha3",
+    "kute.js": "^2.1.2",
     "minifill": "^0.0.16",
-    "shorter-js": "^0.2.0-alpha1"
+    "shorter-js": "^0.2.0-alpha4"
   },
   "devDependencies": {
     "@rollup/plugin-buble": "^0.21.3",

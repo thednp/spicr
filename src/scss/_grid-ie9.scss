@@ -1,12 +1,16 @@
+@use "sass:math";
 @import "variables";
+
 $bp: get-breakpoint-name();
 
 .row {
   // display: inline-table;
   display: block;
   // width: auto;
-  margin-right: -($grid-gutter-width/2);
-  margin-left: -($grid-gutter-width/2);
+  // margin-right: -($grid-gutter-width/2);
+  // margin-left: -($grid-gutter-width/2);
+  margin-right: math.div(-$grid-gutter-width, 2);
+  margin-left: math.div($grid-gutter-width, 2);
   clear: both;
 }
 
@@ -23,8 +27,8 @@ $bp: get-breakpoint-name();
   // display: table-cell;
   float: left;
   min-height: 1px;
-  padding-right: $grid-gutter-width/2;
-  padding-left: $grid-gutter-width/2;
+  padding-right: math.div($grid-gutter-width, 2);
+  padding-left: math.div($grid-gutter-width, 2);
 }
 
 .col-2 {

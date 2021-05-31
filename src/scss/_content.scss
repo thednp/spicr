@@ -1,3 +1,5 @@
+@use "sass:math";
+
 /* GLOBAL STYLE
 -------------------------------------------------- */
 body {
@@ -215,7 +217,8 @@ footer {
       height: $arrow-width;
     }
     .arrow-next, .arrow-prev {
-      margin-top: #{-$arrow-width/2};
+      // margin-top: #{-$arrow-width/2};
+      margin-top: math.div(-$arrow-width, 2);
       border-radius: $arrow-width;
     }
   }

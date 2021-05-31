@@ -1,5 +1,5 @@
 /*!
-* Spicr Standalone v1.0.7-alpha1 (http://thednp.github.io/spicr)
+* Spicr Standalone v1.0.8 (http://thednp.github.io/spicr)
 * Copyright 2017-2021 © thednp
 * Licensed under MIT (https://github.com/thednp/spicr/blob/master/LICENSE)
 */
@@ -56,7 +56,7 @@
       return false;
     }
 
-    if (!Number.isNaN(value)) {
+    if (!Number.isNaN(+value)) {
       return +value;
     }
 
@@ -578,6 +578,7 @@
       KUTE[blob] = blob === 'Time' ? Time.now : Render[blob];
     }
   });
+
   globalObject$1._KUTE = KUTE;
 
   var defaultOptions = {

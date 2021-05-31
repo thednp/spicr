@@ -1,3 +1,4 @@
+@use "sass:math";
 
 .spicr {
   position: relative;
@@ -52,7 +53,8 @@
     position: absolute;
     top: 50%;
     display: inline-block;
-    margin-top: #{-$arrow-width/2};
+    // margin-top: #{-$arrow-width/2};
+    margin-top: math.div(-$arrow-width, 2);
   }
   .arrow-prev {
     left: 50%;

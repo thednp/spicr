@@ -31,12 +31,13 @@ const OUTPUT = {
 };
 
 const PLUGINS = [ 
-  json(), 
-  buble({
-    objectAssign: 'Object.assign'
-  }),
+  json(),
   node({mainFields: ['jsnext','module'], dedupe: ['shorter-js','kute.js']}) 
 ];
+
+if (FORMAT!=='esm') {
+  PLUGINS.push(buble({objectAssign: 'Object.assign'}));
+}
 
 if (MIN){
   PLUGINS.push(terser({output: {preamble: miniBannerJS}}));

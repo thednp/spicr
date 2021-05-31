@@ -1,28 +1,28 @@
 /*!
-* Spicr v1.0.7-alpha1 (http://thednp.github.io/spicr)
+* Spicr v1.0.8 (http://thednp.github.io/spicr)
 * Copyright 2017-2021 © thednp
 * Licensed under MIT (https://github.com/thednp/spicr/blob/master/LICENSE)
 */
 function queryElement(selector, parent) {
-  var lookUp = parent && parent instanceof Element ? parent : document;
+  const lookUp = parent && parent instanceof Element ? parent : document;
   return selector instanceof Element ? selector : lookUp.querySelector(selector);
 }
 
-var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-var supportTouch = ('ontouchstart' in window || navigator.msMaxTouchPoints) || false;
+const supportTouch = ('ontouchstart' in window || navigator.msMaxTouchPoints) || false;
 
-var mouseHoverEvents = ('onmouseleave' in document) ? ['mouseenter', 'mouseleave'] : ['mouseover', 'mouseout'];
+const mouseHoverEvents = ('onmouseleave' in document) ? ['mouseenter', 'mouseleave'] : ['mouseover', 'mouseout'];
 
-var addEventListener = 'addEventListener';
+const addEventListener = 'addEventListener';
 
-var removeEventListener = 'removeEventListener';
+const removeEventListener = 'removeEventListener';
 
-var supportPassive = (function () {
-  var result = false;
+const supportPassive = (() => {
+  let result = false;
   try {
-    var opts = Object.defineProperty({}, 'passive', {
-      get: function get() {
+    const opts = Object.defineProperty({}, 'passive', {
+      get() {
         result = true;
         return result;
       },
@@ -50,7 +50,7 @@ function normalizeValue(value) {
     return false;
   }
 
-  if (!Number.isNaN(value)) {
+  if (!Number.isNaN(+value)) {
     return +value;
   }
 
@@ -63,26 +63,26 @@ function normalizeValue(value) {
 }
 
 function normalizeOptions(element, defaultOps, inputOps, ns) {
-  var normalOps = {};
-  var dataOps = {};
-  var data = Object.assign({}, element.dataset);
+  const normalOps = {};
+  const dataOps = {};
+  const data = { ...element.dataset };
 
   Object.keys(data)
-    .forEach(function (k) {
-      var key = k.includes(ns)
-        ? k.replace(ns, '').replace(/[A-Z]/, function (match) { return match.toLowerCase(); })
+    .forEach((k) => {
+      const key = k.includes(ns)
+        ? k.replace(ns, '').replace(/[A-Z]/, (match) => match.toLowerCase())
         : k;
 
       dataOps[key] = normalizeValue(data[k]);
     });
 
   Object.keys(inputOps)
-    .forEach(function (k) {
+    .forEach((k) => {
       inputOps[k] = normalizeValue(inputOps[k]);
     });
 
   Object.keys(defaultOps)
-    .forEach(function (k) {
+    .forEach((k) => {
       if (k in inputOps) {
         normalOps[k] = inputOps[k];
       } else if (k in dataOps) {
@@ -99,14 +99,14 @@ var spicrConnect = {};
 
 // process array from data string
 function processLayerData(elem, attributeString, isOrigin) {
-  var attributesArray = attributeString.trim().split(/[,|;]/);
-  var obj = {};
+  const attributesArray = attributeString.trim().split(/[,|;]/);
+  const obj = {};
 
-  attributesArray.forEach(function (x) {
-    var prop = x.split(/[:|=]/);
-    var pName = prop[0];
-    var pValue = prop[1];
-    var offsetType = /y/i.test(pName) || /v/i.test(pValue) ? 'offsetHeight' : 'offsetWidth';
+  attributesArray.forEach((x) => {
+    const prop = x.split(/[:|=]/);
+    const pName = prop[0];
+    const pValue = prop[1];
+    const offsetType = /y/i.test(pName) || /v/i.test(pValue) ? 'offsetHeight' : 'offsetWidth';
 
     if (isOrigin && /%/.test(pValue) && !/z/i.test(pName)) {
       obj[pName] = pValue;
@@ -120,7 +120,7 @@ function processLayerData(elem, attributeString, isOrigin) {
   return obj;
 }
 
-var defaultSpicrOptions = {
+const defaultSpicrOptions = {
   delay: 250,
   duration: 500,
   easing: 'easingCubicOut',
@@ -130,27 +130,23 @@ var defaultSpicrOptions = {
 };
 
 function getAttributes(elem) {
-  var obj = {};
-  var attr = ['translate', 'rotate', 'scale',
+  const obj = {};
+  const attr = ['translate', 'rotate', 'scale',
     'transform-origin', 'opacity', 'duration', 'delay', 'easing'];
 
-  attr.forEach(function (a) {
-    var prop = a === 'transform-origin' ? 'origin' : a;
-    obj[prop] = elem.getAttribute(("data-" + a));
+  attr.forEach((a) => {
+    const prop = a === 'transform-origin' ? 'origin' : a;
+    obj[prop] = elem.getAttribute(`data-${a}`);
   });
   return obj;
 }
 
 function getLayerData(elem) {
-  var attr = getAttributes(elem);
-  var translate = attr.translate;
-  var rotate = attr.rotate;
-  var origin = attr.origin;
-  var opacity = attr.opacity;
-  var easing = attr.easing;
-  var scale = attr.scale;
-  var duration = attr.duration;
-  var delay = attr.delay;
+  const attr = getAttributes(elem);
+  const {
+    translate, rotate, origin, opacity, easing,
+  } = attr;
+  let { scale, duration, delay } = attr;
 
   scale = parseFloat(scale);
   duration = +duration;
@@ -174,75 +170,73 @@ function getLayers(elem) {
 
 // function to animate slider item background
 function animateSliderLayers(slides, idx, next) {
-  var activeItem = slides[idx] || slides[0];
-  var allLayers = getLayers(activeItem);
-  var isIn = activeItem.classList.contains('active');
-  var nextItem = slides[next];
-  var nextBg = nextItem && nextItem.getElementsByClassName('item-bg')[0];
-  var nextData = nextBg ? getLayerData(nextBg) : 0;
+  const activeItem = slides[idx] || slides[0];
+  const allLayers = getLayers(activeItem);
+  const isIn = activeItem.classList.contains('active');
+  const nextItem = slides[next];
+  const nextBg = nextItem && nextItem.getElementsByClassName('item-bg')[0];
+  const nextData = nextBg ? getLayerData(nextBg) : 0;
 
   if (nextData) {
-    Object.keys(nextData).forEach(function (x) {
+    Object.keys(nextData).forEach((x) => {
       if (/translate|rotate/.test(x) && nextData[x] instanceof Object) {
-        Object.keys(nextData[x]).forEach(function (y) {
+        Object.keys(nextData[x]).forEach((y) => {
           nextData[x][y] = -nextData[x][y];
         });
       }
     });
-    return allLayers.map(function (x) { return spicrConnect.layer(x, 0, nextData); });
+    return allLayers.map((x) => spicrConnect.layer(x, 0, nextData));
   }
-  return allLayers.map(function (x) { return spicrConnect.layer(x, isIn ? 0 : 1); });
+  return allLayers.map((x) => spicrConnect.layer(x, isIn ? 0 : 1));
 }
 
 // SPICR DEFINITION
 // ================
 function Spicr(el, ops) {
-  var this$1 = this;
-
-  var element = queryElement(el);
+  const element = queryElement(el);
 
   // set options
-  var options = normalizeOptions(element, defaultSpicrOptions, (ops || {}));
+  const options = normalizeOptions(element, defaultSpicrOptions, (ops || {}));
 
   // internal bind
-  var self = this;
+  const self = this;
   self.tweens = [];
-  var tws = self.tweens;
-  var vars = {};
+  let tws = self.tweens;
+  let vars = {};
 
   // SPICR UTILITIES
-  var pauseEvents = mouseHoverEvents;
+  let pauseEvents = mouseHoverEvents;
   if (supportTouch && isMobile) {
     pauseEvents = ['touchstart', 'touchend'];
   }
 
   // options
-  var pauseOption = options.pause; // false / hover
-  var touchOption = options.touch; // boolean
+  const pauseOption = options.pause; // false / hover
+  const touchOption = options.touch; // boolean
 
-  var intervalOption = options.interval; // integer / false
+  const intervalOption = options.interval; // integer / false
 
   // child elements
-  var slides = element.getElementsByClassName('item');
+  const slides = element.getElementsByClassName('item');
 
   // controls
-  var controls = element.querySelectorAll('[data-slide]');
-  var leftArrow = controls.length && controls[0];
-  var rightArrow = controls.length && controls[1];
+  const controls = element.querySelectorAll('[data-slide]');
+  const leftArrow = controls.length && controls[0];
+  const rightArrow = controls.length && controls[1];
 
   // pages
-  var pageNav = element.getElementsByClassName('spicr-pages')[0];
-  var pages = pageNav && pageNav.querySelectorAll('[data-slide-to]');
+  const pageNav = element.getElementsByClassName('spicr-pages')[0];
+  const pages = pageNav && pageNav.querySelectorAll('[data-slide-to]');
 
   // internal variables and / or constants
-  var timer = null;
-  var slideDirection = null;
-  var index = 0;
-  var isAnimating = 0;
+  let timer = null;
+  let slideDirection = null;
+  let index = 0;
+  let isAnimating = 0;
 
   // spicr type
-  var isSlider = element.classList.contains('spicr-slider');
-  var isCarousel = element.classList.contains('spicr-carousel');
+  const isSlider = element.classList.contains('spicr-slider');
+  const isCarousel = element.classList.contains('spicr-carousel');
 
   // event handlers
   function pauseHandler() {
@@ -264,8 +258,8 @@ function Spicr(el, ops) {
   function pageHandler(e) { // pages
     e.preventDefault();
     if (isAnimating) { return; }
-    var eventTarget = e.target;
-    var nextIndex = eventTarget && eventTarget.getAttribute('data-slide-to');
+    const eventTarget = e.target;
+    const nextIndex = eventTarget && eventTarget.getAttribute('data-slide-to');
 
     if (eventTarget && !eventTarget.classList.contains('active') && nextIndex) {
       index = parseInt(nextIndex, 10);
@@ -275,7 +269,7 @@ function Spicr(el, ops) {
   function controlsHandler(e) { // left | right
     e.preventDefault();
     if (isAnimating) { return; }
-    var eventTarget = this;
+    const eventTarget = this;
 
     if (eventTarget === rightArrow || rightArrow.contains(eventTarget)) {
       index += 1;
@@ -327,13 +321,13 @@ function Spicr(el, ops) {
     }
   }
   function toggleTouchEvents(add) {
-    var action = add ? 'addEventListener' : 'removeEventListener';
+    const action = add ? 'addEventListener' : 'removeEventListener';
     element[action]('touchmove', touchMoveHandler, passiveHandler);
     element[action]('touchend', touchEndHandler, passiveHandler);
   }
   // private methods
   function toggleEvents(add) {
-    var action = add ? 'addEventListener' : 'removeEventListener';
+    const action = add ? 'addEventListener' : 'removeEventListener';
     if (pauseOption === 'hover' && intervalOption) {
       element[action](pauseEvents[0], pauseHandler);
       element[action](pauseEvents[1], resumeHandler);
@@ -341,14 +335,14 @@ function Spicr(el, ops) {
     if (rightArrow) { rightArrow[action]('click', controlsHandler); }
     if (leftArrow) { leftArrow[action]('click', controlsHandler); }
 
-    if (touchOption && slides.length > 1) { element[action]('touchstart', touchDownHandler, passiveHandler); }
+    if (touchOption && slides.length > 1) element[action]('touchstart', touchDownHandler, passiveHandler);
 
     // pages
     if (pageNav) { pageNav[action]('click', pageHandler); }
   }
   function setActivePage(pageIndex) {
-    Array.from(pages).map(function (x) { return x.classList.remove('active'); });
-    if (pageIndex) { pageIndex.classList.add('active'); }
+    Array.from(pages).map((x) => x.classList.remove('active'));
+    if (pageIndex) pageIndex.classList.add('active');
   }
   function beforeTween(current, next) {
     index = next;
@@ -367,7 +361,7 @@ function Spicr(el, ops) {
       slides[activeIndex].classList.remove('active');
     }
 
-    setTimeout(function () {
+    setTimeout(() => {
       if (isCarousel) {
         element.style.height = '';
       }
@@ -381,25 +375,25 @@ function Spicr(el, ops) {
   }
 
   // public methods
-  this.getActiveIndex = function () {
-    var activeIndex = element.getElementsByClassName('item active')[0];
+  this.getActiveIndex = () => {
+    const activeIndex = element.getElementsByClassName('item active')[0];
     return Array.from(slides).indexOf(activeIndex);
   };
-  this.cycle = function () {
+  this.cycle = () => {
     clearInterval(timer);
-    timer = setTimeout(function () {
+    timer = setTimeout(() => {
       index += 1;
       self.slideTo(index);
     }, intervalOption);
   };
-  this.slideTo = function (nextIdx) {
-    var nextActive = nextIdx;
-    var activeIndex = this$1.getActiveIndex();
+  this.slideTo = (nextIdx) => {
+    let nextActive = nextIdx;
+    const activeIndex = this.getActiveIndex();
 
-    if (activeIndex === nextActive || isAnimating) { return; }
+    if (activeIndex === nextActive || isAnimating) return;
 
     clearInterval(timer);
-    timer = setTimeout(function () {
+    timer = setTimeout(() => {
       // determine slideDirection first
       if ((activeIndex < nextActive) || (activeIndex === 0 && nextActive === slides.length - 1)) {
         slideDirection = 1; // left next
@@ -419,38 +413,36 @@ function Spicr(el, ops) {
       if (isSlider) {
         beforeTween(activeIndex, nextActive); // always before creating tween objects
 
-        var animateActiveLayers = activeIndex !== -1
+        const animateActiveLayers = activeIndex !== -1
           ? animateSliderLayers(slides, activeIndex, nextActive)
           : animateSliderLayers(slides, activeIndex);
 
-        var animateNextLayers = activeIndex !== -1 && animateSliderLayers(slides, nextActive);
+        const animateNextLayers = activeIndex !== -1 && animateSliderLayers(slides, nextActive);
 
         if (activeIndex === -1) {
-          if (animateActiveLayers.length) { tws = tws.concat(animateActiveLayers); }
+          if (animateActiveLayers.length) tws = tws.concat(animateActiveLayers);
         } else {
-          if (animateActiveLayers.length) { tws = tws.concat(animateActiveLayers); }
-          if (animateNextLayers.length) { tws = tws.concat(animateNextLayers); }
+          if (animateActiveLayers.length) tws = tws.concat(animateActiveLayers);
+          if (animateNextLayers.length) tws = tws.concat(animateNextLayers);
         }
 
         if (tws.length) {
-          tws.reduce(function (x, y) { return (x._duration + x._delay > y._duration + y._delay ? x : y); })
-            ._onComplete = function () { return afterTween(activeIndex, nextActive); };
+          tws.reduce((x, y) => (x._duration + x._delay > y._duration + y._delay ? x : y))
+            ._onComplete = () => afterTween(activeIndex, nextActive);
 
-          tws.forEach(function (x) { return x.start(); });
+          tws.forEach((x) => x.start());
         } else {
           afterTween(activeIndex, nextActive);
         }
 
-        if (pages) { setActivePage(pages[nextActive]); }
+        if (pages) setActivePage(pages[nextActive]);
       // do carousel work
       } else if (isCarousel) {
         beforeTween(activeIndex, nextActive); // always before creating tween objects
 
-        var delay = defaultSpicrOptions.delay;
-        var duration = defaultSpicrOptions.duration;
-        var easing = defaultSpicrOptions.easing;
-        var currentSlide = slides[activeIndex];
-        var nextSlide = slides[nextActive];
+        const { delay, duration, easing } = defaultSpicrOptions;
+        const currentSlide = slides[activeIndex];
+        const nextSlide = slides[nextActive];
 
         tws = spicrConnect.carousel(element, slides, activeIndex, nextActive, slideDirection);
 
@@ -460,24 +452,24 @@ function Spicr(el, ops) {
               { height: parseFloat(getComputedStyle(currentSlide).height) },
               { height: parseFloat(getComputedStyle(nextSlide).height) },
               {
-                easing: easing,
-                duration: duration,
+                easing,
+                duration,
                 // delay: Math.max.apply(Math, tws.map((x) => x._delay + x._duration)) || delay,
-                delay: Math.max.apply(Math, tws.map(function (x) { return x._delay + x._duration; })) || delay,
+                delay: Math.max(...tws.map((x) => x._delay + x._duration)) || delay,
               }));
           }
-          tws[tws.length - 1]._onComplete = function () { return afterTween(activeIndex, nextActive); };
+          tws[tws.length - 1]._onComplete = () => afterTween(activeIndex, nextActive);
 
-          tws.forEach(function (x) { return x.start(); });
+          tws.forEach((x) => x.start());
         } else {
           afterTween(activeIndex, nextActive);
         }
-        if (pages) { setActivePage(pages[nextActive]); }
+        if (pages) setActivePage(pages[nextActive]);
       }
     }, 1);
   };
-  this.dispose = function () {
-    if (isAnimating) { tws.forEach(function (x) { return x.stop(); }); }
+  this.dispose = () => {
+    if (isAnimating) tws.forEach((x) => x.stop());
     spicrConnect.reset(element);
     vars = {};
     toggleEvents();
@@ -486,7 +478,7 @@ function Spicr(el, ops) {
   };
 
   // remove previous init
-  if (element.Spicr) { element.Spicr.dispose(); }
+  if (element.Spicr) element.Spicr.dispose();
 
   // INIT
   // next/prev
@@ -504,12 +496,12 @@ var KUTE = {};
 
 var Tweens = [];
 
-var globalObject;
+let globalObject;
 
-if (typeof (global) !== 'undefined') { globalObject = global; }
-else if (typeof (window.self) !== 'undefined') { globalObject = window.self; }
-else if (typeof (window) !== 'undefined') { globalObject = window; }
-else { globalObject = {}; }
+if (typeof (global) !== 'undefined') globalObject = global;
+else if (typeof (window.self) !== 'undefined') globalObject = window.self;
+else if (typeof (window) !== 'undefined') globalObject = window;
+else globalObject = {};
 
 var globalObject$1 = globalObject;
 
@@ -521,14 +513,14 @@ var Interpolate = {};
 // link property update function to KUTE.js execution context
 var onStart = {};
 
-var Time = {};
-var that = window.self || window || {};
+const Time = {};
+const that = window.self || window || {};
 Time.now = that.performance.now.bind(that.performance);
 
-var Tick = 0;
+let Tick = 0;
 
-var Ticker = function (time) {
-  var i = 0;
+const Ticker = (time) => {
+  let i = 0;
   while (i < Tweens.length) {
     if (Tweens[i].update(time)) {
       i += 1;
@@ -541,22 +533,22 @@ var Ticker = function (time) {
 
 // stop requesting animation frame
 function stop() {
-  setTimeout(function () { // re-added for #81
+  setTimeout(() => { // re-added for #81
     if (!Tweens.length && Tick) {
       cancelAnimationFrame(Tick);
       Tick = null;
-      Object.keys(onStart).forEach(function (obj) {
+      Object.keys(onStart).forEach((obj) => {
         if (typeof (onStart[obj]) === 'function') {
-          if (KUTE[obj]) { delete KUTE[obj]; }
+          if (KUTE[obj]) delete KUTE[obj];
         } else {
-          Object.keys(onStart[obj]).forEach(function (prop) {
-            if (KUTE[prop]) { delete KUTE[prop]; }
+          Object.keys(onStart[obj]).forEach((prop) => {
+            if (KUTE[prop]) delete KUTE[prop];
           });
         }
       });
 
-      Object.keys(Interpolate).forEach(function (i) {
-        if (KUTE[i]) { delete KUTE[i]; }
+      Object.keys(Interpolate).forEach((i) => {
+        if (KUTE[i]) delete KUTE[i];
       });
     }
   }, 64);
@@ -564,17 +556,18 @@ function stop() {
 
 // KUTE.js render update functions
 // ===============================
-var Render = {
-  Tick: Tick, Ticker: Ticker, Tweens: Tweens, Time: Time,
+const Render = {
+  Tick, Ticker, Tweens, Time,
 };
-Object.keys(Render).forEach(function (blob) {
+Object.keys(Render).forEach((blob) => {
   if (!KUTE[blob]) {
     KUTE[blob] = blob === 'Time' ? Time.now : Render[blob];
   }
 });
+
 globalObject$1._KUTE = KUTE;
 
-var defaultOptions = {
+const defaultOptions = {
   duration: 700,
   delay: 0,
   easing: 'linear',
@@ -587,10 +580,10 @@ var linkProperty = {};
 var onComplete = {};
 
 var Objects = {
-  defaultOptions: defaultOptions,
-  linkProperty: linkProperty,
-  onStart: onStart,
-  onComplete: onComplete,
+  defaultOptions,
+  linkProperty,
+  onStart,
+  onComplete,
 };
 
 // util - a general object for utils like rgbToHex, processEasing
@@ -600,93 +593,93 @@ var connect = {};
 
 // Robert Penner's Easing Functions
 // updated for ESLint
-var Easing = {
-  linear: function (t) { return t; },
-  easingSinusoidalIn: function (t) { return -Math.cos((t * Math.PI) / 2) + 1; },
-  easingSinusoidalOut: function (t) { return Math.sin((t * Math.PI) / 2); },
-  easingSinusoidalInOut: function (t) { return -0.5 * (Math.cos(Math.PI * t) - 1); },
-  easingQuadraticIn: function (t) { return t * t; },
-  easingQuadraticOut: function (t) { return t * (2 - t); },
-  easingQuadraticInOut: function (t) { return (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t); },
-  easingCubicIn: function (t) { return t * t * t; },
-  easingCubicOut: function (t0) { var t = t0 - 1; return t * t * t + 1; },
-  easingCubicInOut: function (t) { return (t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1); },
-  easingQuarticIn: function (t) { return t * t * t * t; },
-  easingQuarticOut: function (t0) { var t = t0 - 1; return 1 - t * t * t * t; },
-  easingQuarticInOut: function (t0) {
-    var t = t0;
-    if (t < 0.5) { return 8 * t * t * t * t; }
+const Easing = {
+  linear: (t) => t,
+  easingSinusoidalIn: (t) => -Math.cos((t * Math.PI) / 2) + 1,
+  easingSinusoidalOut: (t) => Math.sin((t * Math.PI) / 2),
+  easingSinusoidalInOut: (t) => -0.5 * (Math.cos(Math.PI * t) - 1),
+  easingQuadraticIn: (t) => t * t,
+  easingQuadraticOut: (t) => t * (2 - t),
+  easingQuadraticInOut: (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
+  easingCubicIn: (t) => t * t * t,
+  easingCubicOut: (t0) => { const t = t0 - 1; return t * t * t + 1; },
+  easingCubicInOut: (t) => (t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1),
+  easingQuarticIn: (t) => t * t * t * t,
+  easingQuarticOut: (t0) => { const t = t0 - 1; return 1 - t * t * t * t; },
+  easingQuarticInOut: (t0) => {
+    let t = t0;
+    if (t < 0.5) return 8 * t * t * t * t;
     t -= 1; return 1 - 8 * t * t * t * t;
   },
-  easingQuinticIn: function (t) { return t * t * t * t * t; },
-  easingQuinticOut: function (t0) { var t = t0 - 1; return 1 + t * t * t * t * t; },
-  easingQuinticInOut: function (t0) {
-    var t = t0;
-    if (t < 0.5) { return 16 * t * t * t * t * t; }
+  easingQuinticIn: (t) => t * t * t * t * t,
+  easingQuinticOut: (t0) => { const t = t0 - 1; return 1 + t * t * t * t * t; },
+  easingQuinticInOut: (t0) => {
+    let t = t0;
+    if (t < 0.5) return 16 * t * t * t * t * t;
     t -= 1; return 1 + 16 * t * t * t * t * t;
   },
-  easingCircularIn: function (t) { return -(Math.sqrt(1 - (t * t)) - 1); },
-  easingCircularOut: function (t0) { var t = t0 - 1; return Math.sqrt(1 - t * t); },
-  easingCircularInOut: function (t0) {
-    var t = t0 * 2;
-    if (t < 1) { return -0.5 * (Math.sqrt(1 - t * t) - 1); }
+  easingCircularIn: (t) => -(Math.sqrt(1 - (t * t)) - 1),
+  easingCircularOut: (t0) => { const t = t0 - 1; return Math.sqrt(1 - t * t); },
+  easingCircularInOut: (t0) => {
+    let t = t0 * 2;
+    if (t < 1) return -0.5 * (Math.sqrt(1 - t * t) - 1);
     t -= 2; return 0.5 * (Math.sqrt(1 - t * t) + 1);
   },
-  easingExponentialIn: function (t) { return Math.pow( 2, (10 * (t - 1)) ) - 0.001; },
-  easingExponentialOut: function (t) { return 1 - Math.pow( 2, (-10 * t) ); },
-  easingExponentialInOut: function (t0) {
-    var t = t0 * 2;
-    if (t < 1) { return 0.5 * (Math.pow( 2, (10 * (t - 1)) )); }
-    return 0.5 * (2 - Math.pow( 2, (-10 * (t - 1)) ));
+  easingExponentialIn: (t) => 2 ** (10 * (t - 1)) - 0.001,
+  easingExponentialOut: (t) => 1 - 2 ** (-10 * t),
+  easingExponentialInOut: (t0) => {
+    const t = t0 * 2;
+    if (t < 1) return 0.5 * (2 ** (10 * (t - 1)));
+    return 0.5 * (2 - 2 ** (-10 * (t - 1)));
   },
-  easingBackIn: function (t) { var s = 1.70158; return t * t * ((s + 1) * t - s); },
-  easingBackOut: function (t0) {
-    var s = 1.70158;
-    var t = t0 - 1;
+  easingBackIn: (t) => { const s = 1.70158; return t * t * ((s + 1) * t - s); },
+  easingBackOut: (t0) => {
+    const s = 1.70158;
+    const t = t0 - 1;
     return t * t * ((s + 1) * t + s) + 1;
   },
-  easingBackInOut: function (t0) {
-    var s = 1.70158 * 1.525;
-    var t = t0 * 2;
-    if (t < 1) { return 0.5 * (t * t * ((s + 1) * t - s)); }
+  easingBackInOut: (t0) => {
+    const s = 1.70158 * 1.525;
+    let t = t0 * 2;
+    if (t < 1) return 0.5 * (t * t * ((s + 1) * t - s));
     t -= 2; return 0.5 * (t * t * ((s + 1) * t + s) + 2);
   },
-  easingElasticIn: function (t0) {
-    var s;
-    var k1 = 0.1;
-    var k2 = 0.4;
-    var t = t0;
-    if (t === 0) { return 0; }
-    if (t === 1) { return 1; }
+  easingElasticIn: (t0) => {
+    let s;
+    let k1 = 0.1;
+    const k2 = 0.4;
+    let t = t0;
+    if (t === 0) return 0;
+    if (t === 1) return 1;
     if (!k1 || k1 < 1) {
       k1 = 1; s = k2 / 4;
     } else {
       s = ((k2 * Math.asin(1 / k1)) / Math.PI) * 2;
     }
     t -= 1;
-    return -(k1 * (Math.pow( 2, (10 * t) )) * Math.sin(((t - s) * Math.PI * 2) / k2));
+    return -(k1 * (2 ** (10 * t)) * Math.sin(((t - s) * Math.PI * 2) / k2));
   },
-  easingElasticOut: function (t) {
-    var s;
-    var k1 = 0.1;
-    var k2 = 0.4;
-    if (t === 0) { return 0; }
-    if (t === 1) { return 1; }
+  easingElasticOut: (t) => {
+    let s;
+    let k1 = 0.1;
+    const k2 = 0.4;
+    if (t === 0) return 0;
+    if (t === 1) return 1;
     if (!k1 || k1 < 1) {
       k1 = 1;
       s = k2 / 4;
     } else {
       s = ((k2 * Math.asin(1 / k1)) / Math.PI) * 2;
     }
-    return k1 * (Math.pow( 2, (-10 * t) )) * Math.sin(((t - s) * Math.PI * 2) / k2) + 1;
+    return k1 * (2 ** (-10 * t)) * Math.sin(((t - s) * Math.PI * 2) / k2) + 1;
   },
-  easingElasticInOut: function (t0) {
-    var t = t0;
-    var s;
-    var k1 = 0.1;
-    var k2 = 0.4;
-    if (t === 0) { return 0; }
-    if (t === 1) { return 1; }
+  easingElasticInOut: (t0) => {
+    let t = t0;
+    let s;
+    let k1 = 0.1;
+    const k2 = 0.4;
+    if (t === 0) return 0;
+    if (t === 1) return 1;
     if (!k1 || k1 < 1) {
       k1 = 1; s = k2 / 4;
     } else {
@@ -694,23 +687,23 @@ var Easing = {
     }
     t *= 2;
     if (t < 1) {
-      return -0.5 * (k1 * (Math.pow( 2, (10 * (t - 1)) ))
+      return -0.5 * (k1 * (2 ** (10 * (t - 1)))
         * Math.sin(((t - 1 - s) * Math.PI * 2) / k2));
     }
     t -= 1;
-    return k1 * (Math.pow( 2, (-10 * t) )) * Math.sin(((t - s) * Math.PI * 2) / k2) * 0.5 + 1;
+    return k1 * (2 ** (-10 * t)) * Math.sin(((t - s) * Math.PI * 2) / k2) * 0.5 + 1;
   },
-  easingBounceIn: function (t) { return 1 - Easing.easingBounceOut(1 - t); },
-  easingBounceOut: function (t0) {
-    var t = t0;
+  easingBounceIn: (t) => 1 - Easing.easingBounceOut(1 - t),
+  easingBounceOut: (t0) => {
+    let t = t0;
     if (t < (1 / 2.75)) { return 7.5625 * t * t; }
     if (t < (2 / 2.75)) { t -= (1.5 / 2.75); return 7.5625 * t * t + 0.75; }
     if (t < (2.5 / 2.75)) { t -= (2.25 / 2.75); return 7.5625 * t * t + 0.9375; }
     t -= (2.625 / 2.75);
     return 7.5625 * t * t + 0.984375;
   },
-  easingBounceInOut: function (t) {
-    if (t < 0.5) { return Easing.easingBounceIn(t * 2) * 0.5; }
+  easingBounceInOut: (t) => {
+    if (t < 0.5) return Easing.easingBounceIn(t * 2) * 0.5;
     return Easing.easingBounceOut(t * 2 - 1) * 0.5 + 0.5;
   },
 };
@@ -727,42 +720,40 @@ function processEasing(fn) {
 // Tween constructor needs to know who will process easing functions
 connect.processEasing = processEasing;
 
-function add (tw) { return Tweens.push(tw); }
+var add = (tw) => Tweens.push(tw);
 
-function remove (tw) {
-  var i = Tweens.indexOf(tw);
-  if (i !== -1) { Tweens.splice(i, 1); }
-}
+var remove = (tw) => {
+  const i = Tweens.indexOf(tw);
+  if (i !== -1) Tweens.splice(i, 1);
+};
 
-function getAll () { return Tweens; }
+var getAll = () => Tweens;
 
-function removeAll () { Tweens.length = 0; }
+var removeAll = () => { Tweens.length = 0; };
 
 var supportedProperties = {};
 
-function linkInterpolation() {
-  var this$1 = this;
- // DON'T change
-  Object.keys(linkProperty).forEach(function (component) {
-    var componentLink = linkProperty[component];
-    var componentProps = supportedProperties[component];
+function linkInterpolation() { // DON'T change
+  Object.keys(linkProperty).forEach((component) => {
+    const componentLink = linkProperty[component];
+    const componentProps = supportedProperties[component];
 
-    Object.keys(componentLink).forEach(function (fnObj) {
+    Object.keys(componentLink).forEach((fnObj) => {
       if (typeof (componentLink[fnObj]) === 'function' // ATTR, colors, scroll, boxModel, borderRadius
-          && Object.keys(this$1.valuesEnd).some(function (i) { return (componentProps && componentProps.includes(i))
-          || (i === 'attr' && Object.keys(this$1.valuesEnd[i]).some(function (j) { return componentProps && componentProps.includes(j); })); })) {
-        if (!KUTE[fnObj]) { KUTE[fnObj] = componentLink[fnObj]; }
+          && Object.keys(this.valuesEnd).some((i) => (componentProps && componentProps.includes(i))
+          || (i === 'attr' && Object.keys(this.valuesEnd[i]).some((j) => componentProps && componentProps.includes(j))))) {
+        if (!KUTE[fnObj]) KUTE[fnObj] = componentLink[fnObj];
       } else {
-        Object.keys(this$1.valuesEnd).forEach(function (prop) {
-          var propObject = this$1.valuesEnd[prop];
+        Object.keys(this.valuesEnd).forEach((prop) => {
+          const propObject = this.valuesEnd[prop];
           if (propObject instanceof Object) {
-            Object.keys(propObject).forEach(function (i) {
+            Object.keys(propObject).forEach((i) => {
               if (typeof (componentLink[i]) === 'function') { // transformCSS3
-                if (!KUTE[i]) { KUTE[i] = componentLink[i]; }
+                if (!KUTE[i]) KUTE[i] = componentLink[i];
               } else {
-                Object.keys(componentLink[fnObj]).forEach(function (j) {
+                Object.keys(componentLink[fnObj]).forEach((j) => {
                   if (componentLink[i] && typeof (componentLink[i][j]) === 'function') { // transformMatrix
-                    if (!KUTE[j]) { KUTE[j] = componentLink[i][j]; }
+                    if (!KUTE[j]) KUTE[j] = componentLink[i][j];
                   }
                 });
               }
@@ -775,21 +766,21 @@ function linkInterpolation() {
 }
 
 var Internals = {
-  add: add,
-  remove: remove,
-  getAll: getAll,
-  removeAll: removeAll,
-  stop: stop,
-  linkInterpolation: linkInterpolation,
+  add,
+  remove,
+  getAll,
+  removeAll,
+  stop,
+  linkInterpolation,
 };
 
 // a public selector utility
 function selector(el, multi) {
   try {
-    var requestedElem;
-    var itemsArray;
+    let requestedElem;
+    let itemsArray;
     if (multi) {
-      itemsArray = el instanceof Array && el.every(function (x) { return x instanceof Element; });
+      itemsArray = el instanceof Array && el.every((x) => x instanceof Element);
       requestedElem = el instanceof HTMLCollection || el instanceof NodeList || itemsArray
         ? el : document.querySelectorAll(el);
     } else {
@@ -798,98 +789,98 @@ function selector(el, multi) {
     }
     return requestedElem;
   } catch (e) {
-    throw TypeError(("KUTE.js - Element(s) not found: " + el + "."));
+    throw TypeError(`KUTE.js - Element(s) not found: ${el}.`);
   }
 }
 
 // Animation class
-var AnimationBase = function AnimationBase(Component) {
-  return this.setComponent(Component);
-};
-
-AnimationBase.prototype.setComponent = function setComponent (Component) {
-  var ComponentName = Component.component;
-  // const Objects = { defaultValues, defaultOptions, Interpolate, linkProperty }
-  var Functions = { onStart: onStart, onComplete: onComplete };
-  var Category = Component.category;
-  var Property = Component.property;
-  // ESLint
-  this._ = 0;
-
-  // set supported category/property
-  supportedProperties[ComponentName] = Component.properties
-    || Component.subProperties || Component.property;
-
-  // set additional options
-  if (Component.defaultOptions) {
-    Object.keys(Component.defaultOptions).forEach(function (op) {
-      defaultOptions[op] = Component.defaultOptions[op];
-    });
+class AnimationBase {
+  constructor(Component) {
+    return this.setComponent(Component);
   }
 
-  // set functions
-  if (Component.functions) {
-    Object.keys(Functions).forEach(function (fn) {
-      if (fn in Component.functions) {
-        if (typeof (Component.functions[fn]) === 'function') {
-          // if (!Functions[fn][ Category||Property ]) {
-          // Functions[fn][ Category||Property ] = Component.functions[fn];
-          // }
-          if (!Functions[fn][ComponentName]) { Functions[fn][ComponentName] = {}; }
-          if (!Functions[fn][ComponentName][Category || Property]) {
-            Functions[fn][ComponentName][Category || Property] = Component.functions[fn];
+  setComponent(Component) {
+    const ComponentName = Component.component;
+    // const Objects = { defaultValues, defaultOptions, Interpolate, linkProperty }
+    const Functions = { onStart, onComplete };
+    const Category = Component.category;
+    const Property = Component.property;
+    // ESLint
+    this._ = 0;
+
+    // set supported category/property
+    supportedProperties[ComponentName] = Component.properties
+      || Component.subProperties || Component.property;
+
+    // set additional options
+    if (Component.defaultOptions) {
+      Object.keys(Component.defaultOptions).forEach((op) => {
+        defaultOptions[op] = Component.defaultOptions[op];
+      });
+    }
+
+    // set functions
+    if (Component.functions) {
+      Object.keys(Functions).forEach((fn) => {
+        if (fn in Component.functions) {
+          if (typeof (Component.functions[fn]) === 'function') {
+            // if (!Functions[fn][ Category||Property ]) {
+            //   Functions[fn][ Category||Property ] = Component.functions[fn];
+            // }
+            if (!Functions[fn][ComponentName]) Functions[fn][ComponentName] = {};
+            if (!Functions[fn][ComponentName][Category || Property]) {
+              Functions[fn][ComponentName][Category || Property] = Component.functions[fn];
+            }
+          } else {
+            Object.keys(Component.functions[fn]).forEach((ofn) => {
+              // if (!Functions[fn][ofn]) Functions[fn][ofn] = Component.functions[fn][ofn];
+              if (!Functions[fn][ComponentName]) Functions[fn][ComponentName] = {};
+              if (!Functions[fn][ComponentName][ofn]) {
+                Functions[fn][ComponentName][ofn] = Component.functions[fn][ofn];
+              }
+            });
           }
+        }
+      });
+    }
+
+    // set interpolate
+    if (Component.Interpolate) {
+      Object.keys(Component.Interpolate).forEach((fni) => {
+        const compIntObj = Component.Interpolate[fni];
+        if (typeof (compIntObj) === 'function' && !Interpolate[fni]) {
+          Interpolate[fni] = compIntObj;
         } else {
-          Object.keys(Component.functions[fn]).forEach(function (ofn) {
-            // if (!Functions[fn][ofn]) Functions[fn][ofn] = Component.functions[fn][ofn];
-            if (!Functions[fn][ComponentName]) { Functions[fn][ComponentName] = {}; }
-            if (!Functions[fn][ComponentName][ofn]) {
-              Functions[fn][ComponentName][ofn] = Component.functions[fn][ofn];
+          Object.keys(compIntObj).forEach((sfn) => {
+            if (typeof (compIntObj[sfn]) === 'function' && !Interpolate[fni]) {
+              Interpolate[fni] = compIntObj[sfn];
             }
           });
         }
-      }
-    });
+      });
+
+      linkProperty[ComponentName] = Component.Interpolate;
+    }
+
+    // set component util
+    if (Component.Util) {
+      Object.keys(Component.Util).forEach((fnu) => {
+        if (!Util[fnu]) Util[fnu] = Component.Util[fnu];
+      });
+    }
+
+    return { name: ComponentName };
   }
-
-  // set interpolate
-  if (Component.Interpolate) {
-    Object.keys(Component.Interpolate).forEach(function (fni) {
-      var compIntObj = Component.Interpolate[fni];
-      if (typeof (compIntObj) === 'function' && !Interpolate[fni]) {
-        Interpolate[fni] = compIntObj;
-      } else {
-        Object.keys(compIntObj).forEach(function (sfn) {
-          if (typeof (compIntObj[sfn]) === 'function' && !Interpolate[fni]) {
-            Interpolate[fni] = compIntObj[sfn];
-          }
-        });
-      }
-    });
-
-    linkProperty[ComponentName] = Component.Interpolate;
-  }
-
-  // set component util
-  if (Component.Util) {
-    Object.keys(Component.Util).forEach(function (fnu) {
-      if (!Util[fnu]) { Util[fnu] = Component.Util[fnu]; }
-    });
-  }
-
-  return { name: ComponentName };
-};
+}
 
 function queueStart() {
-  var this$1 = this;
-
   // fire onStart actions
-  Object.keys(onStart).forEach(function (obj) {
+  Object.keys(onStart).forEach((obj) => {
     if (typeof (onStart[obj]) === 'function') {
-      onStart[obj].call(this$1, obj); // easing functions
+      onStart[obj].call(this, obj); // easing functions
     } else {
-      Object.keys(onStart[obj]).forEach(function (prop) {
-        onStart[obj][prop].call(this$1, prop);
+      Object.keys(onStart[obj]).forEach((prop) => {
+        onStart[obj][prop].call(this, prop);
       });
     }
   });
@@ -900,216 +891,212 @@ function queueStart() {
 
 // single Tween object construct
 // TweenBase is meant to be use for pre-processed values
-var TweenBase = function TweenBase(targetElement, startObject, endObject, opsObject) {
-  var this$1 = this;
+class TweenBase {
+  constructor(targetElement, startObject, endObject, opsObject) {
+    // element animation is applied to
+    this.element = targetElement;
 
-  // element animation is applied to
-  this.element = targetElement;
-
-  this.playing = false;
-
-  this._startTime = null;
-  this._startFired = false;
-
-  this.valuesEnd = endObject; // valuesEnd
-  this.valuesStart = startObject; // valuesStart
-
-  // OPTIONS
-  var options = opsObject || {};
-  // internal option to process inline/computed style at start instead of init
-  // used by to() method and expects object : {} / false
-  this._resetStart = options.resetStart || 0;
-  // you can only set a core easing function as default
-  this._easing = typeof (options.easing) === 'function' ? options.easing : connect.processEasing(options.easing);
-  this._duration = options.duration || defaultOptions.duration; // duration option | default
-  this._delay = options.delay || defaultOptions.delay; // delay option | default
-
-  // set other options
-  Object.keys(options).forEach(function (op) {
-    var internalOption = "_" + op;
-    if (!(internalOption in this$1)) { this$1[internalOption] = options[op]; }
-  });
-
-  // callbacks should not be set as undefined
-  // this._onStart = options.onStart
-  // this._onUpdate = options.onUpdate
-  // this._onStop = options.onStop
-  // this._onComplete = options.onComplete
-
-  // queue the easing
-  var easingFnName = this._easing.name;
-  if (!onStart[easingFnName]) {
-    onStart[easingFnName] = function easingFn(prop) {
-      if (!KUTE[prop] && prop === this._easing.name) { KUTE[prop] = this._easing; }
-    };
-  }
-
-  return this;
-};
-
-// tween prototype
-// queue tween object to main frame update
-// move functions that use the ticker outside the prototype to be in the same scope with it
-TweenBase.prototype.start = function start (time) {
-  // now it's a good time to start
-  add(this);
-  this.playing = true;
-
-  this._startTime = typeof time !== 'undefined' ? time : KUTE.Time();
-  this._startTime += this._delay;
-
-  if (!this._startFired) {
-    if (this._onStart) {
-      this._onStart.call(this);
-    }
-
-    queueStart.call(this);
-
-    this._startFired = true;
-  }
-
-  if (!Tick) { Ticker(); }
-  return this;
-};
-
-TweenBase.prototype.stop = function stop () {
-  if (this.playing) {
-    remove(this);
     this.playing = false;
 
-    if (this._onStop) {
-      this._onStop.call(this);
-    }
-    this.close();
-  }
-  return this;
-};
+    this._startTime = null;
+    this._startFired = false;
 
-TweenBase.prototype.close = function close () {
-    var this$1 = this;
+    this.valuesEnd = endObject; // valuesEnd
+    this.valuesStart = startObject; // valuesStart
 
-  // scroll|transformMatrix need this
-  Object.keys(onComplete).forEach(function (component) {
-    Object.keys(onComplete[component]).forEach(function (toClose) {
-      onComplete[component][toClose].call(this$1, toClose);
+    // OPTIONS
+    const options = opsObject || {};
+    // internal option to process inline/computed style at start instead of init
+    // used by to() method and expects object : {} / false
+    this._resetStart = options.resetStart || 0;
+    // you can only set a core easing function as default
+    this._easing = typeof (options.easing) === 'function' ? options.easing : connect.processEasing(options.easing);
+    this._duration = options.duration || defaultOptions.duration; // duration option | default
+    this._delay = options.delay || defaultOptions.delay; // delay option | default
+
+    // set other options
+    Object.keys(options).forEach((op) => {
+      const internalOption = `_${op}`;
+      if (!(internalOption in this)) this[internalOption] = options[op];
     });
-  });
-  // when all animations are finished, stop ticking after ~3 frames
-  this._startFired = false;
-  stop.call(this);
-};
 
-TweenBase.prototype.chain = function chain (args) {
-  this._chain = [];
-  this._chain = args.length ? args : this._chain.concat(args);
-  return this;
-};
+    // callbacks should not be set as undefined
+    // this._onStart = options.onStart
+    // this._onUpdate = options.onUpdate
+    // this._onStop = options.onStop
+    // this._onComplete = options.onComplete
 
-TweenBase.prototype.stopChainedTweens = function stopChainedTweens () {
-  if (this._chain && this._chain.length) { this._chain.forEach(function (tw) { return tw.stop(); }); }
-};
-
-TweenBase.prototype.update = function update (time) {
-    var this$1 = this;
-
-  var T = time !== undefined ? time : KUTE.Time();
-
-  var elapsed;
-
-  if (T < this._startTime && this.playing) { return true; }
-
-  elapsed = (T - this._startTime) / this._duration;
-  elapsed = (this._duration === 0 || elapsed > 1) ? 1 : elapsed;
-
-  // calculate progress
-  var progress = this._easing(elapsed);
-
-  // render the update
-  Object.keys(this.valuesEnd).forEach(function (tweenProp) {
-    KUTE[tweenProp](this$1.element,
-      this$1.valuesStart[tweenProp],
-      this$1.valuesEnd[tweenProp],
-      progress);
-  });
-
-  // fire the updateCallback
-  if (this._onUpdate) {
-    this._onUpdate.call(this);
-  }
-
-  if (elapsed === 1) {
-    // fire the complete callback
-    if (this._onComplete) {
-      this._onComplete.call(this);
+    // queue the easing
+    const easingFnName = this._easing.name;
+    if (!onStart[easingFnName]) {
+      onStart[easingFnName] = function easingFn(prop) {
+        if (!KUTE[prop] && prop === this._easing.name) KUTE[prop] = this._easing;
+      };
     }
 
-    // now we're sure no animation is running
-    this.playing = false;
-
-    // stop ticking when finished
-    this.close();
-
-    // start animating chained tweens
-    if (this._chain !== undefined && this._chain.length) {
-      this._chain.map(function (tw) { return tw.start(); });
-    }
-
-    return false;
+    return this;
   }
 
-  return true;
-};
+  // tween prototype
+  // queue tween object to main frame update
+  // move functions that use the ticker outside the prototype to be in the same scope with it
+  start(time) {
+    // now it's a good time to start
+    add(this);
+    this.playing = true;
+
+    this._startTime = typeof time !== 'undefined' ? time : KUTE.Time();
+    this._startTime += this._delay;
+
+    if (!this._startFired) {
+      if (this._onStart) {
+        this._onStart.call(this);
+      }
+
+      queueStart.call(this);
+
+      this._startFired = true;
+    }
+
+    if (!Tick) Ticker();
+    return this;
+  }
+
+  stop() {
+    if (this.playing) {
+      remove(this);
+      this.playing = false;
+
+      if (this._onStop) {
+        this._onStop.call(this);
+      }
+      this.close();
+    }
+    return this;
+  }
+
+  close() {
+    // scroll|transformMatrix need this
+    Object.keys(onComplete).forEach((component) => {
+      Object.keys(onComplete[component]).forEach((toClose) => {
+        onComplete[component][toClose].call(this, toClose);
+      });
+    });
+    // when all animations are finished, stop ticking after ~3 frames
+    this._startFired = false;
+    stop.call(this);
+  }
+
+  chain(args) {
+    this._chain = [];
+    this._chain = args.length ? args : this._chain.concat(args);
+    return this;
+  }
+
+  stopChainedTweens() {
+    if (this._chain && this._chain.length) this._chain.forEach((tw) => tw.stop());
+  }
+
+  update(time) {
+    const T = time !== undefined ? time : KUTE.Time();
+
+    let elapsed;
+
+    if (T < this._startTime && this.playing) { return true; }
+
+    elapsed = (T - this._startTime) / this._duration;
+    elapsed = (this._duration === 0 || elapsed > 1) ? 1 : elapsed;
+
+    // calculate progress
+    const progress = this._easing(elapsed);
+
+    // render the update
+    Object.keys(this.valuesEnd).forEach((tweenProp) => {
+      KUTE[tweenProp](this.element,
+        this.valuesStart[tweenProp],
+        this.valuesEnd[tweenProp],
+        progress);
+    });
+
+    // fire the updateCallback
+    if (this._onUpdate) {
+      this._onUpdate.call(this);
+    }
+
+    if (elapsed === 1) {
+      // fire the complete callback
+      if (this._onComplete) {
+        this._onComplete.call(this);
+      }
+
+      // now we're sure no animation is running
+      this.playing = false;
+
+      // stop ticking when finished
+      this.close();
+
+      // start animating chained tweens
+      if (this._chain !== undefined && this._chain.length) {
+        this._chain.map((tw) => tw.start());
+      }
+
+      return false;
+    }
+
+    return true;
+  }
+}
 
 // Update Tween Interface
 connect.tween = TweenBase;
 
 function fromTo(element, startObject, endObject, optionsObj) {
-  var options = optionsObj || {};
-  var TweenConstructor = connect.tween;
+  const options = optionsObj || {};
+  const TweenConstructor = connect.tween;
   return new TweenConstructor(selector(element), startObject, endObject, options);
 }
 
 function perspective(a, b, u, v) {
-  return ("perspective(" + (((a + (b - a) * v) * 1000 >> 0) / 1000) + u + ")");
+  return `perspective(${((a + (b - a) * v) * 1000 >> 0) / 1000}${u})`;
 }
 
 function translate3d(a, b, u, v) {
-  var translateArray = [];
-  for (var ax = 0; ax < 3; ax += 1) {
+  const translateArray = [];
+  for (let ax = 0; ax < 3; ax += 1) {
     translateArray[ax] = (a[ax] || b[ax]
       ? ((a[ax] + (b[ax] - a[ax]) * v) * 1000 >> 0) / 1000 : 0) + u;
   }
-  return ("translate3d(" + (translateArray.join(',')) + ")");
+  return `translate3d(${translateArray.join(',')})`;
 }
 
 function rotate3d(a, b, u, v) {
-  var rotateStr = '';
-  rotateStr += a[0] || b[0] ? ("rotateX(" + (((a[0] + (b[0] - a[0]) * v) * 1000 >> 0) / 1000) + u + ")") : '';
-  rotateStr += a[1] || b[1] ? ("rotateY(" + (((a[1] + (b[1] - a[1]) * v) * 1000 >> 0) / 1000) + u + ")") : '';
-  rotateStr += a[2] || b[2] ? ("rotateZ(" + (((a[2] + (b[2] - a[2]) * v) * 1000 >> 0) / 1000) + u + ")") : '';
+  let rotateStr = '';
+  rotateStr += a[0] || b[0] ? `rotateX(${((a[0] + (b[0] - a[0]) * v) * 1000 >> 0) / 1000}${u})` : '';
+  rotateStr += a[1] || b[1] ? `rotateY(${((a[1] + (b[1] - a[1]) * v) * 1000 >> 0) / 1000}${u})` : '';
+  rotateStr += a[2] || b[2] ? `rotateZ(${((a[2] + (b[2] - a[2]) * v) * 1000 >> 0) / 1000}${u})` : '';
   return rotateStr;
 }
 
 function translate(a, b, u, v) {
-  var translateArray = [];
+  const translateArray = [];
   translateArray[0] = (a[0] === b[0] ? b[0] : ((a[0] + (b[0] - a[0]) * v) * 1000 >> 0) / 1000) + u;
   translateArray[1] = a[1] || b[1] ? ((a[1] === b[1] ? b[1] : ((a[1] + (b[1] - a[1]) * v) * 1000 >> 0) / 1000) + u) : '0';
-  return ("translate(" + (translateArray.join(',')) + ")");
+  return `translate(${translateArray.join(',')})`;
 }
 
 function rotate(a, b, u, v) {
-  return ("rotate(" + (((a + (b - a) * v) * 1000 >> 0) / 1000) + u + ")");
+  return `rotate(${((a + (b - a) * v) * 1000 >> 0) / 1000}${u})`;
 }
 
 function scale(a, b, v) {
-  return ("scale(" + (((a + (b - a) * v) * 1000 >> 0) / 1000) + ")");
+  return `scale(${((a + (b - a) * v) * 1000 >> 0) / 1000})`;
 }
 
 function skew(a, b, u, v) {
-  var skewArray = [];
+  const skewArray = [];
   skewArray[0] = (a[0] === b[0] ? b[0] : ((a[0] + (b[0] - a[0]) * v) * 1000 >> 0) / 1000) + u;
   skewArray[1] = a[1] || b[1] ? ((a[1] === b[1] ? b[1] : ((a[1] + (b[1] - a[1]) * v) * 1000 >> 0) / 1000) + u) : '0';
-  return ("skew(" + (skewArray.join(',')) + ")");
+  return `skew(${skewArray.join(',')})`;
 }
 
 /* transformFunctions = {
@@ -1124,7 +1111,7 @@ function skew(a, b, u, v) {
 // Component Functions
 function onStartTransform(tweenProp) {
   if (!KUTE[tweenProp] && this.valuesEnd[tweenProp]) {
-    KUTE[tweenProp] = function (elem, a, b, v) {
+    KUTE[tweenProp] = (elem, a, b, v) => {
       elem.style[tweenProp] = (a.perspective || b.perspective ? perspective(a.perspective, b.perspective, 'px', v) : '') // one side might be 0
         + (a.translate3d ? translate3d(a.translate3d, b.translate3d, 'px', v) : '') // array [x,y,z]
         + (a.rotate3d ? rotate3d(a.rotate3d, b.rotate3d, 'deg', v) : '') // array [x,y,z]
@@ -1135,24 +1122,24 @@ function onStartTransform(tweenProp) {
 }
 
 // Base Component
-var BaseTransform = {
+const BaseTransform = {
   component: 'baseTransform',
   property: 'transform',
   functions: { onStart: onStartTransform },
   Interpolate: {
-    perspective: perspective,
-    translate3d: translate3d,
-    rotate3d: rotate3d,
-    translate: translate,
-    rotate: rotate,
-    scale: scale,
-    skew: skew,
+    perspective,
+    translate3d,
+    rotate3d,
+    translate,
+    rotate,
+    scale,
+    skew,
   },
 };
 
 function numbers(a, b, v) { // number1, number2, progress
-  var A = +a;
-  var B = b - a;
+  const A = +a;
+  const B = b - a;
   // a = +a; b -= a;
   return A + B * v;
 }
@@ -1168,43 +1155,43 @@ function numbers(a, b, v) { // number1, number2, progress
 function onStartOpacity(tweenProp/* , value */) {
   // opacity could be 0 sometimes, we need to check regardless
   if (tweenProp in this.valuesEnd && !KUTE[tweenProp]) {
-    KUTE[tweenProp] = function (elem, a, b, v) {
+    KUTE[tweenProp] = (elem, a, b, v) => {
       elem.style[tweenProp] = ((numbers(a, b, v) * 1000) >> 0) / 1000;
     };
   }
 }
 
 // Base Component
-var baseOpacity = {
+const baseOpacity = {
   component: 'baseOpacity',
   property: 'opacity',
   // defaultValue: 1,
-  Interpolate: { numbers: numbers },
+  Interpolate: { numbers },
   functions: { onStart: onStartOpacity },
 };
 
 // Component Functions
 function boxModelOnStart(tweenProp) {
   if (tweenProp in this.valuesEnd && !KUTE[tweenProp]) {
-    KUTE[tweenProp] = function (elem, a, b, v) {
-      elem.style[tweenProp] = (v > 0.99 || v < 0.01
+    KUTE[tweenProp] = (elem, a, b, v) => {
+      elem.style[tweenProp] = `${v > 0.99 || v < 0.01
         ? ((numbers(a, b, v) * 10) >> 0) / 10
-        : (numbers(a, b, v)) >> 0) + "px";
+        : (numbers(a, b, v)) >> 0}px`;
     };
   }
 }
 
 // Component Base Props
-var baseBoxProps = ['top', 'left', 'width', 'height'];
-var baseBoxOnStart = {};
-baseBoxProps.forEach(function (x) { baseBoxOnStart[x] = boxModelOnStart; });
+const baseBoxProps = ['top', 'left', 'width', 'height'];
+const baseBoxOnStart = {};
+baseBoxProps.forEach((x) => { baseBoxOnStart[x] = boxModelOnStart; });
 
 // Component Base
-var baseBoxModel = {
+const baseBoxModel = {
   component: 'baseBoxModel',
   category: 'boxModel',
   properties: baseBoxProps,
-  Interpolate: { numbers: numbers },
+  Interpolate: { numbers },
   functions: { onStart: baseBoxOnStart },
 };
 
@@ -1212,7 +1199,7 @@ var baseBoxModel = {
 
 spicrConnect.fromTo = fromTo;
 
-var K = {
+const K = {
   Animation: AnimationBase,
   Components: {
     Transform: new AnimationBase(BaseTransform),
@@ -1220,40 +1207,40 @@ var K = {
     BoxModel: new AnimationBase(baseBoxModel),
   },
   Tween: TweenBase,
-  fromTo: fromTo,
-  Objects: Objects,
-  Easing: Easing,
-  Util: Util,
-  Render: Render,
-  Interpolate: Interpolate,
-  Internals: Internals,
+  fromTo,
+  Objects,
+  Easing,
+  Util,
+  Render,
+  Interpolate,
+  Internals,
   Selector: selector,
 };
 
-Object.keys(K).forEach(function (o) {
+Object.keys(K).forEach((o) => {
   Spicr[o] = K[o];
 });
 
 // tweenCarousel to work with KUTE.js transformFunctions component
 function carouselTF(elem, items, active, next, direction) {
-  var carouselTweens = [];
-  var data = getLayerData(elem);
-  var fromActive = {};
-  var toActive = {};
-  var fromNext = {};
-  var toNext = {};
-  var activeItem = items[active];
-  var activeLayers = activeItem && getLayers(activeItem);
-  var nextLayers = getLayers(items[next]);
-  var translate = data.translate;
-  var rotate = data.rotate;
-  var scale = data.scale;
-  var origin = elem.getAttribute('data-transform-origin');
-  var opacity = data.opacity; // opacity is optional | boolean
-  var easing = data.easing;
+  const carouselTweens = [];
+  const data = getLayerData(elem);
+  const fromActive = {};
+  const toActive = {};
+  const fromNext = {};
+  const toNext = {};
+  const activeItem = items[active];
+  const activeLayers = activeItem && getLayers(activeItem);
+  const nextLayers = getLayers(items[next]);
+  const { translate } = data;
+  const { rotate } = data;
+  const { scale } = data;
+  const origin = elem.getAttribute('data-transform-origin');
+  const { opacity } = data; // opacity is optional | boolean
+  const { easing } = data;
 
-  var duration = data.duration || defaultSpicrOptions.duration;
-  var delay = data.delay || +duration / 2;
+  let duration = data.duration || defaultSpicrOptions.duration;
+  let delay = data.delay || +duration / 2;
 
   if (opacity) {
     fromActive.opacity = 1;
@@ -1278,43 +1265,43 @@ function carouselTF(elem, items, active, next, direction) {
 
   if (translate) {
     fromActive.transform.translate3d = [0, 0, 0];
-    var translateX = 0;
-    var translateY = 0;
-    var translateZ = 0;
-    if ('x' in translate) { translateX = direction ? -translate.x : translate.x; }
-    if ('y' in translate) { translateY = direction ? -translate.y : translate.y; }
-    if ('Z' in translate) { translateZ = direction ? -translate.z : translate.z; }
+    let translateX = 0;
+    let translateY = 0;
+    let translateZ = 0;
+    if ('x' in translate) translateX = direction ? -translate.x : translate.x;
+    if ('y' in translate) translateY = direction ? -translate.y : translate.y;
+    if ('Z' in translate) translateZ = direction ? -translate.z : translate.z;
     toActive.transform.translate3d = [translateX, translateY, translateZ];
-    var fromTX = 0;
-    var fromTY = 0;
-    var fromTZ = 0;
-    if ('x' in translate) { fromTX = direction ? translate.x : -translate.x; }
-    if ('y' in translate) { fromTY = direction ? translate.y : -translate.y; }
-    if ('Z' in translate) { fromTZ = direction ? translate.z : -translate.z; }
+    let fromTX = 0;
+    let fromTY = 0;
+    let fromTZ = 0;
+    if ('x' in translate) fromTX = direction ? translate.x : -translate.x;
+    if ('y' in translate) fromTY = direction ? translate.y : -translate.y;
+    if ('Z' in translate) fromTZ = direction ? translate.z : -translate.z;
     fromNext.transform.translate3d = [fromTX, fromTY, fromTZ];
     toNext.transform.translate3d = [0, 0, 0];
   }
   if (rotate) {
     fromActive.transform.rotate3d = [0, 0, 0];
-    var rotX = 0;
-    var rotY = 0;
-    var rotZ = 0;
-    if ('x' in rotate) { rotX = direction ? -rotate.x : rotate.x; }
-    if ('y' in rotate) { rotY = direction ? -rotate.y : rotate.y; }
-    if ('Z' in rotate) { rotZ = direction ? -rotate.z : rotate.z; }
+    let rotX = 0;
+    let rotY = 0;
+    let rotZ = 0;
+    if ('x' in rotate) rotX = direction ? -rotate.x : rotate.x;
+    if ('y' in rotate) rotY = direction ? -rotate.y : rotate.y;
+    if ('Z' in rotate) rotZ = direction ? -rotate.z : rotate.z;
     toActive.transform.rotate3d = [rotX, rotY, rotZ];
-    var fromRX = 0;
-    var fromRY = 0;
-    var fromRZ = 0;
-    if ('x' in rotate) { fromRX = direction ? rotate.x : -rotate.x; }
-    if ('y' in rotate) { fromRY = direction ? rotate.y : -rotate.y; }
-    if ('Z' in rotate) { fromRZ = direction ? rotate.z : -rotate.z; }
+    let fromRX = 0;
+    let fromRY = 0;
+    let fromRZ = 0;
+    if ('x' in rotate) fromRX = direction ? rotate.x : -rotate.x;
+    if ('y' in rotate) fromRY = direction ? rotate.y : -rotate.y;
+    if ('Z' in rotate) fromRZ = direction ? rotate.z : -rotate.z;
     fromNext.transform.rotate3d = [fromRX, fromRY, fromRZ];
     toNext.transform.rotate3d = [0, 0, 0];
   }
 
   if (!direction) {
-    if (activeLayers) { activeLayers.reverse(); }
+    if (activeLayers) activeLayers.reverse();
     nextLayers.reverse();
   }
 
@@ -1323,46 +1310,46 @@ function carouselTF(elem, items, active, next, direction) {
     delay = 0;
   }
 
-  var optionsActive = { easing: easing, duration: duration };
-  var optionsNext = optionsActive;
+  const optionsActive = { easing, duration };
+  const optionsNext = optionsActive;
 
   if (activeLayers) {
-    activeLayers.forEach(function (x, i) {
+    activeLayers.forEach((x, i) => {
       optionsActive.delay = defaultSpicrOptions.delay * i;
       carouselTweens.push(spicrConnect.fromTo(x, fromActive, toActive, optionsActive));
       if (origin) {
-        var o = processLayerData(x, origin);
-        var originX = '50%';
-        var originY = '50%';
-        var originZ = 'z' in o ? (" " + (o.z) + "px") : '';
+        const o = processLayerData(x, origin);
+        let originX = '50%';
+        let originY = '50%';
+        const originZ = 'z' in o ? ` ${o.z}px` : '';
 
         if ('x' in o) {
-          originX = /%/.test(o.x) ? o.x : ((o.x) + "px");
+          originX = /%/.test(o.x) ? o.x : `${o.x}px`;
         }
         if ('y' in o) {
-          originY = /%/.test(o.y) ? o.y : ((o.y) + "px");
+          originY = /%/.test(o.y) ? o.y : `${o.y}px`;
         }
-        x.style.transformOrigin = originX + " " + originY + originZ;
+        x.style.transformOrigin = `${originX} ${originY}${originZ}`;
       }
     });
   }
 
-  nextLayers.forEach(function (x, i) {
+  nextLayers.forEach((x, i) => {
     optionsNext.delay = (delay + 50) * i;
     carouselTweens.push(spicrConnect.fromTo(x, fromNext, toNext, optionsNext));
     if (origin) {
-      var o = processLayerData(x, origin);
-      var originX = '50%';
-      var originY = '50%';
-      var originZ = 'z' in o ? (" " + (o.z) + "px") : '';
+      const o = processLayerData(x, origin);
+      let originX = '50%';
+      let originY = '50%';
+      const originZ = 'z' in o ? ` ${o.z}px` : '';
 
       if ('x' in o) {
-        originX = /%/.test(o.x) ? o.x : ((o.x) + "px");
+        originX = /%/.test(o.x) ? o.x : `${o.x}px`;
       }
       if ('y' in o) {
-        originY = /%/.test(o.y) ? o.y : ((o.y) + "px");
+        originY = /%/.test(o.y) ? o.y : `${o.y}px`;
       }
-      x.style.transformOrigin = originX + " " + originY + originZ;
+      x.style.transformOrigin = `${originX} ${originY}${originZ}`;
     }
   });
 
@@ -1371,18 +1358,18 @@ function carouselTF(elem, items, active, next, direction) {
 
 // tweenLayer to work with KUTE.js transformFunctions component
 function layerTF(elem, isInAnimation, nextData) {
-  var data = nextData || getLayerData(elem);
-  var isBg = elem.classList.contains('item-bg');
-  var from = {};
-  var to = {};
-  var translate = data.translate;
-  var rotate = data.rotate;
-  var scale = data.scale;
-  var origin = data.origin;
-  var opacity = data.opacity;
-  var duration = data.duration;
-  var easing = data.easing;
-  var delay = data.delay || (!isBg ? defaultSpicrOptions.delay : 0);
+  const data = nextData || getLayerData(elem);
+  const isBg = elem.classList.contains('item-bg');
+  const from = {};
+  const to = {};
+  const { translate } = data;
+  const { rotate } = data;
+  const { scale } = data;
+  const { origin } = data;
+  let { opacity } = data;
+  let { duration } = data;
+  let { easing } = data;
+  let delay = data.delay || (!isBg ? defaultSpicrOptions.delay : 0);
 
   if (!/InOut/.test(easing) && !nextData) {
     easing = isInAnimation ? easing.replace('In', 'Out') : easing.replace('Out', 'In');
@@ -1403,18 +1390,18 @@ function layerTF(elem, isInAnimation, nextData) {
     from.transform = {};
     to.transform = {};
     if (origin) { // origin axis can be 0
-      var originX = '50%';
-      var originY = '50%';
-      var originZ = 'z' in origin ? (" " + (origin.z) + "px") : '';
+      let originX = '50%';
+      let originY = '50%';
+      const originZ = 'z' in origin ? ` ${origin.z}px` : '';
 
       if ('x' in origin) {
-        originX = /%/.test(origin.x) ? origin.x : ((origin.x) + "px");
+        originX = /%/.test(origin.x) ? origin.x : `${origin.x}px`;
       }
       if ('y' in origin) {
-        originY = /%/.test(origin.y) ? origin.y : ((origin.y) + "px");
+        originY = /%/.test(origin.y) ? origin.y : `${origin.y}px`;
       }
 
-      elem.style.transformOrigin = originX + " " + originY + originZ;
+      elem.style.transformOrigin = `${originX} ${originY}${originZ}`;
     }
   }
 
@@ -1423,23 +1410,23 @@ function layerTF(elem, isInAnimation, nextData) {
     to.transform.scale = isInAnimation ? 1 : scale;
   }
   if (translate) {
-    var fromTranslateX = isInAnimation && translate.x ? translate.x : 0;
-    var toTranslateX = translate.x && !isInAnimation ? translate.x : 0;
-    var fromTranslateY = isInAnimation && translate.y ? translate.y : 0;
-    var toTranslateY = translate.y && !isInAnimation ? translate.y : 0;
-    var fromTranslateZ = isInAnimation && translate.z ? translate.z : 0;
-    var toTranslateZ = translate.z && !isInAnimation ? translate.z : 0; // not supported on IE9-
+    const fromTranslateX = isInAnimation && translate.x ? translate.x : 0;
+    const toTranslateX = translate.x && !isInAnimation ? translate.x : 0;
+    const fromTranslateY = isInAnimation && translate.y ? translate.y : 0;
+    const toTranslateY = translate.y && !isInAnimation ? translate.y : 0;
+    const fromTranslateZ = isInAnimation && translate.z ? translate.z : 0;
+    const toTranslateZ = translate.z && !isInAnimation ? translate.z : 0; // not supported on IE9-
 
     from.transform.translate3d = [fromTranslateX, fromTranslateY, fromTranslateZ];
     to.transform.translate3d = [toTranslateX, toTranslateY, toTranslateZ];
   }
   if (rotate) {
-    var fromRotateX = isInAnimation && rotate.x ? rotate.x : 0;
-    var toRotateX = !isInAnimation && rotate.x ? rotate.x : 0;
-    var fromRotateY = isInAnimation && rotate.y ? rotate.y : 0;
-    var toRotateY = !isInAnimation && rotate.y ? rotate.y : 0;
-    var fromRotateZ = isInAnimation && rotate.z ? rotate.z : 0;
-    var toRotateZ = !isInAnimation && rotate.z ? rotate.z : 0;
+    const fromRotateX = isInAnimation && rotate.x ? rotate.x : 0;
+    const toRotateX = !isInAnimation && rotate.x ? rotate.x : 0;
+    const fromRotateY = isInAnimation && rotate.y ? rotate.y : 0;
+    const toRotateY = !isInAnimation && rotate.y ? rotate.y : 0;
+    const fromRotateZ = isInAnimation && rotate.z ? rotate.z : 0;
+    const toRotateZ = !isInAnimation && rotate.z ? rotate.z : 0;
 
     from.transform.rotate3d = [fromRotateX, fromRotateY, fromRotateZ];
     to.transform.rotate3d = [toRotateX, toRotateY, toRotateZ];
@@ -1449,11 +1436,11 @@ function layerTF(elem, isInAnimation, nextData) {
     delay = 0;
   }
 
-  return spicrConnect.fromTo(elem, from, to, { easing: easing, duration: duration, delay: delay });
+  return spicrConnect.fromTo(elem, from, to, { easing, duration, delay });
 }
 
 function resetAllLayers(element) {
-  Array.from(element.getElementsByClassName('spicr-layer')).forEach(function (x) {
+  Array.from(element.getElementsByClassName('spicr-layer')).forEach((x) => {
     x.style.opacity = '';
     x.style.transform = '';
     x.style.transformOrigin = '';
@@ -1466,9 +1453,9 @@ spicrConnect.reset = resetAllLayers;
 
 // DATA API
 function initComponent(input) {
-  var lookup = input instanceof Element ? input : document;
-  var Spicrs = Array.from(lookup.querySelectorAll('[data-function="spicr"]'));
-  Spicrs.forEach(function (x) { return new Spicr(x); });
+  const lookup = input instanceof Element ? input : document;
+  const Spicrs = Array.from(lookup.querySelectorAll('[data-function="spicr"]'));
+  Spicrs.forEach((x) => new Spicr(x));
 }
 
 // export to "global"
