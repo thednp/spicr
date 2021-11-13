@@ -1,5 +1,5 @@
 /*!
-* Spicr v1.0.8 (http://thednp.github.io/spicr)
+* Spicr v1.0.9 (http://thednp.github.io/spicr)
 * Copyright 2017-2021 © thednp
 * Licensed under MIT (https://github.com/thednp/spicr/blob/master/LICENSE)
 */
@@ -14,7 +14,10 @@
     return selector instanceof Element ? selector : lookUp.querySelector(selector);
   }
 
-  var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  var mobileBrands = /iPhone|iPad|iPod|Android/i;
+  var isMobile = navigator.userAgentData
+    ? navigator.userAgentData.brands.some(function (x) { return mobileBrands.test(x.brand); })
+    : mobileBrands.test(navigator.userAgent);
 
   var supportTouch = ('ontouchstart' in window || navigator.msMaxTouchPoints) || false;
 
@@ -762,6 +765,10 @@
   } else {
     document.addEventListener('DOMContentLoaded', initComponent, { once: true });
   }
+
+  var version = "1.0.9";
+
+  Spicr.Version = version;
 
   return Spicr;
 

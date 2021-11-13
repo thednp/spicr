@@ -1,5 +1,5 @@
 /*!
-* Spicr v1.0.8 (http://thednp.github.io/spicr)
+* Spicr v1.0.9 (http://thednp.github.io/spicr)
 * Copyright 2017-2021 © thednp
 * Licensed under MIT (https://github.com/thednp/spicr/blob/master/LICENSE)
 */
@@ -8,7 +8,10 @@ function queryElement(selector, parent) {
   return selector instanceof Element ? selector : lookUp.querySelector(selector);
 }
 
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+const mobileBrands = /iPhone|iPad|iPod|Android/i;
+const isMobile = navigator.userAgentData
+  ? navigator.userAgentData.brands.some((x) => mobileBrands.test(x.brand))
+  : mobileBrands.test(navigator.userAgent);
 
 const supportTouch = ('ontouchstart' in window || navigator.msMaxTouchPoints) || false;
 
@@ -498,9 +501,8 @@ var Tweens = [];
 
 let globalObject;
 
-if (typeof (global) !== 'undefined') globalObject = global;
-else if (typeof (window.self) !== 'undefined') globalObject = window.self;
-else if (typeof (window) !== 'undefined') globalObject = window;
+if (typeof global !== 'undefined') globalObject = global;
+else if (typeof window !== 'undefined') globalObject = window.self;
 else globalObject = {};
 
 var globalObject$1 = globalObject;
@@ -513,9 +515,41 @@ var Interpolate = {};
 // link property update function to KUTE.js execution context
 var onStart = {};
 
+// Include a performance.now polyfill.
+// source https://github.com/tweenjs/tween.js/blob/master/src/Now.ts
+let now;
+
+// In node.js, use process.hrtime.
+// eslint-disable-next-line
+// @ts-ignore
+if (typeof self === 'undefined' && typeof process !== 'undefined' && process.hrtime) {
+  now = () => {
+    // eslint-disable-next-line
+		// @ts-ignore
+    const time = process.hrtime();
+
+    // Convert [seconds, nanoseconds] to milliseconds.
+    return time[0] * 1000 + time[1] / 1000000;
+  };
+} else if (typeof self !== 'undefined' && self.performance !== undefined && self.performance.now !== undefined) {
+  // In a browser, use self.performance.now if it is available.
+  // This must be bound, because directly assigning this function
+  // leads to an invocation exception in Chrome.
+  now = self.performance.now.bind(self.performance);
+} else if (typeof Date !== 'undefined' && Date.now) {
+  // Use Date.now if it is available.
+  now = Date.now;
+} else {
+  // Otherwise, use 'new Date().getTime()'.
+  now = () => new Date().getTime();
+}
+
+var now$1 = now;
+
 const Time = {};
-const that = window.self || window || {};
-Time.now = that.performance.now.bind(that.performance);
+Time.now = now$1;
+// const that = window.self || window || {};
+// Time.now = that.performance.now.bind(that.performance);
 
 let Tick = 0;
 
@@ -1468,6 +1502,10 @@ if (document.body) {
   document.addEventListener('DOMContentLoaded', initComponent, { once: true });
 }
 
+var version = "1.0.9";
+
 // import kute-base.js custom build
+
+Spicr.Version = version;
 
 export default Spicr;

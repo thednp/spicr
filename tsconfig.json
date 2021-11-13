@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    // "resolveJsonModule": true,
+    "emitDeclarationOnly": true,
+    "maxNodeModuleJsDepth": 2,
+    "strict": true,
+    "allowJs": true,
+    "rootDir": "src/js",
+    "outDir": "types"
+  },
+  "include": ["src/js/**/*"],
+  // "exclude": ["node_modules", "dist", "types", "demo"]
+  "exclude": ["dist", "types", "demo"]
+}
