@@ -1,8 +1,16 @@
-import spicrConnect from '../util/spicrConnect.js';
-import getLayerData from './getLayerData.js';
-import getLayers from './getLayers.js';
+import spicrConnect from '../util/spicrConnect';
+import getLayerData from './getLayerData';
+import getLayers from './getLayers';
 
-// function to animate slider item background
+/**
+ * Returns an `Array` or Tween objects for all layers
+ * of the current active slider item and / or the next active item.
+ *
+ * @param {Element[]} slides spicr items
+ * @param {number} idx current active index
+ * @param {number} next next active index
+ * @returns {KUTE.TweenBase[]} an `Array` of tween objects
+ */
 export default function animateSliderLayers(slides, idx, next) {
   const activeItem = slides[idx] || slides[0];
   const allLayers = getLayers(activeItem);

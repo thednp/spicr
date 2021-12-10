@@ -1,3 +1,6 @@
-import { version as Version } from '../../../package.json';
+// @ts-ignore
+import { version } from '../../../package.json';
 
+/** @type {string} */
+const Version = version;
 export default Version;

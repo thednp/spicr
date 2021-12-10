@@ -1,9 +1,8 @@
-// import kute-legacy.js custom build
-import Spicr from './spicr.js';
-import './util/kute-legacy.js';
-import './compatibility/transformLegacy.js';
-import './util/init.js';
-import Version from './util/version.js';
+// import kute-legacy custom build
+import Spicr from './util/kute-legacy';
+import './compatibility/transformLegacy';
+import './util/init';
+import Version from './util/version';
 
 Spicr.Version = Version;
 

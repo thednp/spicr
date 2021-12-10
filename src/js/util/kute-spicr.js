@@ -1,22 +1,22 @@
-// KUTE.js custom build for Spicr, MODERN BROWSERS
+// KUTE custom build for Spicr, MODERN BROWSERS
 // using transformFunctionsBase component
-import Render from 'kute.js/src/core/render.js';
-import Interpolate from 'kute.js/src/objects/interpolate.js';
-import Objects from 'kute.js/src/objects/objectsBase.js';
-import Util from 'kute.js/src/objects/util.js';
-import Easing from 'kute.js/src/easing/easing.js';
-import Internals from 'kute.js/src/core/internals.js';
-import Selector from 'kute.js/src/util/selector.js';
-import Animation from 'kute.js/src/animation/animationBase.js';
-import Tween from 'kute.js/src/tween/tweenBase.js';
-import fromTo from 'kute.js/src/interface/fromTo.js';
+import Render from 'kute.js/src/core/render';
+import Interpolate from 'kute.js/src/objects/interpolate';
+import Objects from 'kute.js/src/objects/objectsBase';
+import Util from 'kute.js/src/objects/util';
+import Easing from 'kute.js/src/easing/easing';
+import Internals from 'kute.js/src/core/internals';
+import Selector from 'kute.js/src/util/selector';
+import Animation from 'kute.js/src/animation/animationBase';
+import Tween from 'kute.js/src/tween/tweenBase';
+import fromTo from 'kute.js/src/interface/fromTo';
 
-import baseTransform from 'kute.js/src/components/transformFunctionsBase.js';
-import baseOpacity from 'kute.js/src/components/opacityPropertyBase.js';
-import baseBoxModel from 'kute.js/src/components/boxModelBase.js';
+import baseTransform from 'kute.js/src/components/transformFunctionsBase';
+import baseOpacity from 'kute.js/src/components/opacityPropertyBase';
+import baseBoxModel from 'kute.js/src/components/boxModelBase';
 
-import Spicr from '../spicr.js';
-import spicrConnect from './spicrConnect.js';
+import Spicr from '../spicr';
+import spicrConnect from './spicrConnect';
 
 spicrConnect.fromTo = fromTo;
 
@@ -38,6 +38,6 @@ const K = {
   Selector,
 };
 
-Object.keys(K).forEach((o) => {
-  Spicr[o] = K[o];
-});
+Object.assign(Spicr, K);
+
+export default Spicr;

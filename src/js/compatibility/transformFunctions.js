@@ -1,8 +1,8 @@
-import spicrConnect from '../util/spicrConnect.js';
+import spicrConnect from '../util/spicrConnect';
 
-import carouselTFunctions from '../process/carouselTF.js';
-import layerTFunctions from '../process/layerTF.js';
-import resetAllLayers from '../process/resetAllLayers.js';
+import carouselTFunctions from '../process/carouselTF';
+import layerTFunctions from '../process/layerTF';
+import resetAllLayers from '../process/resetAllLayers';
 
 spicrConnect.carousel = carouselTFunctions;
 spicrConnect.layer = layerTFunctions;

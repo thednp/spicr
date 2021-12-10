@@ -1,8 +1,8 @@
-import spicrConnect from '../util/spicrConnect.js';
+import spicrConnect from '../util/spicrConnect';
 
-import carouselMatrix from '../process/carouselTM.js';
-import layerMatrix from '../process/layerTM.js';
-import resetAllLayers from '../process/resetAllLayers.js';
+import carouselMatrix from '../process/carouselTM';
+import layerMatrix from '../process/layerTM';
+import resetAllLayers from '../process/resetAllLayers';
 
 spicrConnect.carousel = carouselMatrix;
 spicrConnect.layer = layerMatrix;

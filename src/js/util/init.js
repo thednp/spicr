@@ -1,6 +1,10 @@
-import Spicr from '../spicr.js';
+import Spicr from '../spicr';
 
-// DATA API
+/**
+ * DATA API initialization callback
+ *
+ * @param {Element=} input target parent, usually the document
+ */
 export default function initComponent(input) {
   const lookup = input instanceof Element ? input : document;
   const Spicrs = Array.from(lookup.querySelectorAll('[data-function="spicr"]'));

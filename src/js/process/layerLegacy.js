@@ -1,10 +1,16 @@
-import support3DTransform from 'shorter-js/src/boolean/support3DTransform.js';
-import transformOriginLegacy from '../util/transformOriginLegacy.js';
-import spicrConnect from '../util/spicrConnect.js';
-import getLayerData from './getLayerData.js';
-import defaultSpicrDefaults from '../options/defaultOptions.js';
+import support3DTransform from 'shorter-js/src/boolean/support3DTransform';
+import transformOriginLegacy from '../util/transformOriginLegacy';
+import spicrConnect from '../util/spicrConnect';
+import getLayerData from './getLayerData';
+import defaultSpicrDefaults from '../options/defaultOptions';
 
-// tweenLayer to work with KUTE.js transformFunctions component
+/**
+ * Returns a tween object for a single layer for TransformLegacy component.
+ * @param {Element} elem target layer
+ * @param {number | boolean} isInAnimation parent slide is next
+ * @param {Spicr.layerData} nextData some layer data used when parent is NOT next
+ * @returns {KUTE.TweenBase} a new tween object
+ */
 export default function layerLegacy(elem, isInAnimation, nextData) {
   const data = nextData || getLayerData(elem);
   const isBg = elem.classList.contains('item-bg');

@@ -1,9 +1,9 @@
-import Spicr from './spicr.js';
-import './util/spicrFromTo.js';
-import './compatibility/transformFunctions.js';
-import './util/init.js';
-import Version from './util/version.js';
+import Spicr from './spicr';
+import './util/spicrFromTo';
+import './compatibility/transformFunctions';
+import './util/init';
+import Version from './util/version';
 
-Spicr.Version = Version;
+Object.assign(Spicr, { Version });
 
 export default Spicr;

@@ -1,26 +1,1034 @@
 /*!
-* Spicr v1.0.9 (http://thednp.github.io/spicr)
+* Spicr v1.0.10 (http://thednp.github.io/spicr)
 * Copyright 2017-2021 © thednp
 * Licensed under MIT (https://github.com/thednp/spicr/blob/master/LICENSE)
 */
+/**
+ * The KUTE.js Execution Context
+ */
+const KEC = {};
+
+const Tweens = [];
+
+let gl0bal;
+
+if (typeof global !== 'undefined') gl0bal = global;
+else if (typeof window !== 'undefined') gl0bal = window.self;
+else gl0bal = {};
+
+const globalObject = gl0bal;
+
+// KUTE.js INTERPOLATE FUNCTIONS
+// =============================
+const interpolate = {};
+
+// schedule property specific function on animation start
+// link property update function to KUTE.js execution context
+const onStart = {};
+
+// Include a performance.now polyfill.
+// source https://github.com/tweenjs/tween.js/blob/master/src/Now.ts
+let performanceNow;
+
+// In node.js, use process.hrtime.
+// eslint-disable-next-line
+// @ts-ignore
+if (typeof self === 'undefined' && typeof process !== 'undefined' && process.hrtime) {
+  performanceNow = () => {
+    // eslint-disable-next-line
+		// @ts-ignore
+    const time = process.hrtime();
+
+    // Convert [seconds, nanoseconds] to milliseconds.
+    return time[0] * 1000 + time[1] / 1000000;
+  };
+} else if (typeof self !== 'undefined' && self.performance !== undefined && self.performance.now !== undefined) {
+  // In a browser, use self.performance.now if it is available.
+  // This must be bound, because directly assigning this function
+  // leads to an invocation exception in Chrome.
+  performanceNow = self.performance.now.bind(self.performance);
+} else if (typeof Date !== 'undefined' && Date.now) {
+  // Use Date.now if it is available.
+  performanceNow = Date.now;
+} else {
+  // Otherwise, use 'new Date().getTime()'.
+  performanceNow = () => new Date().getTime();
+}
+
+const now = performanceNow;
+
+const Time = {};
+Time.now = now;
+
+// eslint-disable-next-line import/no-mutable-exports -- impossible to satisfy
+let Tick = 0;
+
+/**
+ *
+ * @param {number | Date} time
+ */
+const Ticker = (time) => {
+  let i = 0;
+  while (i < Tweens.length) {
+    if (Tweens[i].update(time)) {
+      i += 1;
+    } else {
+      Tweens.splice(i, 1);
+    }
+  }
+  Tick = requestAnimationFrame(Ticker);
+};
+
+// stop requesting animation frame
+function stop() {
+  setTimeout(() => { // re-added for #81
+    if (!Tweens.length && Tick) {
+      cancelAnimationFrame(Tick);
+      Tick = null;
+      Object.keys(onStart).forEach((obj) => {
+        if (typeof (onStart[obj]) === 'function') {
+          if (KEC[obj]) delete KEC[obj];
+        } else {
+          Object.keys(onStart[obj]).forEach((prop) => {
+            if (KEC[prop]) delete KEC[prop];
+          });
+        }
+      });
+
+      Object.keys(interpolate).forEach((i) => {
+        if (KEC[i]) delete KEC[i];
+      });
+    }
+  }, 64);
+}
+
+// render update functions
+// =======================
+const Render = {
+  Tick, Ticker, Tweens, Time,
+};
+Object.keys(Render).forEach((blob) => {
+  if (!KEC[blob]) {
+    KEC[blob] = blob === 'Time' ? Time.now : Render[blob];
+  }
+});
+
+globalObject._KUTE = KEC;
+
+const defaultOptions = {
+  duration: 700,
+  delay: 0,
+  easing: 'linear',
+  repeat: 0,
+  repeatDelay: 0,
+  yoyo: false,
+  resetStart: false,
+  offset: 0,
+};
+
+// link properties to interpolate functions
+const linkProperty = {};
+
+// schedule property specific function on animation complete
+const onComplete = {};
+
+const Objects = {
+  defaultOptions,
+  linkProperty,
+  onStart,
+  onComplete,
+};
+
+// util - a general object for utils like rgbToHex, processEasing
+const Util = {};
+
+const connect = {};
+/** @type {KUTE.TweenBase | KUTE.Tween | KUTE.TweenExtra} */
+connect.tween = null;
+connect.processEasing = null;
+
+// Robert Penner's Easing Functions
+// updated for ESLint
+const Easing = {
+  /** @type {KUTE.easingFunction} */
+  linear: (t) => t,
+  /** @type {KUTE.easingFunction} */
+  easingSinusoidalIn: (t) => -Math.cos((t * Math.PI) / 2) + 1,
+  /** @type {KUTE.easingFunction} */
+  easingSinusoidalOut: (t) => Math.sin((t * Math.PI) / 2),
+  /** @type {KUTE.easingFunction} */
+  easingSinusoidalInOut: (t) => -0.5 * (Math.cos(Math.PI * t) - 1),
+  /** @type {KUTE.easingFunction} */
+  easingQuadraticIn: (t) => t * t,
+  /** @type {KUTE.easingFunction} */
+  easingQuadraticOut: (t) => t * (2 - t),
+  /** @type {KUTE.easingFunction} */
+  easingQuadraticInOut: (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
+  /** @type {KUTE.easingFunction} */
+  easingCubicIn: (t) => t * t * t,
+  /** @type {KUTE.easingFunction} */
+  easingCubicOut: (t0) => { const t = t0 - 1; return t * t * t + 1; },
+  /** @type {KUTE.easingFunction} */
+  easingCubicInOut: (t) => (t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1),
+  /** @type {KUTE.easingFunction} */
+  easingQuarticIn: (t) => t * t * t * t,
+  /** @type {KUTE.easingFunction} */
+  easingQuarticOut: (t0) => { const t = t0 - 1; return 1 - t * t * t * t; },
+  /** @type {KUTE.easingFunction} */
+  easingQuarticInOut: (t0) => {
+    let t = t0;
+    if (t < 0.5) return 8 * t * t * t * t;
+    t -= 1; return 1 - 8 * t * t * t * t;
+  },
+  /** @type {KUTE.easingFunction} */
+  easingQuinticIn: (t) => t * t * t * t * t,
+  /** @type {KUTE.easingFunction} */
+  easingQuinticOut: (t0) => { const t = t0 - 1; return 1 + t * t * t * t * t; },
+  /** @type {KUTE.easingFunction} */
+  easingQuinticInOut: (t0) => {
+    let t = t0;
+    if (t < 0.5) return 16 * t * t * t * t * t;
+    t -= 1; return 1 + 16 * t * t * t * t * t;
+  },
+  /** @type {KUTE.easingFunction} */
+  easingCircularIn: (t) => -(Math.sqrt(1 - (t * t)) - 1),
+  /** @type {KUTE.easingFunction} */
+  easingCircularOut: (t0) => { const t = t0 - 1; return Math.sqrt(1 - t * t); },
+  /** @type {KUTE.easingFunction} */
+  easingCircularInOut: (t0) => {
+    let t = t0 * 2;
+    if (t < 1) return -0.5 * (Math.sqrt(1 - t * t) - 1);
+    t -= 2; return 0.5 * (Math.sqrt(1 - t * t) + 1);
+  },
+  /** @type {KUTE.easingFunction} */
+  easingExponentialIn: (t) => 2 ** (10 * (t - 1)) - 0.001,
+  /** @type {KUTE.easingFunction} */
+  easingExponentialOut: (t) => 1 - 2 ** (-10 * t),
+  /** @type {KUTE.easingFunction} */
+  easingExponentialInOut: (t0) => {
+    const t = t0 * 2;
+    if (t < 1) return 0.5 * (2 ** (10 * (t - 1)));
+    return 0.5 * (2 - 2 ** (-10 * (t - 1)));
+  },
+  /** @type {KUTE.easingFunction} */
+  easingBackIn: (t) => { const s = 1.70158; return t * t * ((s + 1) * t - s); },
+  /** @type {KUTE.easingFunction} */
+  easingBackOut: (t0) => {
+    const s = 1.70158;
+    const t = t0 - 1;
+    return t * t * ((s + 1) * t + s) + 1;
+  },
+  /** @type {KUTE.easingFunction} */
+  easingBackInOut: (t0) => {
+    const s = 1.70158 * 1.525;
+    let t = t0 * 2;
+    if (t < 1) return 0.5 * (t * t * ((s + 1) * t - s));
+    t -= 2; return 0.5 * (t * t * ((s + 1) * t + s) + 2);
+  },
+  /** @type {KUTE.easingFunction} */
+  easingElasticIn: (t0) => {
+    let s;
+    let k1 = 0.1;
+    const k2 = 0.4;
+    let t = t0;
+    if (t === 0) return 0;
+    if (t === 1) return 1;
+    if (!k1 || k1 < 1) {
+      k1 = 1; s = k2 / 4;
+    } else {
+      s = ((k2 * Math.asin(1 / k1)) / Math.PI) * 2;
+    }
+    t -= 1;
+    return -(k1 * (2 ** (10 * t)) * Math.sin(((t - s) * Math.PI * 2) / k2));
+  },
+  /** @type {KUTE.easingFunction} */
+  easingElasticOut: (t) => {
+    let s;
+    let k1 = 0.1;
+    const k2 = 0.4;
+    if (t === 0) return 0;
+    if (t === 1) return 1;
+    if (!k1 || k1 < 1) {
+      k1 = 1;
+      s = k2 / 4;
+    } else {
+      s = ((k2 * Math.asin(1 / k1)) / Math.PI) * 2;
+    }
+    return k1 * (2 ** (-10 * t)) * Math.sin(((t - s) * Math.PI * 2) / k2) + 1;
+  },
+  /** @type {KUTE.easingFunction} */
+  easingElasticInOut: (t0) => {
+    let t = t0;
+    let s;
+    let k1 = 0.1;
+    const k2 = 0.4;
+    if (t === 0) return 0;
+    if (t === 1) return 1;
+    if (!k1 || k1 < 1) {
+      k1 = 1; s = k2 / 4;
+    } else {
+      s = k2 * (Math.asin(1 / k1) / Math.PI) * 2;
+    }
+    t *= 2;
+    if (t < 1) {
+      return -0.5 * (k1 * (2 ** (10 * (t - 1)))
+      * Math.sin(((t - 1 - s) * Math.PI * 2) / k2));
+    }
+    t -= 1;
+    return k1 * (2 ** (-10 * t)) * Math.sin(((t - s) * Math.PI * 2) / k2) * 0.5 + 1;
+  },
+  /** @type {KUTE.easingFunction} */
+  easingBounceIn: (t) => 1 - Easing.easingBounceOut(1 - t),
+  /** @type {KUTE.easingFunction} */
+  easingBounceOut: (t0) => {
+    let t = t0;
+    if (t < (1 / 2.75)) { return 7.5625 * t * t; }
+    if (t < (2 / 2.75)) { t -= (1.5 / 2.75); return 7.5625 * t * t + 0.75; }
+    if (t < (2.5 / 2.75)) { t -= (2.25 / 2.75); return 7.5625 * t * t + 0.9375; }
+    t -= (2.625 / 2.75);
+    return 7.5625 * t * t + 0.984375;
+  },
+  /** @type {KUTE.easingFunction} */
+  easingBounceInOut: (t) => {
+    if (t < 0.5) return Easing.easingBounceIn(t * 2) * 0.5;
+    return Easing.easingBounceOut(t * 2 - 1) * 0.5 + 0.5;
+  },
+};
+
+/**
+ * Returns a valid `easingFunction`.
+ *
+ * @param {KUTE.easingFunction | string} fn function name or constructor
+ * @returns {KUTE.easingFunction} a valid easing function
+ */
+function processEasing(fn) {
+  if (typeof fn === 'function') {
+    return fn;
+  } if (typeof Easing[fn] === 'function') {
+    return Easing[fn]; // regular Robert Penner Easing Functions
+  }
+  return Easing.linear;
+}
+
+// Tween constructor needs to know who will process easing functions
+connect.processEasing = processEasing;
+
+/**
+ * KUTE.add(Tween)
+ *
+ * @param {KUTE.Tween} tw a new tween to add
+ */
+const add = (tw) => Tweens.push(tw);
+
+/**
+ * KUTE.remove(Tween)
+ *
+ * @param {KUTE.Tween} tw a new tween to add
+ */
+const remove = (tw) => {
+  const i = Tweens.indexOf(tw);
+  if (i !== -1) Tweens.splice(i, 1);
+};
+
+/**
+ * KUTE.add(Tween)
+ *
+ * @return {KUTE.Tween[]} tw a new tween to add
+ */
+const getAll = () => Tweens;
+
+/**
+ * KUTE.removeAll()
+ */
+const removeAll = () => { Tweens.length = 0; };
+
+// all supported properties
+const supportedProperties = {};
+
+/**
+ * linkInterpolation
+ * @this {KUTE.Tween}
+ */
+function linkInterpolation() { // DON'T change
+  Object.keys(linkProperty).forEach((component) => {
+    const componentLink = linkProperty[component];
+    const componentProps = supportedProperties[component];
+
+    Object.keys(componentLink).forEach((fnObj) => {
+      if (typeof (componentLink[fnObj]) === 'function' // ATTR, colors, scroll, boxModel, borderRadius
+          && Object.keys(this.valuesEnd).some((i) => (componentProps && componentProps.includes(i))
+          || (i === 'attr' && Object.keys(this.valuesEnd[i]).some((j) => componentProps && componentProps.includes(j))))) {
+        if (!KEC[fnObj]) KEC[fnObj] = componentLink[fnObj];
+      } else {
+        Object.keys(this.valuesEnd).forEach((prop) => {
+          const propObject = this.valuesEnd[prop];
+          if (propObject instanceof Object) {
+            Object.keys(propObject).forEach((i) => {
+              if (typeof (componentLink[i]) === 'function') { // transformCSS3
+                if (!KEC[i]) KEC[i] = componentLink[i];
+              } else {
+                Object.keys(componentLink[fnObj]).forEach((j) => {
+                  if (componentLink[i] && typeof (componentLink[i][j]) === 'function') { // transformMatrix
+                    if (!KEC[j]) KEC[j] = componentLink[i][j];
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  });
+}
+
+const internals = {
+  add,
+  remove,
+  getAll,
+  removeAll,
+  stop,
+  linkInterpolation,
+};
+
+/**
+ * selector
+ *
+ * A selector utility for KUTE.js.
+ *
+ * @param {KUTE.selectorType} el target(s) or string selector
+ * @param {boolean | number} multi when true returns an array/collection of elements
+ * @returns {Element | Element[] | null}
+ */
+function selector(el, multi) {
+  try {
+    let requestedElem;
+    let itemsArray;
+    if (multi) {
+      itemsArray = el instanceof Array && el.every((x) => x instanceof Element);
+      requestedElem = el instanceof HTMLCollection || el instanceof NodeList || itemsArray
+        ? el : document.querySelectorAll(el);
+    } else {
+      requestedElem = el instanceof Element || el === window // scroll
+        ? el : document.querySelector(el);
+    }
+    return requestedElem;
+  } catch (e) {
+    throw TypeError(`KUTE.js - Element(s) not found: ${el}.`);
+  }
+}
+
+/**
+ * Animation Base Class
+ *
+ * Registers components by populating KUTE.js objects and makes sure
+ * no duplicate component / property is allowed.
+ *
+ * This class only registers the minimal amount of component information
+ * required to enable components animation, which means value processing
+ * as well as `to()` and `allTo()` methods are not supported.
+ */
+class AnimationBase {
+  /**
+   * @class
+   * @param {KUTE.baseComponent} Component
+   */
+  constructor(Component) {
+    const ComponentName = Component.component;
+    // const Objects = { defaultValues, defaultOptions, Interpolate, linkProperty }
+    const Functions = { onStart, onComplete };
+    const Category = Component.category;
+    const Property = Component.property;
+    // ESLint
+    this._ = 0;
+
+    // set supported category/property
+    supportedProperties[ComponentName] = Component.properties
+      || Component.subProperties || Component.property;
+
+    // set additional options
+    if (Component.defaultOptions) {
+      // Object.keys(Component.defaultOptions).forEach((op) => {
+      //   defaultOptions[op] = Component.defaultOptions[op];
+      // });
+      Object.assign(defaultOptions, Component.defaultOptions);
+    }
+
+    // set functions
+    if (Component.functions) {
+      Object.keys(Functions).forEach((fn) => {
+        if (fn in Component.functions) {
+          if (typeof (Component.functions[fn]) === 'function') {
+            // if (!Functions[fn][ Category||Property ]) {
+            //   Functions[fn][ Category||Property ] = Component.functions[fn];
+            // }
+            if (!Functions[fn][ComponentName]) Functions[fn][ComponentName] = {};
+            if (!Functions[fn][ComponentName][Category || Property]) {
+              Functions[fn][ComponentName][Category || Property] = Component.functions[fn];
+            }
+          } else {
+            Object.keys(Component.functions[fn]).forEach((ofn) => {
+              // if (!Functions[fn][ofn]) Functions[fn][ofn] = Component.functions[fn][ofn];
+              if (!Functions[fn][ComponentName]) Functions[fn][ComponentName] = {};
+              if (!Functions[fn][ComponentName][ofn]) {
+                Functions[fn][ComponentName][ofn] = Component.functions[fn][ofn];
+              }
+            });
+          }
+        }
+      });
+    }
+
+    // set interpolate
+    if (Component.Interpolate) {
+      Object.keys(Component.Interpolate).forEach((fni) => {
+        const compIntObj = Component.Interpolate[fni];
+        if (typeof (compIntObj) === 'function' && !interpolate[fni]) {
+          interpolate[fni] = compIntObj;
+        } else {
+          Object.keys(compIntObj).forEach((sfn) => {
+            if (typeof (compIntObj[sfn]) === 'function' && !interpolate[fni]) {
+              interpolate[fni] = compIntObj[sfn];
+            }
+          });
+        }
+      });
+
+      linkProperty[ComponentName] = Component.Interpolate;
+    }
+
+    // set component util
+    if (Component.Util) {
+      Object.keys(Component.Util).forEach((fnu) => {
+        if (!Util[fnu]) Util[fnu] = Component.Util[fnu];
+      });
+    }
+
+    return { name: ComponentName };
+  }
+}
+
+function queueStart() {
+  // fire onStart actions
+  Object.keys(onStart).forEach((obj) => {
+    if (typeof (onStart[obj]) === 'function') {
+      onStart[obj].call(this, obj); // easing functions
+    } else {
+      Object.keys(onStart[obj]).forEach((prop) => {
+        onStart[obj][prop].call(this, prop);
+      });
+    }
+  });
+
+  // add interpolations
+  linkInterpolation.call(this);
+}
+
+/**
+ * The `TweenBase` constructor creates a new `Tween` object
+ * for a single `HTMLElement` and returns it.
+ *
+ * `TweenBase` is meant to be used with pre-processed values.
+ */
+class TweenBase {
+  /**
+   * @param {Element} targetElement the target element
+   * @param {KUTE.tweenProps} startObject the start values
+   * @param {KUTE.tweenProps} endObject the end values
+   * @param {KUTE.tweenOptions} opsObject the end values
+   * @returns {TweenBase} the resulting Tween object
+   */
+  constructor(targetElement, startObject, endObject, opsObject) {
+    // element animation is applied to
+    this.element = targetElement;
+
+    /** @type {boolean} */
+    this.playing = false;
+    /** @type {number?} */
+    this._startTime = null;
+    /** @type {boolean} */
+    this._startFired = false;
+
+    // type is set via KUTE.tweenProps
+    this.valuesEnd = endObject;
+    this.valuesStart = startObject;
+
+    // OPTIONS
+    const options = opsObject || {};
+    // internal option to process inline/computed style at start instead of init
+    // used by to() method and expects object : {} / false
+    this._resetStart = options.resetStart || 0;
+    // you can only set a core easing function as default
+    /** @type {KUTE.easingOption} */
+    this._easing = typeof (options.easing) === 'function' ? options.easing : connect.processEasing(options.easing);
+    /** @type {number} */
+    this._duration = options.duration || defaultOptions.duration; // duration option | default
+    /** @type {number} */
+    this._delay = options.delay || defaultOptions.delay; // delay option | default
+
+    // set other options
+    Object.keys(options).forEach((op) => {
+      const internalOption = `_${op}`;
+      if (!(internalOption in this)) this[internalOption] = options[op];
+    });
+
+    // callbacks should not be set as undefined
+    // this._onStart = options.onStart
+    // this._onUpdate = options.onUpdate
+    // this._onStop = options.onStop
+    // this._onComplete = options.onComplete
+
+    // queue the easing
+    const easingFnName = this._easing.name;
+    if (!onStart[easingFnName]) {
+      onStart[easingFnName] = function easingFn(prop) {
+        if (!KEC[prop] && prop === this._easing.name) KEC[prop] = this._easing;
+      };
+    }
+
+    return this;
+  }
+
+  /**
+   * Starts tweening
+   * @param {number?} time the tween start time
+   * @returns {TweenBase} this instance
+   */
+  start(time) {
+    // now it's a good time to start
+    add(this);
+    this.playing = true;
+
+    this._startTime = typeof time !== 'undefined' ? time : KEC.Time();
+    this._startTime += this._delay;
+
+    if (!this._startFired) {
+      if (this._onStart) {
+        this._onStart.call(this);
+      }
+
+      queueStart.call(this);
+
+      this._startFired = true;
+    }
+
+    if (!Tick) Ticker();
+    return this;
+  }
+
+  /**
+   * Stops tweening
+   * @returns {TweenBase} this instance
+   */
+  stop() {
+    if (this.playing) {
+      remove(this);
+      this.playing = false;
+
+      if (this._onStop) {
+        this._onStop.call(this);
+      }
+      this.close();
+    }
+    return this;
+  }
+
+  /**
+   * Trigger internal completion callbacks.
+   */
+  close() {
+    // scroll|transformMatrix need this
+    Object.keys(onComplete).forEach((component) => {
+      Object.keys(onComplete[component]).forEach((toClose) => {
+        onComplete[component][toClose].call(this, toClose);
+      });
+    });
+    // when all animations are finished, stop ticking after ~3 frames
+    this._startFired = false;
+    stop.call(this);
+  }
+
+  /**
+   * Schedule another tween instance to start once this one completes.
+   * @param {KUTE.chainOption} args the tween animation start time
+   * @returns {TweenBase} this instance
+   */
+  chain(args) {
+    this._chain = [];
+    this._chain = args.length ? args : this._chain.concat(args);
+    return this;
+  }
+
+  /**
+   * Stop tweening the chained tween instances.
+   */
+  stopChainedTweens() {
+    if (this._chain && this._chain.length) this._chain.forEach((tw) => tw.stop());
+  }
+
+  /**
+   * Update the tween on each tick.
+   * @param {number} time the tick time
+   * @returns {boolean} this instance
+   */
+  update(time) {
+    const T = time !== undefined ? time : KEC.Time();
+
+    let elapsed;
+
+    if (T < this._startTime && this.playing) { return true; }
+
+    elapsed = (T - this._startTime) / this._duration;
+    elapsed = (this._duration === 0 || elapsed > 1) ? 1 : elapsed;
+
+    // calculate progress
+    const progress = this._easing(elapsed);
+
+    // render the update
+    Object.keys(this.valuesEnd).forEach((tweenProp) => {
+      KEC[tweenProp](this.element,
+        this.valuesStart[tweenProp],
+        this.valuesEnd[tweenProp],
+        progress);
+    });
+
+    // fire the updateCallback
+    if (this._onUpdate) {
+      this._onUpdate.call(this);
+    }
+
+    if (elapsed === 1) {
+      // fire the complete callback
+      if (this._onComplete) {
+        this._onComplete.call(this);
+      }
+
+      // now we're sure no animation is running
+      this.playing = false;
+
+      // stop ticking when finished
+      this.close();
+
+      // start animating chained tweens
+      if (this._chain !== undefined && this._chain.length) {
+        this._chain.map((tw) => tw.start());
+      }
+
+      return false;
+    }
+
+    return true;
+  }
+}
+
+// Update Tween Interface
+connect.tween = TweenBase;
+
+const { tween: TweenConstructor } = connect;
+
+/**
+ * The `KUTE.fromTo()` static method returns a new Tween object
+ * for a single `HTMLElement` at a given state.
+ *
+ * @param {Element} element target element
+ * @param {KUTE.tweenProps} startObject
+ * @param {KUTE.tweenProps} endObject
+ * @param {KUTE.tweenOptions} optionsObj tween options
+ * @returns {KUTE.Tween} the resulting Tween object
+ */
+function fromTo(element, startObject, endObject, optionsObj) {
+  const options = optionsObj || {};
+  return new TweenConstructor(selector(element), startObject, endObject, options);
+}
+
+/**
+ * Perspective Interpolation Function.
+ *
+ * @param {number} a start value
+ * @param {number} b end value
+ * @param {string} u unit
+ * @param {number} v progress
+ * @returns {string} the perspective function in string format
+ */
+function perspective(a, b, u, v) {
+  // eslint-disable-next-line no-bitwise
+  return `perspective(${((a + (b - a) * v) * 1000 >> 0) / 1000}${u})`;
+}
+
+/**
+ * Translate 3D Interpolation Function.
+ *
+ * @param {number[]} a start [x,y,z] position
+ * @param {number[]} b end [x,y,z] position
+ * @param {string} u unit, usually `px` degrees
+ * @param {number} v progress
+ * @returns {string} the interpolated 3D translation string
+ */
+function translate3d(a, b, u, v) {
+  const translateArray = [];
+  for (let ax = 0; ax < 3; ax += 1) {
+    translateArray[ax] = (a[ax] || b[ax]
+      // eslint-disable-next-line no-bitwise
+      ? ((a[ax] + (b[ax] - a[ax]) * v) * 1000 >> 0) / 1000 : 0) + u;
+  }
+  return `translate3d(${translateArray.join(',')})`;
+}
+
+/**
+ * 3D Rotation Interpolation Function.
+ *
+ * @param {number} a start [x,y,z] angles
+ * @param {number} b end [x,y,z] angles
+ * @param {string} u unit, usually `deg` degrees
+ * @param {number} v progress
+ * @returns {string} the interpolated 3D rotation string
+ */
+function rotate3d(a, b, u, v) {
+  let rotateStr = '';
+  // eslint-disable-next-line no-bitwise
+  rotateStr += a[0] || b[0] ? `rotateX(${((a[0] + (b[0] - a[0]) * v) * 1000 >> 0) / 1000}${u})` : '';
+  // eslint-disable-next-line no-bitwise
+  rotateStr += a[1] || b[1] ? `rotateY(${((a[1] + (b[1] - a[1]) * v) * 1000 >> 0) / 1000}${u})` : '';
+  // eslint-disable-next-line no-bitwise
+  rotateStr += a[2] || b[2] ? `rotateZ(${((a[2] + (b[2] - a[2]) * v) * 1000 >> 0) / 1000}${u})` : '';
+  return rotateStr;
+}
+
+/**
+ * Translate 2D Interpolation Function.
+ *
+ * @param {number[]} a start [x,y] position
+ * @param {number[]} b end [x,y] position
+ * @param {string} u unit, usually `px` degrees
+ * @param {number} v progress
+ * @returns {string} the interpolated 2D translation string
+ */
+function translate(a, b, u, v) {
+  const translateArray = [];
+  // eslint-disable-next-line no-bitwise
+  translateArray[0] = (a[0] === b[0] ? b[0] : ((a[0] + (b[0] - a[0]) * v) * 1000 >> 0) / 1000) + u;
+  // eslint-disable-next-line no-bitwise
+  translateArray[1] = a[1] || b[1] ? ((a[1] === b[1] ? b[1] : ((a[1] + (b[1] - a[1]) * v) * 1000 >> 0) / 1000) + u) : '0';
+  return `translate(${translateArray.join(',')})`;
+}
+
+/**
+ * 2D Rotation Interpolation Function.
+ *
+ * @param {number} a start angle
+ * @param {number} b end angle
+ * @param {string} u unit, usually `deg` degrees
+ * @param {number} v progress
+ * @returns {string} the interpolated rotation
+ */
+function rotate(a, b, u, v) {
+  // eslint-disable-next-line no-bitwise
+  return `rotate(${((a + (b - a) * v) * 1000 >> 0) / 1000}${u})`;
+}
+
+/**
+ * Scale Interpolation Function.
+ *
+ * @param {number} a start scale
+ * @param {number} b end scale
+ * @param {number} v progress
+ * @returns {string} the interpolated scale
+ */
+function scale(a, b, v) {
+  // eslint-disable-next-line no-bitwise
+  return `scale(${((a + (b - a) * v) * 1000 >> 0) / 1000})`;
+}
+
+/**
+ * Skew Interpolation Function.
+ *
+ * @param {number} a start {x,y} angles
+ * @param {number} b end {x,y} angles
+ * @param {string} u unit, usually `deg` degrees
+ * @param {number} v progress
+ * @returns {string} the interpolated string value of skew(s)
+ */
+function skew(a, b, u, v) {
+  const skewArray = [];
+  // eslint-disable-next-line no-bitwise
+  skewArray[0] = (a[0] === b[0] ? b[0] : ((a[0] + (b[0] - a[0]) * v) * 1000 >> 0) / 1000) + u;
+  // eslint-disable-next-line no-bitwise
+  skewArray[1] = a[1] || b[1] ? ((a[1] === b[1] ? b[1] : ((a[1] + (b[1] - a[1]) * v) * 1000 >> 0) / 1000) + u) : '0';
+  return `skew(${skewArray.join(',')})`;
+}
+
+// Component Functions
+/**
+ * Sets the property update function.
+ * * same to svgTransform, htmlAttributes
+ * @param {string} tweenProp the property name
+ */
+function onStartTransform(tweenProp) {
+  if (!KEC[tweenProp] && this.valuesEnd[tweenProp]) {
+    KEC[tweenProp] = (elem, a, b, v) => {
+      // eslint-disable-next-line no-param-reassign
+      elem.style[tweenProp] = (a.perspective || b.perspective ? perspective(a.perspective, b.perspective, 'px', v) : '') // one side might be 0
+        + (a.translate3d ? translate3d(a.translate3d, b.translate3d, 'px', v) : '') // array [x,y,z]
+        + (a.rotate3d ? rotate3d(a.rotate3d, b.rotate3d, 'deg', v) : '') // array [x,y,z]
+        + (a.skew ? skew(a.skew, b.skew, 'deg', v) : '') // array [x,y]
+        + (a.scale || b.scale ? scale(a.scale, b.scale, v) : ''); // one side might be 0
+    };
+  }
+}
+
+// Base Component
+const TransformFunctionsBase = {
+  component: 'baseTransform',
+  property: 'transform',
+  functions: { onStart: onStartTransform },
+  Interpolate: {
+    perspective,
+    translate3d,
+    rotate3d,
+    translate,
+    rotate,
+    scale,
+    skew,
+  },
+};
+
+/**
+ * Numbers Interpolation Function.
+ *
+ * @param {number} a start value
+ * @param {number} b end value
+ * @param {number} v progress
+ * @returns {number} the interpolated number
+ */
+function numbers(a, b, v) {
+  const A = +a;
+  const B = b - a;
+  // a = +a; b -= a;
+  return A + B * v;
+}
+
+/* opacityProperty = {
+  property: 'opacity',
+  defaultValue: 1,
+  interpolators: {numbers},
+  functions = { prepareStart, prepareProperty, onStart }
+} */
+
+// Component Functions
+/**
+ * Sets the property update function.
+ * @param {string} tweenProp the property name
+ */
+function onStartOpacity(tweenProp/* , value */) {
+  // opacity could be 0 sometimes, we need to check regardless
+  if (tweenProp in this.valuesEnd && !KEC[tweenProp]) {
+    KEC[tweenProp] = (elem, a, b, v) => {
+      /* eslint-disable */
+      elem.style[tweenProp] = ((numbers(a, b, v) * 1000) >> 0) / 1000;
+      /* eslint-enable */
+    };
+  }
+}
+
+// Base Component
+const OpacityPropertyBase = {
+  component: 'baseOpacity',
+  property: 'opacity',
+  // defaultValue: 1,
+  Interpolate: { numbers },
+  functions: { onStart: onStartOpacity },
+};
+
+// Component Functions
+/**
+ * Sets the update function for the property.
+ * @param {string} tweenProp the property name
+ */
+function boxModelOnStart(tweenProp) {
+  if (tweenProp in this.valuesEnd && !KEC[tweenProp]) {
+    KEC[tweenProp] = (elem, a, b, v) => {
+      /* eslint-disable no-param-reassign -- impossible to satisfy */
+      /* eslint-disable no-bitwise -- impossible to satisfy */
+      elem.style[tweenProp] = `${v > 0.99 || v < 0.01
+        ? ((numbers(a, b, v) * 10) >> 0) / 10
+        : (numbers(a, b, v)) >> 0}px`;
+      /* eslint-enable no-bitwise */
+      /* eslint-enable no-param-reassign */
+    };
+  }
+}
+
+// Component Base Props
+const baseBoxProps = ['top', 'left', 'width', 'height'];
+const baseBoxOnStart = {};
+baseBoxProps.forEach((x) => { baseBoxOnStart[x] = boxModelOnStart; });
+
+// Component Base
+const BoxModelBase = {
+  component: 'baseBoxModel',
+  category: 'boxModel',
+  properties: baseBoxProps,
+  Interpolate: { numbers },
+  functions: { onStart: baseBoxOnStart },
+};
+
+/**
+ * Utility to check if target is typeof Element
+ * or find one that matches a selector.
+ *
+ * @param {Element | string} selector the input selector or target element
+ * @param {Element | null} parent optional Element to look into
+ * @return {Element | null} the Element or result of the querySelector
+ */
 function queryElement(selector, parent) {
   const lookUp = parent && parent instanceof Element ? parent : document;
   return selector instanceof Element ? selector : lookUp.querySelector(selector);
 }
 
 const mobileBrands = /iPhone|iPad|iPod|Android/i;
-const isMobile = navigator.userAgentData
-  ? navigator.userAgentData.brands.some((x) => mobileBrands.test(x.brand))
-  : mobileBrands.test(navigator.userAgent);
+const userAgentStr = 'userAgentData';
 
-const supportTouch = ('ontouchstart' in window || navigator.msMaxTouchPoints) || false;
+let isMobileCheck = false;
 
+if (navigator[userAgentStr]) {
+  isMobileCheck = navigator[userAgentStr].brands.some((x) => mobileBrands.test(x.brand));
+} else {
+  isMobileCheck = mobileBrands.test(navigator.userAgent);
+}
+
+/**
+ * A global namespace for mobile detection.
+ * @type {boolean}
+ */
+const isMobile = isMobileCheck;
+
+/**
+ * A global namespace for touch events support.
+ * @type {boolean}
+ */
+const supportTouch = 'ontouchstart' in window || 'msMaxTouchPoints' in navigator;
+
+/**
+ * A global namespace for mouse hover events.
+ * @type {[string, string]}
+ */
 const mouseHoverEvents = ('onmouseleave' in document) ? ['mouseenter', 'mouseleave'] : ['mouseover', 'mouseout'];
 
+/**
+ * A global namespace for 'addEventListener' string.
+ * @type {string}
+ */
 const addEventListener = 'addEventListener';
 
+/**
+ * A global namespace for 'removeEventListener' string.
+ * @type {string}
+ */
 const removeEventListener = 'removeEventListener';
 
+/**
+ * A global namespace for passive events support.
+ * @type {boolean}
+ */
 const supportPassive = (() => {
   let result = false;
   try {
@@ -42,33 +1050,58 @@ const supportPassive = (() => {
 
 // general event options
 
-var passiveHandler = supportPassive ? { passive: true } : false;
+/**
+ * A global namespace for most scroll event listeners.
+ */
+const passiveHandler = supportPassive ? { passive: true } : false;
 
+/**
+ * The raw value or a given component option.
+ *
+ * @typedef {string | Element | Function | number | boolean | null} niceValue
+ */
+
+/**
+ * Utility to normalize component options
+ *
+ * @param {any} value the input value
+ * @return {niceValue} the normalized value
+ */
 function normalizeValue(value) {
-  if (value === 'true') {
+  if (value === 'true') { // boolean
     return true;
   }
 
-  if (value === 'false') {
+  if (value === 'false') { // boolean
     return false;
   }
 
-  if (!Number.isNaN(+value)) {
+  if (!Number.isNaN(+value)) { // number
     return +value;
   }
 
-  if (value === '' || value === 'null') {
+  if (value === '' || value === 'null') { // null
     return null;
   }
 
-  // string / function / Element / Object
+  // string / function / Element / object
   return value;
 }
 
+/**
+ * Utility to normalize component options
+ *
+ * @param {Element} element target
+ * @param {object} defaultOps component default options
+ * @param {object} inputOps component instance options
+ * @param {string} ns component namespace
+ * @return {object} normalized component options object
+ */
 function normalizeOptions(element, defaultOps, inputOps, ns) {
+  // @ts-ignore
+  const data = { ...element.dataset };
   const normalOps = {};
   const dataOps = {};
-  const data = { ...element.dataset };
 
   Object.keys(data)
     .forEach((k) => {
@@ -98,9 +1131,22 @@ function normalizeOptions(element, defaultOps, inputOps, ns) {
   return normalOps;
 }
 
-var spicrConnect = {};
+/**
+ * @type {object} spicrConnect
+ * @property {function} carousel
+ * @property {function} layer
+ * @property {function} reset
+ * @property {function} fromTo
+ */
+const spicrConnect = {};
 
-// process array from data string
+/**
+ * Returns proper values from string attribute values.
+ * @param {Element} elem target layer
+ * @param {string} attributeString attribute value
+ * @param {number | boolean} isOrigin attribute is transform-origin
+ * @returns {Spicr.layerData} layer data ready to tween
+ */
 function processLayerData(elem, attributeString, isOrigin) {
   const attributesArray = attributeString.trim().split(/[,|;]/);
   const obj = {};
@@ -132,6 +1178,11 @@ const defaultSpicrOptions = {
   pause: 'hover',
 };
 
+/**
+ * Returns an object with attribute values specific to Spicr layer.
+ * @param {Element} elem target
+ * @returns {Object.<string, (number | string)>}
+ */
 function getAttributes(elem) {
   const obj = {};
   const attr = ['translate', 'rotate', 'scale',
@@ -144,8 +1195,13 @@ function getAttributes(elem) {
   return obj;
 }
 
-function getLayerData(elem) {
-  const attr = getAttributes(elem);
+/**
+ * Returns layer animation settings for DATA API attributes.
+ * @param {Element} layer target
+ * @returns {Spicr.layerData} values to create a tween object
+ */
+function getLayerData(layer) {
+  const attr = getAttributes(layer);
   const {
     translate, rotate, origin, opacity, easing,
   } = attr;
@@ -156,9 +1212,9 @@ function getLayerData(elem) {
   delay = +delay;
 
   return {
-    translate: translate ? processLayerData(elem, translate) : '',
-    rotate: rotate ? processLayerData(elem, rotate) : '',
-    origin: origin ? processLayerData(elem, origin, 1) : '',
+    translate: translate ? processLayerData(layer, translate) : '',
+    rotate: rotate ? processLayerData(layer, rotate) : '',
+    origin: origin ? processLayerData(layer, origin, 1) : '',
     scale: !Number.isNaN(scale) ? scale : '',
     opacity: opacity !== 'false' ? 1 : 0,
     duration: !Number.isNaN(duration) ? duration : defaultSpicrOptions.duration,
@@ -167,11 +1223,24 @@ function getLayerData(elem) {
   };
 }
 
+/**
+ * Returns an `Array` with all layers from a slide / Spicr element.
+ * @param {Element} elem target
+ * @returns {Element[]} an `Array` of Spicr layers
+ */
 function getLayers(elem) {
   return Array.from(elem.getElementsByClassName('spicr-layer'));
 }
 
-// function to animate slider item background
+/**
+ * Returns an `Array` or Tween objects for all layers
+ * of the current active slider item and / or the next active item.
+ *
+ * @param {Element[]} slides spicr items
+ * @param {number} idx current active index
+ * @param {number} next next active index
+ * @returns {KUTE.TweenBase[]} an `Array` of tween objects
+ */
 function animateSliderLayers(slides, idx, next) {
   const activeItem = slides[idx] || slides[0];
   const allLayers = getLayers(activeItem);
@@ -195,6 +1264,11 @@ function animateSliderLayers(slides, idx, next) {
 
 // SPICR DEFINITION
 // ================
+/**
+ * Returns a new Spicr instance
+ * @param {Element | string} el target element
+ * @param {Spicr.spicrOptions} ops instance options
+ */
 function Spicr(el, ops) {
   const element = queryElement(el);
 
@@ -378,10 +1452,16 @@ function Spicr(el, ops) {
   }
 
   // public methods
+  /**
+   * Returns the index of the curent active item.
+   */
   this.getActiveIndex = () => {
     const activeIndex = element.getElementsByClassName('item active')[0];
     return Array.from(slides).indexOf(activeIndex);
   };
+  /**
+   * Cycles through items automatically in a pre-configured time interval.
+   */
   this.cycle = () => {
     clearInterval(timer);
     timer = setTimeout(() => {
@@ -389,6 +1469,10 @@ function Spicr(el, ops) {
       self.slideTo(index);
     }, intervalOption);
   };
+  /**
+   * Slides to a certain Spicr item.
+   * @param {number} nextIdx the index of the next slide.
+   */
   this.slideTo = (nextIdx) => {
     let nextActive = nextIdx;
     const activeIndex = this.getActiveIndex();
@@ -471,6 +1555,9 @@ function Spicr(el, ops) {
       }
     }, 1);
   };
+  /**
+   * Removes Spicr from target element
+   */
   this.dispose = () => {
     if (isAnimating) tws.forEach((x) => x.stop());
     spicrConnect.reset(element);
@@ -495,750 +1582,16 @@ function Spicr(el, ops) {
   }
 }
 
-var KUTE = {};
-
-var Tweens = [];
-
-let globalObject;
-
-if (typeof global !== 'undefined') globalObject = global;
-else if (typeof window !== 'undefined') globalObject = window.self;
-else globalObject = {};
-
-var globalObject$1 = globalObject;
-
-// KUTE.js INTERPOLATE FUNCTIONS
-// =============================
-var Interpolate = {};
-
-// schedule property specific function on animation start
-// link property update function to KUTE.js execution context
-var onStart = {};
-
-// Include a performance.now polyfill.
-// source https://github.com/tweenjs/tween.js/blob/master/src/Now.ts
-let now;
-
-// In node.js, use process.hrtime.
-// eslint-disable-next-line
-// @ts-ignore
-if (typeof self === 'undefined' && typeof process !== 'undefined' && process.hrtime) {
-  now = () => {
-    // eslint-disable-next-line
-		// @ts-ignore
-    const time = process.hrtime();
-
-    // Convert [seconds, nanoseconds] to milliseconds.
-    return time[0] * 1000 + time[1] / 1000000;
-  };
-} else if (typeof self !== 'undefined' && self.performance !== undefined && self.performance.now !== undefined) {
-  // In a browser, use self.performance.now if it is available.
-  // This must be bound, because directly assigning this function
-  // leads to an invocation exception in Chrome.
-  now = self.performance.now.bind(self.performance);
-} else if (typeof Date !== 'undefined' && Date.now) {
-  // Use Date.now if it is available.
-  now = Date.now;
-} else {
-  // Otherwise, use 'new Date().getTime()'.
-  now = () => new Date().getTime();
-}
-
-var now$1 = now;
-
-const Time = {};
-Time.now = now$1;
-// const that = window.self || window || {};
-// Time.now = that.performance.now.bind(that.performance);
-
-let Tick = 0;
-
-const Ticker = (time) => {
-  let i = 0;
-  while (i < Tweens.length) {
-    if (Tweens[i].update(time)) {
-      i += 1;
-    } else {
-      Tweens.splice(i, 1);
-    }
-  }
-  Tick = requestAnimationFrame(Ticker);
-};
-
-// stop requesting animation frame
-function stop() {
-  setTimeout(() => { // re-added for #81
-    if (!Tweens.length && Tick) {
-      cancelAnimationFrame(Tick);
-      Tick = null;
-      Object.keys(onStart).forEach((obj) => {
-        if (typeof (onStart[obj]) === 'function') {
-          if (KUTE[obj]) delete KUTE[obj];
-        } else {
-          Object.keys(onStart[obj]).forEach((prop) => {
-            if (KUTE[prop]) delete KUTE[prop];
-          });
-        }
-      });
-
-      Object.keys(Interpolate).forEach((i) => {
-        if (KUTE[i]) delete KUTE[i];
-      });
-    }
-  }, 64);
-}
-
-// KUTE.js render update functions
-// ===============================
-const Render = {
-  Tick, Ticker, Tweens, Time,
-};
-Object.keys(Render).forEach((blob) => {
-  if (!KUTE[blob]) {
-    KUTE[blob] = blob === 'Time' ? Time.now : Render[blob];
-  }
-});
-
-globalObject$1._KUTE = KUTE;
-
-const defaultOptions = {
-  duration: 700,
-  delay: 0,
-  easing: 'linear',
-};
-
-// link properties to interpolate functions
-var linkProperty = {};
-
-// schedule property specific function on animation complete
-var onComplete = {};
-
-var Objects = {
-  defaultOptions,
-  linkProperty,
-  onStart,
-  onComplete,
-};
-
-// util - a general object for utils like rgbToHex, processEasing
-var Util = {};
-
-var connect = {};
-
-// Robert Penner's Easing Functions
-// updated for ESLint
-const Easing = {
-  linear: (t) => t,
-  easingSinusoidalIn: (t) => -Math.cos((t * Math.PI) / 2) + 1,
-  easingSinusoidalOut: (t) => Math.sin((t * Math.PI) / 2),
-  easingSinusoidalInOut: (t) => -0.5 * (Math.cos(Math.PI * t) - 1),
-  easingQuadraticIn: (t) => t * t,
-  easingQuadraticOut: (t) => t * (2 - t),
-  easingQuadraticInOut: (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
-  easingCubicIn: (t) => t * t * t,
-  easingCubicOut: (t0) => { const t = t0 - 1; return t * t * t + 1; },
-  easingCubicInOut: (t) => (t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1),
-  easingQuarticIn: (t) => t * t * t * t,
-  easingQuarticOut: (t0) => { const t = t0 - 1; return 1 - t * t * t * t; },
-  easingQuarticInOut: (t0) => {
-    let t = t0;
-    if (t < 0.5) return 8 * t * t * t * t;
-    t -= 1; return 1 - 8 * t * t * t * t;
-  },
-  easingQuinticIn: (t) => t * t * t * t * t,
-  easingQuinticOut: (t0) => { const t = t0 - 1; return 1 + t * t * t * t * t; },
-  easingQuinticInOut: (t0) => {
-    let t = t0;
-    if (t < 0.5) return 16 * t * t * t * t * t;
-    t -= 1; return 1 + 16 * t * t * t * t * t;
-  },
-  easingCircularIn: (t) => -(Math.sqrt(1 - (t * t)) - 1),
-  easingCircularOut: (t0) => { const t = t0 - 1; return Math.sqrt(1 - t * t); },
-  easingCircularInOut: (t0) => {
-    let t = t0 * 2;
-    if (t < 1) return -0.5 * (Math.sqrt(1 - t * t) - 1);
-    t -= 2; return 0.5 * (Math.sqrt(1 - t * t) + 1);
-  },
-  easingExponentialIn: (t) => 2 ** (10 * (t - 1)) - 0.001,
-  easingExponentialOut: (t) => 1 - 2 ** (-10 * t),
-  easingExponentialInOut: (t0) => {
-    const t = t0 * 2;
-    if (t < 1) return 0.5 * (2 ** (10 * (t - 1)));
-    return 0.5 * (2 - 2 ** (-10 * (t - 1)));
-  },
-  easingBackIn: (t) => { const s = 1.70158; return t * t * ((s + 1) * t - s); },
-  easingBackOut: (t0) => {
-    const s = 1.70158;
-    const t = t0 - 1;
-    return t * t * ((s + 1) * t + s) + 1;
-  },
-  easingBackInOut: (t0) => {
-    const s = 1.70158 * 1.525;
-    let t = t0 * 2;
-    if (t < 1) return 0.5 * (t * t * ((s + 1) * t - s));
-    t -= 2; return 0.5 * (t * t * ((s + 1) * t + s) + 2);
-  },
-  easingElasticIn: (t0) => {
-    let s;
-    let k1 = 0.1;
-    const k2 = 0.4;
-    let t = t0;
-    if (t === 0) return 0;
-    if (t === 1) return 1;
-    if (!k1 || k1 < 1) {
-      k1 = 1; s = k2 / 4;
-    } else {
-      s = ((k2 * Math.asin(1 / k1)) / Math.PI) * 2;
-    }
-    t -= 1;
-    return -(k1 * (2 ** (10 * t)) * Math.sin(((t - s) * Math.PI * 2) / k2));
-  },
-  easingElasticOut: (t) => {
-    let s;
-    let k1 = 0.1;
-    const k2 = 0.4;
-    if (t === 0) return 0;
-    if (t === 1) return 1;
-    if (!k1 || k1 < 1) {
-      k1 = 1;
-      s = k2 / 4;
-    } else {
-      s = ((k2 * Math.asin(1 / k1)) / Math.PI) * 2;
-    }
-    return k1 * (2 ** (-10 * t)) * Math.sin(((t - s) * Math.PI * 2) / k2) + 1;
-  },
-  easingElasticInOut: (t0) => {
-    let t = t0;
-    let s;
-    let k1 = 0.1;
-    const k2 = 0.4;
-    if (t === 0) return 0;
-    if (t === 1) return 1;
-    if (!k1 || k1 < 1) {
-      k1 = 1; s = k2 / 4;
-    } else {
-      s = k2 * (Math.asin(1 / k1) / Math.PI) * 2;
-    }
-    t *= 2;
-    if (t < 1) {
-      return -0.5 * (k1 * (2 ** (10 * (t - 1)))
-        * Math.sin(((t - 1 - s) * Math.PI * 2) / k2));
-    }
-    t -= 1;
-    return k1 * (2 ** (-10 * t)) * Math.sin(((t - s) * Math.PI * 2) / k2) * 0.5 + 1;
-  },
-  easingBounceIn: (t) => 1 - Easing.easingBounceOut(1 - t),
-  easingBounceOut: (t0) => {
-    let t = t0;
-    if (t < (1 / 2.75)) { return 7.5625 * t * t; }
-    if (t < (2 / 2.75)) { t -= (1.5 / 2.75); return 7.5625 * t * t + 0.75; }
-    if (t < (2.5 / 2.75)) { t -= (2.25 / 2.75); return 7.5625 * t * t + 0.9375; }
-    t -= (2.625 / 2.75);
-    return 7.5625 * t * t + 0.984375;
-  },
-  easingBounceInOut: (t) => {
-    if (t < 0.5) return Easing.easingBounceIn(t * 2) * 0.5;
-    return Easing.easingBounceOut(t * 2 - 1) * 0.5 + 0.5;
-  },
-};
-
-function processEasing(fn) {
-  if (typeof fn === 'function') {
-    return fn;
-  } if (typeof Easing[fn] === 'function') {
-    return Easing[fn]; // regular Robert Penner Easing Functions
-  }
-  return Easing.linear;
-}
-
-// Tween constructor needs to know who will process easing functions
-connect.processEasing = processEasing;
-
-var add = (tw) => Tweens.push(tw);
-
-var remove = (tw) => {
-  const i = Tweens.indexOf(tw);
-  if (i !== -1) Tweens.splice(i, 1);
-};
-
-var getAll = () => Tweens;
-
-var removeAll = () => { Tweens.length = 0; };
-
-var supportedProperties = {};
-
-function linkInterpolation() { // DON'T change
-  Object.keys(linkProperty).forEach((component) => {
-    const componentLink = linkProperty[component];
-    const componentProps = supportedProperties[component];
-
-    Object.keys(componentLink).forEach((fnObj) => {
-      if (typeof (componentLink[fnObj]) === 'function' // ATTR, colors, scroll, boxModel, borderRadius
-          && Object.keys(this.valuesEnd).some((i) => (componentProps && componentProps.includes(i))
-          || (i === 'attr' && Object.keys(this.valuesEnd[i]).some((j) => componentProps && componentProps.includes(j))))) {
-        if (!KUTE[fnObj]) KUTE[fnObj] = componentLink[fnObj];
-      } else {
-        Object.keys(this.valuesEnd).forEach((prop) => {
-          const propObject = this.valuesEnd[prop];
-          if (propObject instanceof Object) {
-            Object.keys(propObject).forEach((i) => {
-              if (typeof (componentLink[i]) === 'function') { // transformCSS3
-                if (!KUTE[i]) KUTE[i] = componentLink[i];
-              } else {
-                Object.keys(componentLink[fnObj]).forEach((j) => {
-                  if (componentLink[i] && typeof (componentLink[i][j]) === 'function') { // transformMatrix
-                    if (!KUTE[j]) KUTE[j] = componentLink[i][j];
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    });
-  });
-}
-
-var Internals = {
-  add,
-  remove,
-  getAll,
-  removeAll,
-  stop,
-  linkInterpolation,
-};
-
-// a public selector utility
-function selector(el, multi) {
-  try {
-    let requestedElem;
-    let itemsArray;
-    if (multi) {
-      itemsArray = el instanceof Array && el.every((x) => x instanceof Element);
-      requestedElem = el instanceof HTMLCollection || el instanceof NodeList || itemsArray
-        ? el : document.querySelectorAll(el);
-    } else {
-      requestedElem = el instanceof Element || el === window // scroll
-        ? el : document.querySelector(el);
-    }
-    return requestedElem;
-  } catch (e) {
-    throw TypeError(`KUTE.js - Element(s) not found: ${el}.`);
-  }
-}
-
-// Animation class
-class AnimationBase {
-  constructor(Component) {
-    return this.setComponent(Component);
-  }
-
-  setComponent(Component) {
-    const ComponentName = Component.component;
-    // const Objects = { defaultValues, defaultOptions, Interpolate, linkProperty }
-    const Functions = { onStart, onComplete };
-    const Category = Component.category;
-    const Property = Component.property;
-    // ESLint
-    this._ = 0;
-
-    // set supported category/property
-    supportedProperties[ComponentName] = Component.properties
-      || Component.subProperties || Component.property;
-
-    // set additional options
-    if (Component.defaultOptions) {
-      Object.keys(Component.defaultOptions).forEach((op) => {
-        defaultOptions[op] = Component.defaultOptions[op];
-      });
-    }
-
-    // set functions
-    if (Component.functions) {
-      Object.keys(Functions).forEach((fn) => {
-        if (fn in Component.functions) {
-          if (typeof (Component.functions[fn]) === 'function') {
-            // if (!Functions[fn][ Category||Property ]) {
-            //   Functions[fn][ Category||Property ] = Component.functions[fn];
-            // }
-            if (!Functions[fn][ComponentName]) Functions[fn][ComponentName] = {};
-            if (!Functions[fn][ComponentName][Category || Property]) {
-              Functions[fn][ComponentName][Category || Property] = Component.functions[fn];
-            }
-          } else {
-            Object.keys(Component.functions[fn]).forEach((ofn) => {
-              // if (!Functions[fn][ofn]) Functions[fn][ofn] = Component.functions[fn][ofn];
-              if (!Functions[fn][ComponentName]) Functions[fn][ComponentName] = {};
-              if (!Functions[fn][ComponentName][ofn]) {
-                Functions[fn][ComponentName][ofn] = Component.functions[fn][ofn];
-              }
-            });
-          }
-        }
-      });
-    }
-
-    // set interpolate
-    if (Component.Interpolate) {
-      Object.keys(Component.Interpolate).forEach((fni) => {
-        const compIntObj = Component.Interpolate[fni];
-        if (typeof (compIntObj) === 'function' && !Interpolate[fni]) {
-          Interpolate[fni] = compIntObj;
-        } else {
-          Object.keys(compIntObj).forEach((sfn) => {
-            if (typeof (compIntObj[sfn]) === 'function' && !Interpolate[fni]) {
-              Interpolate[fni] = compIntObj[sfn];
-            }
-          });
-        }
-      });
-
-      linkProperty[ComponentName] = Component.Interpolate;
-    }
-
-    // set component util
-    if (Component.Util) {
-      Object.keys(Component.Util).forEach((fnu) => {
-        if (!Util[fnu]) Util[fnu] = Component.Util[fnu];
-      });
-    }
-
-    return { name: ComponentName };
-  }
-}
-
-function queueStart() {
-  // fire onStart actions
-  Object.keys(onStart).forEach((obj) => {
-    if (typeof (onStart[obj]) === 'function') {
-      onStart[obj].call(this, obj); // easing functions
-    } else {
-      Object.keys(onStart[obj]).forEach((prop) => {
-        onStart[obj][prop].call(this, prop);
-      });
-    }
-  });
-
-  // add interpolations
-  linkInterpolation.call(this);
-}
-
-// single Tween object construct
-// TweenBase is meant to be use for pre-processed values
-class TweenBase {
-  constructor(targetElement, startObject, endObject, opsObject) {
-    // element animation is applied to
-    this.element = targetElement;
-
-    this.playing = false;
-
-    this._startTime = null;
-    this._startFired = false;
-
-    this.valuesEnd = endObject; // valuesEnd
-    this.valuesStart = startObject; // valuesStart
-
-    // OPTIONS
-    const options = opsObject || {};
-    // internal option to process inline/computed style at start instead of init
-    // used by to() method and expects object : {} / false
-    this._resetStart = options.resetStart || 0;
-    // you can only set a core easing function as default
-    this._easing = typeof (options.easing) === 'function' ? options.easing : connect.processEasing(options.easing);
-    this._duration = options.duration || defaultOptions.duration; // duration option | default
-    this._delay = options.delay || defaultOptions.delay; // delay option | default
-
-    // set other options
-    Object.keys(options).forEach((op) => {
-      const internalOption = `_${op}`;
-      if (!(internalOption in this)) this[internalOption] = options[op];
-    });
-
-    // callbacks should not be set as undefined
-    // this._onStart = options.onStart
-    // this._onUpdate = options.onUpdate
-    // this._onStop = options.onStop
-    // this._onComplete = options.onComplete
-
-    // queue the easing
-    const easingFnName = this._easing.name;
-    if (!onStart[easingFnName]) {
-      onStart[easingFnName] = function easingFn(prop) {
-        if (!KUTE[prop] && prop === this._easing.name) KUTE[prop] = this._easing;
-      };
-    }
-
-    return this;
-  }
-
-  // tween prototype
-  // queue tween object to main frame update
-  // move functions that use the ticker outside the prototype to be in the same scope with it
-  start(time) {
-    // now it's a good time to start
-    add(this);
-    this.playing = true;
-
-    this._startTime = typeof time !== 'undefined' ? time : KUTE.Time();
-    this._startTime += this._delay;
-
-    if (!this._startFired) {
-      if (this._onStart) {
-        this._onStart.call(this);
-      }
-
-      queueStart.call(this);
-
-      this._startFired = true;
-    }
-
-    if (!Tick) Ticker();
-    return this;
-  }
-
-  stop() {
-    if (this.playing) {
-      remove(this);
-      this.playing = false;
-
-      if (this._onStop) {
-        this._onStop.call(this);
-      }
-      this.close();
-    }
-    return this;
-  }
-
-  close() {
-    // scroll|transformMatrix need this
-    Object.keys(onComplete).forEach((component) => {
-      Object.keys(onComplete[component]).forEach((toClose) => {
-        onComplete[component][toClose].call(this, toClose);
-      });
-    });
-    // when all animations are finished, stop ticking after ~3 frames
-    this._startFired = false;
-    stop.call(this);
-  }
-
-  chain(args) {
-    this._chain = [];
-    this._chain = args.length ? args : this._chain.concat(args);
-    return this;
-  }
-
-  stopChainedTweens() {
-    if (this._chain && this._chain.length) this._chain.forEach((tw) => tw.stop());
-  }
-
-  update(time) {
-    const T = time !== undefined ? time : KUTE.Time();
-
-    let elapsed;
-
-    if (T < this._startTime && this.playing) { return true; }
-
-    elapsed = (T - this._startTime) / this._duration;
-    elapsed = (this._duration === 0 || elapsed > 1) ? 1 : elapsed;
-
-    // calculate progress
-    const progress = this._easing(elapsed);
-
-    // render the update
-    Object.keys(this.valuesEnd).forEach((tweenProp) => {
-      KUTE[tweenProp](this.element,
-        this.valuesStart[tweenProp],
-        this.valuesEnd[tweenProp],
-        progress);
-    });
-
-    // fire the updateCallback
-    if (this._onUpdate) {
-      this._onUpdate.call(this);
-    }
-
-    if (elapsed === 1) {
-      // fire the complete callback
-      if (this._onComplete) {
-        this._onComplete.call(this);
-      }
-
-      // now we're sure no animation is running
-      this.playing = false;
-
-      // stop ticking when finished
-      this.close();
-
-      // start animating chained tweens
-      if (this._chain !== undefined && this._chain.length) {
-        this._chain.map((tw) => tw.start());
-      }
-
-      return false;
-    }
-
-    return true;
-  }
-}
-
-// Update Tween Interface
-connect.tween = TweenBase;
-
-function fromTo(element, startObject, endObject, optionsObj) {
-  const options = optionsObj || {};
-  const TweenConstructor = connect.tween;
-  return new TweenConstructor(selector(element), startObject, endObject, options);
-}
-
-function perspective(a, b, u, v) {
-  return `perspective(${((a + (b - a) * v) * 1000 >> 0) / 1000}${u})`;
-}
-
-function translate3d(a, b, u, v) {
-  const translateArray = [];
-  for (let ax = 0; ax < 3; ax += 1) {
-    translateArray[ax] = (a[ax] || b[ax]
-      ? ((a[ax] + (b[ax] - a[ax]) * v) * 1000 >> 0) / 1000 : 0) + u;
-  }
-  return `translate3d(${translateArray.join(',')})`;
-}
-
-function rotate3d(a, b, u, v) {
-  let rotateStr = '';
-  rotateStr += a[0] || b[0] ? `rotateX(${((a[0] + (b[0] - a[0]) * v) * 1000 >> 0) / 1000}${u})` : '';
-  rotateStr += a[1] || b[1] ? `rotateY(${((a[1] + (b[1] - a[1]) * v) * 1000 >> 0) / 1000}${u})` : '';
-  rotateStr += a[2] || b[2] ? `rotateZ(${((a[2] + (b[2] - a[2]) * v) * 1000 >> 0) / 1000}${u})` : '';
-  return rotateStr;
-}
-
-function translate(a, b, u, v) {
-  const translateArray = [];
-  translateArray[0] = (a[0] === b[0] ? b[0] : ((a[0] + (b[0] - a[0]) * v) * 1000 >> 0) / 1000) + u;
-  translateArray[1] = a[1] || b[1] ? ((a[1] === b[1] ? b[1] : ((a[1] + (b[1] - a[1]) * v) * 1000 >> 0) / 1000) + u) : '0';
-  return `translate(${translateArray.join(',')})`;
-}
-
-function rotate(a, b, u, v) {
-  return `rotate(${((a + (b - a) * v) * 1000 >> 0) / 1000}${u})`;
-}
-
-function scale(a, b, v) {
-  return `scale(${((a + (b - a) * v) * 1000 >> 0) / 1000})`;
-}
-
-function skew(a, b, u, v) {
-  const skewArray = [];
-  skewArray[0] = (a[0] === b[0] ? b[0] : ((a[0] + (b[0] - a[0]) * v) * 1000 >> 0) / 1000) + u;
-  skewArray[1] = a[1] || b[1] ? ((a[1] === b[1] ? b[1] : ((a[1] + (b[1] - a[1]) * v) * 1000 >> 0) / 1000) + u) : '0';
-  return `skew(${skewArray.join(',')})`;
-}
-
-/* transformFunctions = {
-  property: 'transform',
-  subProperties,
-  defaultValues,
-  Interpolate: {translate,rotate,skew,scale},
-  functions } */
-
-// same to svg transform, attr
-
-// Component Functions
-function onStartTransform(tweenProp) {
-  if (!KUTE[tweenProp] && this.valuesEnd[tweenProp]) {
-    KUTE[tweenProp] = (elem, a, b, v) => {
-      elem.style[tweenProp] = (a.perspective || b.perspective ? perspective(a.perspective, b.perspective, 'px', v) : '') // one side might be 0
-        + (a.translate3d ? translate3d(a.translate3d, b.translate3d, 'px', v) : '') // array [x,y,z]
-        + (a.rotate3d ? rotate3d(a.rotate3d, b.rotate3d, 'deg', v) : '') // array [x,y,z]
-        + (a.skew ? skew(a.skew, b.skew, 'deg', v) : '') // array [x,y]
-        + (a.scale || b.scale ? scale(a.scale, b.scale, v) : ''); // one side might be 0
-    };
-  }
-}
-
-// Base Component
-const BaseTransform = {
-  component: 'baseTransform',
-  property: 'transform',
-  functions: { onStart: onStartTransform },
-  Interpolate: {
-    perspective,
-    translate3d,
-    rotate3d,
-    translate,
-    rotate,
-    scale,
-    skew,
-  },
-};
-
-function numbers(a, b, v) { // number1, number2, progress
-  const A = +a;
-  const B = b - a;
-  // a = +a; b -= a;
-  return A + B * v;
-}
-
-/* opacityProperty = {
-  property: 'opacity',
-  defaultValue: 1,
-  interpolators: {numbers},
-  functions = { prepareStart, prepareProperty, onStart }
-} */
-
-// Component Functions
-function onStartOpacity(tweenProp/* , value */) {
-  // opacity could be 0 sometimes, we need to check regardless
-  if (tweenProp in this.valuesEnd && !KUTE[tweenProp]) {
-    KUTE[tweenProp] = (elem, a, b, v) => {
-      elem.style[tweenProp] = ((numbers(a, b, v) * 1000) >> 0) / 1000;
-    };
-  }
-}
-
-// Base Component
-const baseOpacity = {
-  component: 'baseOpacity',
-  property: 'opacity',
-  // defaultValue: 1,
-  Interpolate: { numbers },
-  functions: { onStart: onStartOpacity },
-};
-
-// Component Functions
-function boxModelOnStart(tweenProp) {
-  if (tweenProp in this.valuesEnd && !KUTE[tweenProp]) {
-    KUTE[tweenProp] = (elem, a, b, v) => {
-      elem.style[tweenProp] = `${v > 0.99 || v < 0.01
-        ? ((numbers(a, b, v) * 10) >> 0) / 10
-        : (numbers(a, b, v)) >> 0}px`;
-    };
-  }
-}
-
-// Component Base Props
-const baseBoxProps = ['top', 'left', 'width', 'height'];
-const baseBoxOnStart = {};
-baseBoxProps.forEach((x) => { baseBoxOnStart[x] = boxModelOnStart; });
-
-// Component Base
-const baseBoxModel = {
-  component: 'baseBoxModel',
-  category: 'boxModel',
-  properties: baseBoxProps,
-  Interpolate: { numbers },
-  functions: { onStart: baseBoxOnStart },
-};
-
-// KUTE.js custom build for Spicr, MODERN BROWSERS
+// KUTE custom build for Spicr, MODERN BROWSERS
 
 spicrConnect.fromTo = fromTo;
 
 const K = {
   Animation: AnimationBase,
   Components: {
-    Transform: new AnimationBase(BaseTransform),
-    Opacity: new AnimationBase(baseOpacity),
-    BoxModel: new AnimationBase(baseBoxModel),
+    Transform: new AnimationBase(TransformFunctionsBase),
+    Opacity: new AnimationBase(OpacityPropertyBase),
+    BoxModel: new AnimationBase(BoxModelBase),
   },
   Tween: TweenBase,
   fromTo,
@@ -1246,16 +1599,23 @@ const K = {
   Easing,
   Util,
   Render,
-  Interpolate,
-  Internals,
+  Interpolate: interpolate,
+  Internals: internals,
   Selector: selector,
 };
 
-Object.keys(K).forEach((o) => {
-  Spicr[o] = K[o];
-});
+Object.assign(Spicr, K);
 
-// tweenCarousel to work with KUTE.js transformFunctions component
+/**
+ * TweenCarousel to work with KUTE transformFunctions component which returns
+ * an `Array` of Tween objects for layers of the current and next active item.
+ * @param {Element} elem
+ * @param {Element[]} items
+ * @param {number} active
+ * @param {number} next
+ * @param {string} direction animation direction
+ * @returns {KUTE.TweenBase[]} the `Array` of tween objects
+ */
 function carouselTF(elem, items, active, next, direction) {
   const carouselTweens = [];
   const data = getLayerData(elem);
@@ -1390,7 +1750,13 @@ function carouselTF(elem, items, active, next, direction) {
   return carouselTweens;
 }
 
-// tweenLayer to work with KUTE.js transformFunctions component
+/**
+ * Returns a tween object for a single layer for TransformFunctions component.
+ * @param {Element} elem target layer
+ * @param {number | boolean} isInAnimation parent slide is next
+ * @param {Spicr.layerData} nextData some layer data used when parent is NOT next
+ * @returns {KUTE.TweenBase} a new tween object
+ */
 function layerTF(elem, isInAnimation, nextData) {
   const data = nextData || getLayerData(elem);
   const isBg = elem.classList.contains('item-bg');
@@ -1473,6 +1839,10 @@ function layerTF(elem, isInAnimation, nextData) {
   return spicrConnect.fromTo(elem, from, to, { easing, duration, delay });
 }
 
+/**
+ * Reset all layers for a Spicr element or a single slide.
+ * @param {Element} element target Spicr element or slide
+ */
 function resetAllLayers(element) {
   Array.from(element.getElementsByClassName('spicr-layer')).forEach((x) => {
     x.style.opacity = '';
@@ -1485,7 +1855,11 @@ spicrConnect.carousel = carouselTF;
 spicrConnect.layer = layerTF;
 spicrConnect.reset = resetAllLayers;
 
-// DATA API
+/**
+ * DATA API initialization callback
+ *
+ * @param {Element=} input target parent, usually the document
+ */
 function initComponent(input) {
   const lookup = input instanceof Element ? input : document;
   const Spicrs = Array.from(lookup.querySelectorAll('[data-function="spicr"]'));
@@ -1502,10 +1876,15 @@ if (document.body) {
   document.addEventListener('DOMContentLoaded', initComponent, { once: true });
 }
 
-var version = "1.0.9";
+var version = "1.0.10";
 
-// import kute-base.js custom build
+// @ts-ignore
 
-Spicr.Version = version;
+/** @type {string} */
+const Version = version;
+
+// import kute-base custom build
+
+Spicr.Version = Version;
 
 export default Spicr;

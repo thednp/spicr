@@ -1,5 +1,5 @@
-// KUTE custom build for Spicr, LEGACY BROWSERS
-// using transformLegacyBase component
+// KUTE base build for Spicr, MODERN BROWSERS
+// built for transformMatrixBase component
 import Render from 'kute.js/src/core/render';
 import Interpolate from 'kute.js/src/objects/interpolate';
 import Objects from 'kute.js/src/objects/objectsBase';
@@ -11,7 +11,7 @@ import Animation from 'kute.js/src/animation/animationBase';
 import Tween from 'kute.js/src/tween/tweenBase';
 import fromTo from 'kute.js/src/interface/fromTo';
 
-import baseTransform from 'kute.js/src/components/transformLegacyBase';
+import baseTransform from 'kute.js/src/components/transformMatrixBase';
 import baseOpacity from 'kute.js/src/components/opacityPropertyBase';
 import baseBoxModel from 'kute.js/src/components/boxModelBase';
 

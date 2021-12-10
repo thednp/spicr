@@ -1,6 +1,6 @@
 {
   "name": "spicr",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Spicr Modern Slideshow Component",
   "main": "dist/js/spicr.min.js",
   "module": "dist/js/spicr.esm.js",
@@ -9,11 +9,9 @@
   "jsnext": "src/js/index.js",
   "types": "types/index.d.ts",
   "files": [
-    "dist/{js,css}/*.{js,css,map}",
-    "src/{js,scss}/**/*.{js,map}",
-    "src/{js,scss}/*.{js,scss,map}",
-    "types/js/**/*.{ts,map}",
-    "types/js/*.{ts,map}"
+    "dist",
+    "src",
+    "types"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -23,7 +21,7 @@
     "fix:css": "stylelint --config .stylelintrc.json -s --fix scss \"src/scss/*.scss\"",
     "lint:css": "stylelint --config .stylelintrc.json -s scss \"src/scss/*.scss\"",
     "build": "npm run lint:js && npm-run-all --parallel build-* && npm run copy-build && npm run copy-standalone",
-    "build-ts": "tsc -d",
+    "build:ts": "tsc -d",
     "build-js": "rollup --environment FORMAT:umd,MIN:false -c",
     "build-min": "rollup --environment FORMAT:umd,MIN:true -c",
     "build-esm": "rollup --environment FORMAT:esm,MIN:false -c",
@@ -68,9 +66,9 @@
   },
   "homepage": "http://thednp.github.io/spicr",
   "dependencies": {
-    "kute.js": "^2.1.3",
+    "kute.js": "^2.2.0",
     "minifill": "^0.0.16",
-    "shorter-js": "^0.2.1"
+    "shorter-js": "^0.2.9"
   },
   "devDependencies": {
     "@rollup/plugin-buble": "^0.21.3",
@@ -88,6 +86,6 @@
     "stylelint-config-standard": "^20.0.0",
     "stylelint-order": "^4.1.0",
     "stylelint-scss": "^3.19.0",
-    "typescript": "^4.4.4"
+    "typescript": "^4.5.2"
   }
 }

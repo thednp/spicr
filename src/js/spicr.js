@@ -1,18 +1,23 @@
-import queryElement from 'shorter-js/src/misc/queryElement.js';
-import isMobile from 'shorter-js/src/boolean/isMobile.js';
-import supportTouch from 'shorter-js/src/boolean/supportTouch.js';
-import mouseHoverEvents from 'shorter-js/src/strings/mouseHoverEvents.js';
-import passiveHandler from 'shorter-js/src/misc/passiveHandler.js';
-import normalizeOptions from 'shorter-js/src/misc/normalizeOptions.js';
+import queryElement from 'shorter-js/src/misc/queryElement';
+import isMobile from 'shorter-js/src/boolean/isMobile';
+import supportTouch from 'shorter-js/src/boolean/supportTouch';
+import mouseHoverEvents from 'shorter-js/src/strings/mouseHoverEvents';
+import passiveHandler from 'shorter-js/src/misc/passiveHandler';
+import normalizeOptions from 'shorter-js/src/misc/normalizeOptions';
 
-import spicrConnect from './util/spicrConnect.js';
-import animateSliderLayers from './process/animateSliderLayers.js';
+import spicrConnect from './util/spicrConnect';
+import animateSliderLayers from './process/animateSliderLayers';
 
 // options
-import defaultSpicrOptions from './options/defaultOptions.js';
+import defaultSpicrOptions from './options/defaultOptions';
 
 // SPICR DEFINITION
 // ================
+/**
+ * Returns a new Spicr instance
+ * @param {Element | string} el target element
+ * @param {Spicr.spicrOptions} ops instance options
+ */
 export default function Spicr(el, ops) {
   const element = queryElement(el);
 
@@ -196,10 +201,16 @@ export default function Spicr(el, ops) {
   }
 
   // public methods
+  /**
+   * Returns the index of the curent active item.
+   */
   this.getActiveIndex = () => {
     const activeIndex = element.getElementsByClassName('item active')[0];
     return Array.from(slides).indexOf(activeIndex);
   };
+  /**
+   * Cycles through items automatically in a pre-configured time interval.
+   */
   this.cycle = () => {
     clearInterval(timer);
     timer = setTimeout(() => {
@@ -207,6 +218,10 @@ export default function Spicr(el, ops) {
       self.slideTo(index);
     }, intervalOption);
   };
+  /**
+   * Slides to a certain Spicr item.
+   * @param {number} nextIdx the index of the next slide.
+   */
   this.slideTo = (nextIdx) => {
     let nextActive = nextIdx;
     const activeIndex = this.getActiveIndex();
@@ -289,6 +304,9 @@ export default function Spicr(el, ops) {
       }
     }, 1);
   };
+  /**
+   * Removes Spicr from target element
+   */
   this.dispose = () => {
     if (isAnimating) tws.forEach((x) => x.stop());
     spicrConnect.reset(element);

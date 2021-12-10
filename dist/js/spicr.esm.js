@@ -1,26 +1,66 @@
 /*!
-* Spicr v1.0.9 (http://thednp.github.io/spicr)
+* Spicr v1.0.10 (http://thednp.github.io/spicr)
 * Copyright 2017-2021 © thednp
 * Licensed under MIT (https://github.com/thednp/spicr/blob/master/LICENSE)
 */
+/**
+ * Utility to check if target is typeof Element
+ * or find one that matches a selector.
+ *
+ * @param {Element | string} selector the input selector or target element
+ * @param {Element | null} parent optional Element to look into
+ * @return {Element | null} the Element or result of the querySelector
+ */
 function queryElement(selector, parent) {
   const lookUp = parent && parent instanceof Element ? parent : document;
   return selector instanceof Element ? selector : lookUp.querySelector(selector);
 }
 
 const mobileBrands = /iPhone|iPad|iPod|Android/i;
-const isMobile = navigator.userAgentData
-  ? navigator.userAgentData.brands.some((x) => mobileBrands.test(x.brand))
-  : mobileBrands.test(navigator.userAgent);
+const userAgentStr = 'userAgentData';
 
-const supportTouch = ('ontouchstart' in window || navigator.msMaxTouchPoints) || false;
+let isMobileCheck = false;
 
+if (navigator[userAgentStr]) {
+  isMobileCheck = navigator[userAgentStr].brands.some((x) => mobileBrands.test(x.brand));
+} else {
+  isMobileCheck = mobileBrands.test(navigator.userAgent);
+}
+
+/**
+ * A global namespace for mobile detection.
+ * @type {boolean}
+ */
+const isMobile = isMobileCheck;
+
+/**
+ * A global namespace for touch events support.
+ * @type {boolean}
+ */
+const supportTouch = 'ontouchstart' in window || 'msMaxTouchPoints' in navigator;
+
+/**
+ * A global namespace for mouse hover events.
+ * @type {[string, string]}
+ */
 const mouseHoverEvents = ('onmouseleave' in document) ? ['mouseenter', 'mouseleave'] : ['mouseover', 'mouseout'];
 
+/**
+ * A global namespace for 'addEventListener' string.
+ * @type {string}
+ */
 const addEventListener = 'addEventListener';
 
+/**
+ * A global namespace for 'removeEventListener' string.
+ * @type {string}
+ */
 const removeEventListener = 'removeEventListener';
 
+/**
+ * A global namespace for passive events support.
+ * @type {boolean}
+ */
 const supportPassive = (() => {
   let result = false;
   try {
@@ -42,33 +82,58 @@ const supportPassive = (() => {
 
 // general event options
 
-var passiveHandler = supportPassive ? { passive: true } : false;
+/**
+ * A global namespace for most scroll event listeners.
+ */
+const passiveHandler = supportPassive ? { passive: true } : false;
 
+/**
+ * The raw value or a given component option.
+ *
+ * @typedef {string | Element | Function | number | boolean | null} niceValue
+ */
+
+/**
+ * Utility to normalize component options
+ *
+ * @param {any} value the input value
+ * @return {niceValue} the normalized value
+ */
 function normalizeValue(value) {
-  if (value === 'true') {
+  if (value === 'true') { // boolean
     return true;
   }
 
-  if (value === 'false') {
+  if (value === 'false') { // boolean
     return false;
   }
 
-  if (!Number.isNaN(+value)) {
+  if (!Number.isNaN(+value)) { // number
     return +value;
   }
 
-  if (value === '' || value === 'null') {
+  if (value === '' || value === 'null') { // null
     return null;
   }
 
-  // string / function / Element / Object
+  // string / function / Element / object
   return value;
 }
 
+/**
+ * Utility to normalize component options
+ *
+ * @param {Element} element target
+ * @param {object} defaultOps component default options
+ * @param {object} inputOps component instance options
+ * @param {string} ns component namespace
+ * @return {object} normalized component options object
+ */
 function normalizeOptions(element, defaultOps, inputOps, ns) {
+  // @ts-ignore
+  const data = { ...element.dataset };
   const normalOps = {};
   const dataOps = {};
-  const data = { ...element.dataset };
 
   Object.keys(data)
     .forEach((k) => {
@@ -98,9 +163,22 @@ function normalizeOptions(element, defaultOps, inputOps, ns) {
   return normalOps;
 }
 
-var spicrConnect = {};
+/**
+ * @type {object} spicrConnect
+ * @property {function} carousel
+ * @property {function} layer
+ * @property {function} reset
+ * @property {function} fromTo
+ */
+const spicrConnect = {};
 
-// process array from data string
+/**
+ * Returns proper values from string attribute values.
+ * @param {Element} elem target layer
+ * @param {string} attributeString attribute value
+ * @param {number | boolean} isOrigin attribute is transform-origin
+ * @returns {Spicr.layerData} layer data ready to tween
+ */
 function processLayerData(elem, attributeString, isOrigin) {
   const attributesArray = attributeString.trim().split(/[,|;]/);
   const obj = {};
@@ -132,6 +210,11 @@ const defaultSpicrOptions = {
   pause: 'hover',
 };
 
+/**
+ * Returns an object with attribute values specific to Spicr layer.
+ * @param {Element} elem target
+ * @returns {Object.<string, (number | string)>}
+ */
 function getAttributes(elem) {
   const obj = {};
   const attr = ['translate', 'rotate', 'scale',
@@ -144,8 +227,13 @@ function getAttributes(elem) {
   return obj;
 }
 
-function getLayerData(elem) {
-  const attr = getAttributes(elem);
+/**
+ * Returns layer animation settings for DATA API attributes.
+ * @param {Element} layer target
+ * @returns {Spicr.layerData} values to create a tween object
+ */
+function getLayerData(layer) {
+  const attr = getAttributes(layer);
   const {
     translate, rotate, origin, opacity, easing,
   } = attr;
@@ -156,9 +244,9 @@ function getLayerData(elem) {
   delay = +delay;
 
   return {
-    translate: translate ? processLayerData(elem, translate) : '',
-    rotate: rotate ? processLayerData(elem, rotate) : '',
-    origin: origin ? processLayerData(elem, origin, 1) : '',
+    translate: translate ? processLayerData(layer, translate) : '',
+    rotate: rotate ? processLayerData(layer, rotate) : '',
+    origin: origin ? processLayerData(layer, origin, 1) : '',
     scale: !Number.isNaN(scale) ? scale : '',
     opacity: opacity !== 'false' ? 1 : 0,
     duration: !Number.isNaN(duration) ? duration : defaultSpicrOptions.duration,
@@ -167,11 +255,24 @@ function getLayerData(elem) {
   };
 }
 
+/**
+ * Returns an `Array` with all layers from a slide / Spicr element.
+ * @param {Element} elem target
+ * @returns {Element[]} an `Array` of Spicr layers
+ */
 function getLayers(elem) {
   return Array.from(elem.getElementsByClassName('spicr-layer'));
 }
 
-// function to animate slider item background
+/**
+ * Returns an `Array` or Tween objects for all layers
+ * of the current active slider item and / or the next active item.
+ *
+ * @param {Element[]} slides spicr items
+ * @param {number} idx current active index
+ * @param {number} next next active index
+ * @returns {KUTE.TweenBase[]} an `Array` of tween objects
+ */
 function animateSliderLayers(slides, idx, next) {
   const activeItem = slides[idx] || slides[0];
   const allLayers = getLayers(activeItem);
@@ -195,6 +296,11 @@ function animateSliderLayers(slides, idx, next) {
 
 // SPICR DEFINITION
 // ================
+/**
+ * Returns a new Spicr instance
+ * @param {Element | string} el target element
+ * @param {Spicr.spicrOptions} ops instance options
+ */
 function Spicr(el, ops) {
   const element = queryElement(el);
 
@@ -378,10 +484,16 @@ function Spicr(el, ops) {
   }
 
   // public methods
+  /**
+   * Returns the index of the curent active item.
+   */
   this.getActiveIndex = () => {
     const activeIndex = element.getElementsByClassName('item active')[0];
     return Array.from(slides).indexOf(activeIndex);
   };
+  /**
+   * Cycles through items automatically in a pre-configured time interval.
+   */
   this.cycle = () => {
     clearInterval(timer);
     timer = setTimeout(() => {
@@ -389,6 +501,10 @@ function Spicr(el, ops) {
       self.slideTo(index);
     }, intervalOption);
   };
+  /**
+   * Slides to a certain Spicr item.
+   * @param {number} nextIdx the index of the next slide.
+   */
   this.slideTo = (nextIdx) => {
     let nextActive = nextIdx;
     const activeIndex = this.getActiveIndex();
@@ -471,6 +587,9 @@ function Spicr(el, ops) {
       }
     }, 1);
   };
+  /**
+   * Removes Spicr from target element
+   */
   this.dispose = () => {
     if (isAnimating) tws.forEach((x) => x.stop());
     spicrConnect.reset(element);
@@ -505,7 +624,16 @@ if (typeof window.KUTE !== 'undefined') {
   throw Error('Spicr requires KUTE.js ^2.0.10');
 }
 
-// tweenCarousel to work with KUTE.js transformFunctions component
+/**
+ * TweenCarousel to work with KUTE transformFunctions component which returns
+ * an `Array` of Tween objects for layers of the current and next active item.
+ * @param {Element} elem
+ * @param {Element[]} items
+ * @param {number} active
+ * @param {number} next
+ * @param {string} direction animation direction
+ * @returns {KUTE.TweenBase[]} the `Array` of tween objects
+ */
 function carouselTF(elem, items, active, next, direction) {
   const carouselTweens = [];
   const data = getLayerData(elem);
@@ -640,7 +768,13 @@ function carouselTF(elem, items, active, next, direction) {
   return carouselTweens;
 }
 
-// tweenLayer to work with KUTE.js transformFunctions component
+/**
+ * Returns a tween object for a single layer for TransformFunctions component.
+ * @param {Element} elem target layer
+ * @param {number | boolean} isInAnimation parent slide is next
+ * @param {Spicr.layerData} nextData some layer data used when parent is NOT next
+ * @returns {KUTE.TweenBase} a new tween object
+ */
 function layerTF(elem, isInAnimation, nextData) {
   const data = nextData || getLayerData(elem);
   const isBg = elem.classList.contains('item-bg');
@@ -723,6 +857,10 @@ function layerTF(elem, isInAnimation, nextData) {
   return spicrConnect.fromTo(elem, from, to, { easing, duration, delay });
 }
 
+/**
+ * Reset all layers for a Spicr element or a single slide.
+ * @param {Element} element target Spicr element or slide
+ */
 function resetAllLayers(element) {
   Array.from(element.getElementsByClassName('spicr-layer')).forEach((x) => {
     x.style.opacity = '';
@@ -735,7 +873,11 @@ spicrConnect.carousel = carouselTF;
 spicrConnect.layer = layerTF;
 spicrConnect.reset = resetAllLayers;
 
-// DATA API
+/**
+ * DATA API initialization callback
+ *
+ * @param {Element=} input target parent, usually the document
+ */
 function initComponent(input) {
   const lookup = input instanceof Element ? input : document;
   const Spicrs = Array.from(lookup.querySelectorAll('[data-function="spicr"]'));
@@ -752,8 +894,13 @@ if (document.body) {
   document.addEventListener('DOMContentLoaded', initComponent, { once: true });
 }
 
-var version = "1.0.9";
+var version = "1.0.10";
 
-Spicr.Version = version;
+// @ts-ignore
+
+/** @type {string} */
+const Version = version;
+
+Object.assign(Spicr, { Version });
 
 export default Spicr;

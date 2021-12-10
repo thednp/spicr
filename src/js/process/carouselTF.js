@@ -1,12 +1,21 @@
-import spicrConnect from '../util/spicrConnect.js';
-import getLayers from './getLayers.js';
+import spicrConnect from '../util/spicrConnect';
+import getLayers from './getLayers';
 
-import defaultSpicrOptions from '../options/defaultOptions.js';
+import defaultSpicrOptions from '../options/defaultOptions';
 
-import getLayerData from './getLayerData.js';
-import processLayerData from './processLayerData.js';
+import getLayerData from './getLayerData';
+import processLayerData from './processLayerData';
 
-// tweenCarousel to work with KUTE.js transformFunctions component
+/**
+ * TweenCarousel to work with KUTE transformFunctions component which returns
+ * an `Array` of Tween objects for layers of the current and next active item.
+ * @param {Element} elem
+ * @param {Element[]} items
+ * @param {number} active
+ * @param {number} next
+ * @param {string} direction animation direction
+ * @returns {KUTE.TweenBase[]} the `Array` of tween objects
+ */
 export default function carouselTF(elem, items, active, next, direction) {
   const carouselTweens = [];
   const data = getLayerData(elem);

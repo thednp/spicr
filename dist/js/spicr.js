@@ -1,5 +1,5 @@
 /*!
-* Spicr v1.0.9 (http://thednp.github.io/spicr)
+* Spicr v1.0.10 (http://thednp.github.io/spicr)
 * Copyright 2017-2021 © thednp
 * Licensed under MIT (https://github.com/thednp/spicr/blob/master/LICENSE)
 */
@@ -9,24 +9,64 @@
   (global = global || self, global.Spicr = factory());
 }(this, (function () { 'use strict';
 
+  /**
+   * Utility to check if target is typeof Element
+   * or find one that matches a selector.
+   *
+   * @param {Element | string} selector the input selector or target element
+   * @param {Element | null} parent optional Element to look into
+   * @return {Element | null} the Element or result of the querySelector
+   */
   function queryElement(selector, parent) {
     var lookUp = parent && parent instanceof Element ? parent : document;
     return selector instanceof Element ? selector : lookUp.querySelector(selector);
   }
 
   var mobileBrands = /iPhone|iPad|iPod|Android/i;
-  var isMobile = navigator.userAgentData
-    ? navigator.userAgentData.brands.some(function (x) { return mobileBrands.test(x.brand); })
-    : mobileBrands.test(navigator.userAgent);
+  var userAgentStr = 'userAgentData';
 
-  var supportTouch = ('ontouchstart' in window || navigator.msMaxTouchPoints) || false;
+  var isMobileCheck = false;
 
+  if (navigator[userAgentStr]) {
+    isMobileCheck = navigator[userAgentStr].brands.some(function (x) { return mobileBrands.test(x.brand); });
+  } else {
+    isMobileCheck = mobileBrands.test(navigator.userAgent);
+  }
+
+  /**
+   * A global namespace for mobile detection.
+   * @type {boolean}
+   */
+  var isMobile = isMobileCheck;
+
+  /**
+   * A global namespace for touch events support.
+   * @type {boolean}
+   */
+  var supportTouch = 'ontouchstart' in window || 'msMaxTouchPoints' in navigator;
+
+  /**
+   * A global namespace for mouse hover events.
+   * @type {[string, string]}
+   */
   var mouseHoverEvents = ('onmouseleave' in document) ? ['mouseenter', 'mouseleave'] : ['mouseover', 'mouseout'];
 
+  /**
+   * A global namespace for 'addEventListener' string.
+   * @type {string}
+   */
   var addEventListener = 'addEventListener';
 
+  /**
+   * A global namespace for 'removeEventListener' string.
+   * @type {string}
+   */
   var removeEventListener = 'removeEventListener';
 
+  /**
+   * A global namespace for passive events support.
+   * @type {boolean}
+   */
   var supportPassive = (function () {
     var result = false;
     try {
@@ -48,33 +88,58 @@
 
   // general event options
 
+  /**
+   * A global namespace for most scroll event listeners.
+   */
   var passiveHandler = supportPassive ? { passive: true } : false;
 
+  /**
+   * The raw value or a given component option.
+   *
+   * @typedef {string | Element | Function | number | boolean | null} niceValue
+   */
+
+  /**
+   * Utility to normalize component options
+   *
+   * @param {any} value the input value
+   * @return {niceValue} the normalized value
+   */
   function normalizeValue(value) {
-    if (value === 'true') {
+    if (value === 'true') { // boolean
       return true;
     }
 
-    if (value === 'false') {
+    if (value === 'false') { // boolean
       return false;
     }
 
-    if (!Number.isNaN(+value)) {
+    if (!Number.isNaN(+value)) { // number
       return +value;
     }
 
-    if (value === '' || value === 'null') {
+    if (value === '' || value === 'null') { // null
       return null;
     }
 
-    // string / function / Element / Object
+    // string / function / Element / object
     return value;
   }
 
+  /**
+   * Utility to normalize component options
+   *
+   * @param {Element} element target
+   * @param {object} defaultOps component default options
+   * @param {object} inputOps component instance options
+   * @param {string} ns component namespace
+   * @return {object} normalized component options object
+   */
   function normalizeOptions(element, defaultOps, inputOps, ns) {
+    // @ts-ignore
+    var data = Object.assign({}, element.dataset);
     var normalOps = {};
     var dataOps = {};
-    var data = Object.assign({}, element.dataset);
 
     Object.keys(data)
       .forEach(function (k) {
@@ -104,9 +169,22 @@
     return normalOps;
   }
 
+  /**
+   * @type {object} spicrConnect
+   * @property {function} carousel
+   * @property {function} layer
+   * @property {function} reset
+   * @property {function} fromTo
+   */
   var spicrConnect = {};
 
-  // process array from data string
+  /**
+   * Returns proper values from string attribute values.
+   * @param {Element} elem target layer
+   * @param {string} attributeString attribute value
+   * @param {number | boolean} isOrigin attribute is transform-origin
+   * @returns {Spicr.layerData} layer data ready to tween
+   */
   function processLayerData(elem, attributeString, isOrigin) {
     var attributesArray = attributeString.trim().split(/[,|;]/);
     var obj = {};
@@ -138,6 +216,11 @@
     pause: 'hover',
   };
 
+  /**
+   * Returns an object with attribute values specific to Spicr layer.
+   * @param {Element} elem target
+   * @returns {Object.<string, (number | string)>}
+   */
   function getAttributes(elem) {
     var obj = {};
     var attr = ['translate', 'rotate', 'scale',
@@ -150,8 +233,13 @@
     return obj;
   }
 
-  function getLayerData(elem) {
-    var attr = getAttributes(elem);
+  /**
+   * Returns layer animation settings for DATA API attributes.
+   * @param {Element} layer target
+   * @returns {Spicr.layerData} values to create a tween object
+   */
+  function getLayerData(layer) {
+    var attr = getAttributes(layer);
     var translate = attr.translate;
     var rotate = attr.rotate;
     var origin = attr.origin;
@@ -166,9 +254,9 @@
     delay = +delay;
 
     return {
-      translate: translate ? processLayerData(elem, translate) : '',
-      rotate: rotate ? processLayerData(elem, rotate) : '',
-      origin: origin ? processLayerData(elem, origin, 1) : '',
+      translate: translate ? processLayerData(layer, translate) : '',
+      rotate: rotate ? processLayerData(layer, rotate) : '',
+      origin: origin ? processLayerData(layer, origin, 1) : '',
       scale: !Number.isNaN(scale) ? scale : '',
       opacity: opacity !== 'false' ? 1 : 0,
       duration: !Number.isNaN(duration) ? duration : defaultSpicrOptions.duration,
@@ -177,11 +265,24 @@
     };
   }
 
+  /**
+   * Returns an `Array` with all layers from a slide / Spicr element.
+   * @param {Element} elem target
+   * @returns {Element[]} an `Array` of Spicr layers
+   */
   function getLayers(elem) {
     return Array.from(elem.getElementsByClassName('spicr-layer'));
   }
 
-  // function to animate slider item background
+  /**
+   * Returns an `Array` or Tween objects for all layers
+   * of the current active slider item and / or the next active item.
+   *
+   * @param {Element[]} slides spicr items
+   * @param {number} idx current active index
+   * @param {number} next next active index
+   * @returns {KUTE.TweenBase[]} an `Array` of tween objects
+   */
   function animateSliderLayers(slides, idx, next) {
     var activeItem = slides[idx] || slides[0];
     var allLayers = getLayers(activeItem);
@@ -205,6 +306,11 @@
 
   // SPICR DEFINITION
   // ================
+  /**
+   * Returns a new Spicr instance
+   * @param {Element | string} el target element
+   * @param {Spicr.spicrOptions} ops instance options
+   */
   function Spicr(el, ops) {
     var this$1 = this;
 
@@ -390,10 +496,16 @@
     }
 
     // public methods
+    /**
+     * Returns the index of the curent active item.
+     */
     this.getActiveIndex = function () {
       var activeIndex = element.getElementsByClassName('item active')[0];
       return Array.from(slides).indexOf(activeIndex);
     };
+    /**
+     * Cycles through items automatically in a pre-configured time interval.
+     */
     this.cycle = function () {
       clearInterval(timer);
       timer = setTimeout(function () {
@@ -401,6 +513,10 @@
         self.slideTo(index);
       }, intervalOption);
     };
+    /**
+     * Slides to a certain Spicr item.
+     * @param {number} nextIdx the index of the next slide.
+     */
     this.slideTo = function (nextIdx) {
       var nextActive = nextIdx;
       var activeIndex = this$1.getActiveIndex();
@@ -485,6 +601,9 @@
         }
       }, 1);
     };
+    /**
+     * Removes Spicr from target element
+     */
     this.dispose = function () {
       if (isAnimating) { tws.forEach(function (x) { return x.stop(); }); }
       spicrConnect.reset(element);
@@ -519,7 +638,16 @@
     throw Error('Spicr requires KUTE.js ^2.0.10');
   }
 
-  // tweenCarousel to work with KUTE.js transformFunctions component
+  /**
+   * TweenCarousel to work with KUTE transformFunctions component which returns
+   * an `Array` of Tween objects for layers of the current and next active item.
+   * @param {Element} elem
+   * @param {Element[]} items
+   * @param {number} active
+   * @param {number} next
+   * @param {string} direction animation direction
+   * @returns {KUTE.TweenBase[]} the `Array` of tween objects
+   */
   function carouselTF(elem, items, active, next, direction) {
     var carouselTweens = [];
     var data = getLayerData(elem);
@@ -654,7 +782,13 @@
     return carouselTweens;
   }
 
-  // tweenLayer to work with KUTE.js transformFunctions component
+  /**
+   * Returns a tween object for a single layer for TransformFunctions component.
+   * @param {Element} elem target layer
+   * @param {number | boolean} isInAnimation parent slide is next
+   * @param {Spicr.layerData} nextData some layer data used when parent is NOT next
+   * @returns {KUTE.TweenBase} a new tween object
+   */
   function layerTF(elem, isInAnimation, nextData) {
     var data = nextData || getLayerData(elem);
     var isBg = elem.classList.contains('item-bg');
@@ -737,6 +871,10 @@
     return spicrConnect.fromTo(elem, from, to, { easing: easing, duration: duration, delay: delay });
   }
 
+  /**
+   * Reset all layers for a Spicr element or a single slide.
+   * @param {Element} element target Spicr element or slide
+   */
   function resetAllLayers(element) {
     Array.from(element.getElementsByClassName('spicr-layer')).forEach(function (x) {
       x.style.opacity = '';
@@ -749,7 +887,11 @@
   spicrConnect.layer = layerTF;
   spicrConnect.reset = resetAllLayers;
 
-  // DATA API
+  /**
+   * DATA API initialization callback
+   *
+   * @param {Element=} input target parent, usually the document
+   */
   function initComponent(input) {
     var lookup = input instanceof Element ? input : document;
     var Spicrs = Array.from(lookup.querySelectorAll('[data-function="spicr"]'));
@@ -766,9 +908,14 @@
     document.addEventListener('DOMContentLoaded', initComponent, { once: true });
   }
 
-  var version = "1.0.9";
+  var version = "1.0.10";
 
-  Spicr.Version = version;
+  // @ts-ignore
+
+  /** @type {string} */
+  var Version = version;
+
+  Object.assign(Spicr, { Version: Version });
 
   return Spicr;
 

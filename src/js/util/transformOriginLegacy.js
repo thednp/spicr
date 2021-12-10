@@ -1,3 +1,4 @@
-import trueProperty from 'kute.js/src/util/trueProperty.js';
+import trueProperty from 'kute.js/src/util/trueProperty';
 
-export default trueProperty('transform-origin');
+const transformOriginLegacy = trueProperty('transform-origin');
+export default transformOriginLegacy;

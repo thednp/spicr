@@ -1,6 +1,11 @@
-import processLayerData from './processLayerData.js';
-import defaultSpicrOptions from '../options/defaultOptions.js';
+import processLayerData from './processLayerData';
+import defaultSpicrOptions from '../options/defaultOptions';
 
+/**
+ * Returns an object with attribute values specific to Spicr layer.
+ * @param {Element} elem target
+ * @returns {Object.<string, (number | string)>}
+ */
 function getAttributes(elem) {
   const obj = {};
   const attr = ['translate', 'rotate', 'scale',
@@ -13,8 +18,13 @@ function getAttributes(elem) {
   return obj;
 }
 
-export default function getLayerData(elem) {
-  const attr = getAttributes(elem);
+/**
+ * Returns layer animation settings for DATA API attributes.
+ * @param {Element} layer target
+ * @returns {Spicr.layerData} values to create a tween object
+ */
+export default function getLayerData(layer) {
+  const attr = getAttributes(layer);
   const {
     translate, rotate, origin, opacity, easing,
   } = attr;
@@ -25,9 +35,9 @@ export default function getLayerData(elem) {
   delay = +delay;
 
   return {
-    translate: translate ? processLayerData(elem, translate) : '',
-    rotate: rotate ? processLayerData(elem, rotate) : '',
-    origin: origin ? processLayerData(elem, origin, 1) : '',
+    translate: translate ? processLayerData(layer, translate) : '',
+    rotate: rotate ? processLayerData(layer, rotate) : '',
+    origin: origin ? processLayerData(layer, origin, 1) : '',
     scale: !Number.isNaN(scale) ? scale : '',
     opacity: opacity !== 'false' ? 1 : 0,
     duration: !Number.isNaN(duration) ? duration : defaultSpicrOptions.duration,

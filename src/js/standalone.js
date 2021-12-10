@@ -1,9 +1,8 @@
-// import kute-base.js custom build
-import Spicr from './spicr.js';
-import './util/kute-spicr.js';
-import './compatibility/transformFunctions.js';
-import './util/init.js';
-import Version from './util/version.js';
+// import kute-base custom build
+import Spicr from './util/kute-spicr';
+import './compatibility/transformFunctions';
+import './util/init';
+import Version from './util/version';
 
 Spicr.Version = Version;
 export default Spicr;

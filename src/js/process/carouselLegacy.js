@@ -1,15 +1,25 @@
-import support3DTransform from 'shorter-js/src/boolean/support3DTransform.js';
-import spicrConnect from '../util/spicrConnect.js';
-import getLayers from './getLayers.js';
+import support3DTransform from 'shorter-js/src/boolean/support3DTransform';
+import spicrConnect from '../util/spicrConnect';
+import getLayers from './getLayers';
 
-import defaultSpicrOptions from '../options/defaultOptions.js';
+import defaultSpicrOptions from '../options/defaultOptions';
 
-import transformOriginLegacy from '../util/transformOriginLegacy.js';
-import getLayerData from './getLayerData.js';
-import processLayerData from './processLayerData.js';
+import transformOriginLegacy from '../util/transformOriginLegacy';
+import getLayerData from './getLayerData';
+import processLayerData from './processLayerData';
 
-// tweenCarousel to work with KUTE.js transformFunctions component
+/**
+ * TweenCarousel to work with KUTE transformLegacy component which returns
+ * an `Array` of Tween objects for layers of the current and next active item.
+ * @param {Element} elem
+ * @param {Element[]} items
+ * @param {number} active
+ * @param {number} next
+ * @param {string} direction animation direction
+ * @returns {KUTE.TweenBase[]} the `Array` of tween objects
+ */
 export default function carouselLegacy(elem, items, active, next, direction) {
+  /** @type {KUTE.TweenBase[]} */
   const carouselTweens = [];
   const data = getLayerData(elem);
   const fromActive = {};
@@ -131,6 +141,7 @@ export default function carouselLegacy(elem, items, active, next, direction) {
         if ('y' in o) {
           originY = /%/.test(o.y) ? o.y : `${o.y}px`;
         }
+        // no space intentional
         x.style[transformOriginLegacy] = `${originX} ${originY}${originZ}`;
       }
     });

@@ -1,4 +1,4 @@
-import spicrConnect from './spicrConnect.js';
+import spicrConnect from './spicrConnect';
 
 if (typeof window.KUTE !== 'undefined') {
   spicrConnect.fromTo = window.KUTE.fromTo;
